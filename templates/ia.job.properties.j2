@@ -1,0 +1,59 @@
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+# ----------------------------------------------------------------------------------------
+# App Server based Properties
+
+# ----------------------------------------------------------------------------------------
+# DataStage/PX Engine Properties
+# Refer ASB documentation for details
+# ----------------------------------------------------------------------------------------
+
+# Flag to set handler logging detail for debug  
+engine.handler.logging.debug=false
+
+# The name of the Router setup for ia jobs
+router.name=IARouter
+
+# The type of LoadBalancer used by this handler
+router.load.balancer.type=RoundRobin
+
+# The maximum number of times to retry an operation when a retryable error occurs
+router.retries.max=10
+
+# The minimum number of handler instances to be active. 
+# The pool will do a best effort to keep MININSTANCES active at all times. 
+# Note that this can be difficult/impossible if a handler takes a long time to close.
+engine.instances.min=1
+
+# The maximum number of handler instances that will be created. 
+# Handlers in the process of starting or stopping are still considered as an instance. 
+engine.instances.max=20
+
+# Next 3 properties may have to be adjusted on systems where a DataStage job
+# startup takes more than a second.
+
+# increment delay between checks of job status, at this rate
+engine.jobs.status.delayIncrement=1
+
+# maximum delay between each check of job status
+engine.jobs.status.maxDelay=5
+
+# total delay before assuming a job in state Unknown, will not change status
+engine.jobs.status.maxTotalDelay=60
+
+# max number of parallel jobs submitted for px execution
+server.jobs.parallel.max={{ hostvars[ibm_infosvr_hosts.engine].ansible_processor_count }}
