@@ -1,0 +1,69 @@
+{
+	"useAutomaticConfiguration":true,
+	"dataQualityDimensions":[
+		{
+			"ignored":false,
+			"dataQualityProblemType":"DataClassViolation",
+			"name":"Data Class Violations",
+			"description":"Values that do not match the data class of their column have been found."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"SuspectValues",
+			"name":"Suspect Values",
+			"description":"Values have been found that do not seem to have the same domain as the majority of values in the same column. These values could be potential domain violations."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"MissingValue",
+			"name":"Missing Values",
+			"description":"Null or empty values have been found in columns where missing values are not expected."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"ValueRangeViolation",
+			"name":"Value Range Violations",
+			"description":"Out of range values, which are outside the valid range defined for their column, have been found."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"DataTypeViolation",
+			"name":"Data Type Violations",
+			"description":"Values that are not compatible with the selected data type their column have been found."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"CaseViolation",
+			"name":"Inconsistent usage of upper and lower cases.",
+			"description":"The usage of upper and lower cases do not seem to be consistent across the values of the same column (ex: Some values use an upper case representation, while some other values use a lower case representation)"
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"FormatViolation",
+			"name":"Format Violations",
+			"description":"Values that have an invalid format have been found."
+		},
+		{
+			"ignored":true,
+			"dataQualityProblemType":"SuspectCorrelatedValue",
+			"name":"Suspect Values (Correlation Violations)",
+			"description":"Values of a column do not seem to be correct when compared to the values of the other columns in the same record."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"UniquenessViolation",
+			"name":"Duplicate values",
+			"description":"Duplicate values have been found in a column where the values are expected to be unique."
+		},
+		{
+			"ignored":false,
+			"dataQualityProblemType":"NonStandardMissingValue",
+			"name":"Inconsistent missing value representation",
+			"description":"Different representation of the missing values have been found in the same column (ex: null and empty values)."
+		}
+	],
+	"subscribers":[	],
+	"isInherited":false,
+	"useOnlySpecifiedDimensions":true,
+	"qualityThreshold":0.8
+}

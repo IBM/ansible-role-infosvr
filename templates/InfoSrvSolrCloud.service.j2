@@ -1,0 +1,14 @@
+[Unit]
+Description=Information Server Solr
+Requires=basic.target
+After=InfoSrvZookeeper.service
+Before=InfoSrvKafka.service
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+ExecStart=/etc/init.d/InfoSrvSolrCloud start
+ExecStop=/etc/init.d/InfoSrvSolrCloud stop
+
+[Install]
+WantedBy=multi-user.target

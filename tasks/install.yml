@@ -1,0 +1,105 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: open up limits
+  pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: "{{ item.key }}"
+    value: "{{ item.value }}"
+    use_max: yes
+  with_items:
+    - { key: "nproc", value: "100000" }
+    - { key: "nofile", value: "1024000" }
+    - { key: "sigpending", value: "6341600" }
+    - { key: "memlock", value: "6400" }
+    - { key: "msgqueue", value: "81920000" }
+    - { key: "stack", value: "819200" }
+    - { key: "fsize", value: "62914530" }
+  become_user: root
+  become: yes
+  when: not ('ibm-information-server-clients' in group_names)
+
+- import_tasks: common.yml
+  become_user: root
+  become: yes
+  when: not ('ibm-information-server-clients' in group_names) and not ('ibm-information-server-ug' in group_names)
+
+- import_tasks: repo.yml
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-repo' in group_names)
+
+- import_tasks: domain.yml
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-domain' in group_names)
+
+- import_tasks: engine.yml
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: retrieve Information Server certificate
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/ASBServer/apps/lib/iis/tknproperties/tokenservicepublic.cer"
+    dest: cache/tokenservicepublic.cer
+    flat: yes
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: determine UG installer archive location
+  shell: >
+          awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }'
+          {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/UGDockerDeploymentServices/payload/installer/kubeselfextract.bsx
+  register: __ibm_infosvr_ug_archive_linenum
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: create UG installer archive extraction location
+  file: path={{ ibm_infosvr_tmp.linux }}/kubeextract state=directory owner=root group=root mode=0755
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: extract UG installer archive
+  shell: >
+          tail -n+{{ __ibm_infosvr_ug_archive_linenum.stdout }}
+          {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/UGDockerDeploymentServices/payload/installer/kubeselfextract.bsx
+          | tar xz -C {{ ibm_infosvr_tmp.linux }}/kubeextract/
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: grab files from extract UG installer
+  fetch:
+    src: "{{ ibm_infosvr_tmp.linux }}/kubeextract/{{ item }}"
+    dest: "cache/{{ item }}"
+    flat: yes
+  with_items:
+    - kuberepo_CentOS.tar.gz
+    - runUGDiagnostics.sh
+    - runiistoken.sh
+    - cleanUGInstall.sh
+    - ug_build.txt
+  when: ('ibm-information-server-domain' in group_names)
+
+- import_tasks: ug.yml
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-ug' in group_names)
+
+- import_tasks: client.yml
+  when: ('ibm-information-server-clients' in group_names)

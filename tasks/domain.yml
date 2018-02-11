@@ -1,0 +1,161 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- import_tasks: refresh_install_details.yml
+
+##########
+# SETUP
+- name: domain - installing domain-specific packages
+  yum: state=latest name={{ item }}
+  with_items:
+    - compat-libstdc++-33
+    - libXtst
+    - elfutils
+
+- name: domain - apply response file template (Liberty)
+  template:
+    src: services_wlp-v{{ __ibm_infosvr_version|replace(".", "") }}.j2
+    dest: "{{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp"
+    owner: root
+    group: root
+    mode: 0644
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and __ibm_infosvr_features.wlp
+
+- name: domain - apply response file template (ND)
+  template:
+    src: services_wasnd-v{{ __ibm_infosvr_version|replace(".", "") }}.j2
+    dest: "{{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp"
+    owner: root
+    group: root
+    mode: 0644
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and (not __ibm_infosvr_features.wlp)
+
+- name: domain - apply DB2 client response file template
+  template: src={{ item.file }} dest={{ item.target }} owner=root group=root mode=0644
+  with_items:
+    - { file: 'db2client.j2', target: "{{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp" }
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
+
+- name: domain - parse domain-specific variables
+  include_vars: file=domain.yml
+
+- import_tasks: kernel-and-firewall.yml
+
+##########
+# BASE INSTALLATION
+- name: domain - installing domain tier silently
+  # Force the install to ensure it bypasses a check that at least 4GB memory is available
+  shell: >
+          {{ ibm_infosvr_tmp.linux }}/is-suite/setup
+          -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp
+          -force
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
+
+- name: domain - install DB2 client
+  shell: >
+          {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/DB2/payload/db2setup
+          -r {{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp
+  args: creates={{ ibm_infosvr_install_location.db2 }}/bin/db2
+  when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
+
+- name: domain - install Installation Manager update utility
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/_uninstall/payloads/Shared/WAS/payload/WAS/agentInstaller/installc
+          -acceptLicense
+  args:
+    executable: /bin/bash
+    creates: "{{ ibm_infosvr_install_location.im }}"
+  when: (not __ibm_infosvr_features.wlp) and (ibm_infosvr_version_xml.find('domain="true"') == -1)
+
+##########
+# POST-INSTALL CONFIGURATION
+- name: domain - allocate additional memory to IGC
+  replace:
+    dest: "{{ ibm_infosvr_install_location.was }}/profiles/InfoSphere/config/cells/{{ inventory_hostname_short }}Node01Cell/nodes/{{ inventory_hostname_short }}Node01/servers/server1/server.xml"
+    regexp: '(.+?maximumHeapSize)="\d+" (.+)'
+    replace: '\1="6144" \2'
+    backup: yes
+  when: (ansible_memtotal_mb > 12288) and (not __ibm_infosvr_features.wlp) and (__ibm_infosvr_version == "11.5")
+  register: __ibm_infosvr_websphere_jvm_heap
+
+- name: domain - increase max objects in memory
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -set
+          -key com.ibm.iis.gov.vr.setting.maxObjectsInMemory
+          -value 4000000
+  when: __ibm_infosvr_websphere_jvm_heap|changed and (__ibm_infosvr_version == "11.5")
+
+- name: domain - restart WebSphere Application server
+  shell: "{{ item }}"
+  with_items:
+    - "{{ ibm_infosvr_install_location.was }}/bin/stopServer.sh server1 -username {{ ibm_infosvr_user_was }} -password {{ ibm_infosvr_upwd_was }}"
+    - "{{ ibm_infosvr_install_location.was }}/bin/startServer.sh server1 -username {{ ibm_infosvr_user_was }} -password {{ ibm_infosvr_upwd_was }}"
+  when: __ibm_infosvr_websphere_jvm_heap|changed and (__ibm_infosvr_version == "11.5")
+
+- name: domain - sleep for 5 minutes (Liberty only)
+  wait_for: timeout=300
+  delegate_to: localhost
+  when: __ibm_infosvr_features.wlp
+
+- name: domain - start Liberty server
+  shell: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/MetadataServer.sh run"
+  args:
+    executable: /bin/bash
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  when: __ibm_infosvr_features.wlp
+
+- name: domain - confirm domain tier is fully started
+  wait_for: port={{ ibm_infosvr_ports.console }} host={{ inventory_hostname }} state=started delay=10 timeout=300
+
+# This if statement in the open source scripts doesn't really work
+# -- if you're already the user the command needs to execute as it should just execute, without su
+#    (trying to use su in a more secure environment where root has nologin defined won't work, for example)
+- name: domain - modify open source services scripts
+  replace:
+    dest: "{{ item }}"
+    regexp: '(\s+)if \[ -n (\S+) \]; then'
+    replace: '\1if [ -n \2 -a \2 != `whoami` ]; then'
+    backup: yes
+  with_items:
+    - "/etc/init.d/InfoSrvKafka"
+    - "/etc/init.d/InfoSrvSolrCloud"
+    - "/etc/init.d/InfoSrvZookeeper"
+
+# Next two tasks for RHEL 7 only (extrapolated from other services)
+- name: domain - configure domain tier systemd restartability
+  template:
+    src: "{{ item.src }}"
+    dest: /etc/systemd/system/{{ item.svc }}
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
+    - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
+    - { src: InfoSrvZookeeper.service.j2, svc: InfoSrvZookeeper.service }
+  when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
+
+- name: domain - register open source services in systemd
+  systemd: name={{ item }} enabled=yes state=started daemon_reload=yes
+  with_items:
+    - "InfoSrvKafka.service"
+    - "InfoSrvSolrCloud.service"
+    - "InfoSrvZookeeper.service"
+  when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")

@@ -1,0 +1,30 @@
+*-----------------------------------------------------
+* Generated response file used by the DB2 Setup wizard
+* generation time: 11/17/15 1:23 PM
+*-----------------------------------------------------
+*  Product Installation 
+LIC_AGREEMENT       = ACCEPT
+PROD       = CLIENT
+FILE       = {{ ibm_infosvr_install_location.db2 }}
+INSTALL_TYPE       = CUSTOM
+COMP       = LDAP_EXPLOITATION
+COMP       = SQL_PROCEDURES
+COMP       = JAVA_SUPPORT
+COMP       = BASE_CLIENT
+* ----------------------------------------------
+*  Instance properties           
+* ----------------------------------------------
+INSTANCE       = inst1
+inst1.TYPE       = client
+*  Instance-owning user
+inst1.NAME       = {{ ibm_infosvr_user_db2_instance }}
+inst1.GROUP_NAME       = {{ ibm_infosvr_group_db2_instance }}
+inst1.HOME_DIRECTORY       = /home/{{ ibm_infosvr_user_db2_instance }}
+inst1.PASSWORD       = {{ ibm_infosvr_upwd_db2_instance }}
+* Line below commented out as not sure how to encrypt (sequence of numbers)
+* ENCRYPTED       = inst1.PASSWORD
+inst1.AUTOSTART       = NO
+*-----------------------------------------------
+*  Installed Languages 
+*-----------------------------------------------
+LANG       = EN

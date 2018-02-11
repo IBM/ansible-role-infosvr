@@ -1,0 +1,14 @@
+[Unit]
+Description=Information Server Kafka
+Requires=basic.target
+After=InfoSrvZookeeper.service
+After=InfoSrvSolrCloud.service
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+ExecStart=/etc/init.d/InfoSrvKafka start
+ExecStop=/etc/init.d/InfoSrvKafka stop
+
+[Install]
+WantedBy=multi-user.target

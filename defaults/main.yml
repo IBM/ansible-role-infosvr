@@ -1,0 +1,156 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+# LOCATIONS
+ibm_infosvr_install_location:
+  linux: /opt/IBM/InformationServer
+  win: C:\IBM\InformationServer
+  db2: /opt/IBM/DB2
+  was: /opt/IBM/WebSphere/AppServer
+  im: /opt/IBM/InstallationManager
+
+ibm_infosvr_repository_location: "{{ ibm_infosvr_install_location.linux }}/Repos"
+
+ibm_infosvr_tmp:
+  linux: /opt/IBM/install
+  win: C:\IBM\install
+
+ibm_infosvr_ug_storage: /dev/sdb
+
+# MEDIA / FILES
+ibm_infosvr_media_dir: ../media
+
+ibm_infosvr_media_bin:
+  server_tarball: "IS_V11.7_LINUX_X86_64_MULTILING.tar.gz"  # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  ug_tarball: "INFO_SERVER_ENTERPRISE_SEARCH_V11.tar.gz"    # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  client_zip: "IS_V11.7_WINDOWS_CLIENT_MULTILI.zip"         # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  entitlements: "IIS_ENTERPRISE_EDITION_V11.7_BUND.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
+
+ibm_infosvr_updater:
+  version: "IBM InfoSphere Information Server Update Installer Version 11.7.0.005"
+  win: "is-update-windows-11.7.0.005.zip"
+  linux: "is-update-linux64-11.7.0.005.tar"
+
+# FEATURES TO INSTALL
+ibm_infosvr_features:
+  opsdb: True               # DataStage Operations Console (and related database)
+  ia: True                  # Information Analyzer
+  igc: True                 # Information Governance Catalog
+  dataclick: True           # DataClick
+  masking: True             # Optim Data Masking features (for DataStage)
+  event_mgmt: True          # Event Management (for integration to BPM and DQEC)
+  qs: True                  # QualityStage
+  wisd: True                # Information Services Director
+  fasttrack: True           # FastTrack
+  dqec: True                # Data Quality Exception Console (DQEC)
+  ml_term_assignment: True  # Machine Learning-based automatic term assignment
+  igd: False                # Information Governance Dashboard (for integration with Cognos)
+  wlp: False                # Use WebSphere Liberty profile instead of full WAS
+
+# UNIFIED GOVERNANCE CONFIG -- defaults below, override to expand or reduce resource requirements
+ibm_infosvr_ug_cassandra_mem: "16G"
+ibm_infosvr_ug_elasticsearch_mem: "1G"
+ibm_infosvr_ug_kafka_mem: "1G"
+ibm_infosvr_ug_shop4info_mem_min: "1024M"
+ibm_infosvr_ug_shop4info_mem_max: "4096M"
+
+# NETWORK CONFIG
+ibm_infosvr_use_firewalld: False
+ibm_infosvr_firewall_chain: 'INPUT'   # chain for iptables (eg. 'INPUT'), zone (eg. 'public') for firewalld
+
+## PORTS -- if overridding, replace entire dictionary below (copy / paste and replace ports that need to be changed)
+ibm_infosvr_ports:
+  db2: 50000
+  bpm: 9444                           # only used to configure Stewardship Centre, but needed regardless if you want to use DQEC
+  dsrpc: 31538
+  isf_agent: 31531
+  isf_agent_object: 31599
+  jobmon_port1: 13400
+  jobmon_port2: 13401
+  cas_multi_min: 30010
+  cas_multi_max: 30020
+  console: 9446
+  admin: 9060
+  default: 9080
+  secure_admin: 9043
+  bootstrap: 2825
+  dcs_unicast: 9353
+  ipc_connector: 9633
+  mutual_auth_listener: 9405
+  orb_listener: 9108
+  sas_ssl: 9403
+  sib_mq: 5558
+  sib: 7284
+  secure_sib_mq: 5578
+  secure_sib: 7286
+  server_auth_listener: 9404
+  sip: 5076
+  sip_secured: 5077
+  soap_connector: 8882
+  zookeeper: 52181
+  solr: 58983
+  kafka: 59092
+  ug_console: 32500
+  k8s_admin: 30453
+  k8s_api: 6443
+  k8s_kubelet: 10250
+
+## Default config for k8s and weave-net -- modify only if they conflict with a pre-existing network
+ibm_infosvr_k8s_network:
+  weave_ip_range: "10.32.0.0/12"
+  service_cidr: "10.96.0.0/12"
+  cluster_dns: "10.96.0.10"
+
+ibm_infosvr_ug_external_svc_use_ip: True  # Use IP address (True) or hostname (False) as external service
+
+# SENSITIVE SETTINGS (credentials)
+## Application-level credentials
+ibm_infosvr_user_isadmin: isadmin
+ibm_infosvr_upwd_isadmin: isadmin
+## OS-level users (will be created if do not already exist)
+ibm_infosvr_user_dsadmin: dsadm
+ibm_infosvr_upwd_dsadmin: ds4dm
+ibm_infosvr_group_dsadmin: dstage
+ibm_infosvr_user_ia: iauser
+ibm_infosvr_upwd_ia: i4user
+ibm_infosvr_user_srd: srduser
+ibm_infosvr_upwd_srd: srdus3r
+ibm_infosvr_user_xmeta: xmeta
+ibm_infosvr_upwd_xmeta: xm3ta
+ibm_infosvr_user_odb: dsodb
+ibm_infosvr_upwd_odb: ds0db
+ibm_infosvr_user_staging: xmetasr
+ibm_infosvr_upwd_staging: xm3tasr
+ibm_infosvr_user_esdb: esuser
+ibm_infosvr_upwd_esdb: esus3r
+ibm_infosvr_user_igd: igduser
+ibm_infosvr_upwd_igd: igdus3r
+ibm_infosvr_user_db2_fenced: db2fenc1
+ibm_infosvr_upwd_db2_fenced: db2f3nc1
+ibm_infosvr_group_db2_fenced: db2fadm1
+ibm_infosvr_user_db2_instance: db2inst1
+ibm_infosvr_upwd_db2_instance: db21nst1
+ibm_infosvr_group_db2_instance: db2iadm1
+ibm_infosvr_user_was: wasadmin
+ibm_infosvr_upwd_was: wasadmin
+ibm_infosvr_ssl_key_pwd_wlp: p4ssw0rd
+ibm_infosvr_user_k8s: mykubeadm1
+ibm_infosvr_user_bpm: bpm
+ibm_infosvr_upwd_bpm: bpm
+
+## SALT to ensure idempotency for 'user' actions
+ibm_infosvr_salt: 'inf0server'

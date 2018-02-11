@@ -1,0 +1,12 @@
+[Unit]
+Description=DataStage Engine
+Requires=basic.target
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+ExecStart=/etc/init.d/ds.rc start
+ExecStop=/etc/init.d/ds.rc stop
+
+[Install]
+WantedBy=multi-user.target

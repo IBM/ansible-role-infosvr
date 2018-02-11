@@ -1,0 +1,9 @@
+[Unit]
+Description=DB2V105
+
+[Service]
+ExecStart={{ ibm_infosvr_install_location.db2 }}/bin/db2fmcd
+Restart=always
+
+[Install]
+WantedBy=default.target

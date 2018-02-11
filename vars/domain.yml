@@ -1,0 +1,49 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+__ibm_infosvr_kernel_params:
+  - { key: 'kernel.msgmnb', value: '16384', set: 'max' }
+  - { key: 'kernel.msgmax', value: '8192', set: 'max' }
+  - { key: 'kernel.shmall', value: '837241600', set: 'max' }
+  - { key: 'kernel.sem', value: '250 128000 32 1024', set: 'max' }
+  - { key: 'kernel.shmmax', value: "{{ ansible_memtotal_mb * 1048576 }}", set: 'fixed' }
+  - { key: 'kernel.shmmni', value: '2000', set: 'max' }
+
+__ibm_infosvr_firewall_ports:
+  - { port: "{{ ibm_infosvr_ports.console }}", chain: "{% if ibm_infosvr_use_firewalld %}public{% else %}INPUT{% endif %}" }
+  - { port: "{{ ibm_infosvr_ports.console }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.admin }}", chain: "{% if ibm_infosvr_use_firewalld %}public{% else %}INPUT{% endif %}" }
+  - { port: "{{ ibm_infosvr_ports.admin }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.bootstrap }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.dcs_unicast }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.default }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.ipc_connector }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.mutual_auth_listener }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.orb_listener }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.sas_ssl }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.secure_admin }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.secure_sib_mq }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.secure_sib }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.server_auth_listener }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.sib_mq }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.sib }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.sip }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.sip_secured }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.soap_connector }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.zookeeper }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.kafka }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.solr }}", chain: "{{ ibm_infosvr_firewall_chain }}" }

@@ -1,0 +1,25 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+ibm_infosvr_patches_list:
+  - { srcFile: "rollup_RU8v6_ISF_all_11502.zip", pkgFile: "rollup_RU8v6_ISF_all_11502.ispkg", versionInfo: "rollup_RU8v6_ISF_all_11502" }
+  - { srcFile: "servicepack_11.5_ServicePack_2_linux64_11502.tar", pkgFile: "servicepack_11.5_ServicePack_2_linux64_11502.ispkg", versionInfo: "rollup_11.5_GovernanceRollup_9_11502" }
+
+ibm_infosvr_websphere_jdk_update:  # https://www.ibm.com/support/fixcentral/
+  - { filename: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI55778.zip", extractedpath: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI55778", versionInfo: "pxa6460_26sr8fp20-20160111_01(SR8 FP20)" }
+ibm_infosvr_websphere_jdk7_update:  # https://www.ibm.com/support/fixcentral/
+  - { filename: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI55776.zip", extractedpath: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI55776", versionInfo: "pxa6470sr9fp30-20160112_01(SR9 FP30)" }

@@ -1,0 +1,57 @@
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+suite.installLocation={{ ibm_infosvr_install_location.win | replace("\\", "\\\\") }}
+
+#Tier selection
+suite.tier[client.tier].selected=true
+
+
+#Product selection
+product[MetadataServer].selected=true
+product[DataQualityExceptionConsole].selected={{ __ibm_infosvr_features.dqec | lower }}
+product[datastage].selected=true
+product[IMAM].selected=true
+product[CommonEvent].selected=true
+product[CommonMetadata].selected=true
+product[ISF].selected=true
+product[InformationAnalyzer].selected={{ __ibm_infosvr_features.ia | lower }}
+product[qualitystage].selected={{ __ibm_infosvr_features.qs | lower }}
+product[ISALite].selected=true
+product[FastTrack].selected={{ __ibm_infosvr_features.fasttrack | lower }}
+product[IMAMEngine].selected=true
+product[DataClick].selected={{ __ibm_infosvr_features.dataclick | lower }}
+product[WISD].selected={{ __ibm_infosvr_features.wisd | lower }}
+product[InformationGovernanceCatalog].selected={{ __ibm_infosvr_features.igc | lower }}
+
+
+#Variable setting
+LIC_AGREEMENT=ACCEPT
+create.desktop.shortcut=true
+ds.client.language.acronym=ENU
+imam.register.server=true
+imamMbbAgent.https.port=19443
+install.path=1
+is.admin.password={{ ibm_infosvr_upwd_isadmin }}
+is.admin.user={{ ibm_infosvr_user_isadmin }}
+nls.language=English
+nls.language.code=ENU
+services.tier.host={{ ibm_infosvr_hosts.domain }}
+services.tier.port={{ ibm_infosvr_ports.console }}
+target.country.code=US
+target.language.code=en
+
+

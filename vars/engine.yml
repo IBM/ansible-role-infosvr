@@ -1,0 +1,42 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+__ibm_infosvr_kernel_params:
+  - { key: 'kernel.msgmnb', value: '16384', set: 'max' }
+  - { key: 'kernel.msgmax', value: '8192', set: 'max' }
+  - { key: 'kernel.shmall', value: '837241600', set: 'max' }
+  - { key: 'kernel.sem', value: '250 128000 32 1024', set: 'max' }
+  - { key: 'kernel.shmmax', value: "{{ ansible_memtotal_mb * 1048576 }}", set: 'fixed' }
+  - { key: 'kernel.shmmni', value: '2000', set: 'max' }
+
+__ibm_infosvr_firewall_ports:
+  - { port: "{{ ibm_infosvr_ports.dsrpc }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.isf_agent }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.isf_agent_object }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.jobmon_port1 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.jobmon_port2 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 1 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 2 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 3 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 4 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 5 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 6 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 7 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 8 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_min + 9 }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
+  - { port: "{{ ibm_infosvr_ports.cas_multi_max }}", chain: "{{ ibm_infosvr_firewall_chain }}" }
