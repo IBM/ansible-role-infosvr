@@ -123,46 +123,47 @@
     executable: /bin/bash
   when: ('ibm-information-server-domain' in group_names)
 
-- name: configure-ia - transfer new default ODF parameters (v11.7)
-  template: src=ODFParams.json.j2 dest=/tmp/ODFParams.json
-  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.7")
-
-- name: configure-ia - enable Unified Governance additions (v11.7)
-  shell: >
-          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
-          -set
-          {{ item }}
-  args:
-    executable: /bin/bash
-  with_items:
-    - "-key com.ibm.iis.ug11_7.autoclassification.enabled -value true"
-    - "-key com.ibm.iis.ug11_7.autoclassification.dopublish -value true"
-    - "-key com.ibm.iis.ia.server.jobs.results.bridge -value odf"
-    - "-key com.ibm.iis.odf.autoclassification.configuration -value 'CA,TM,DQ'"
-  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.7")
-
-- name: configure-ia - enable Unified Governance IA additions (v11.7)
-  shell: >
-          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
-          -user {{ ibm_infosvr_user_isadmin }}
-          -password {{ ibm_infosvr_upwd_isadmin }}
-          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
-          {{ item }}
-  args:
-    executable: /bin/bash
-  with_items:
-    - "-setODFParams -content /tmp/ODFParams.json"
-    - "-setODFParams -content /tmp/ODFParams.json -projectName UGDefaultWorkspace"
-  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.7")
-
-- name: configure-ia - enable ML-based term classification (Finley v11.7)
-  shell: >
-          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
-          -set
-          {{ item }}
-  args:
-    executable: /bin/bash
-  with_items:
-    - "-key com.ibm.iis.odf.PredictorServiceEndpoint -value '{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn|lower }}:{{ ibm_infosvr_ports.ug_console }}'"
-    - "-key com.ibm.iis.ug11_7.odfservices.ta -value 'com.ibm.iis.odf.services.termassignment.finley.FinleyPredictorService,com.ibm.iis.odf.services.termclassification.matching.bg.MatcherDiscoveryService,com.ibm.iis.odf.iisext.services.cbta.ClassBasedTermAssignmentService'"
-  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_features.ml_term_assignment) and (__ibm_infosvr_version == "11.7")
+# MOVED to separate ibm-infosvr-ug role
+#- name: configure-ia - transfer new default ODF parameters (v11.7)
+#  template: src=ODFParams.json.j2 dest=/tmp/ODFParams.json
+#  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.7")
+#
+#- name: configure-ia - enable Unified Governance additions (v11.7)
+#  shell: >
+#          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+#          -set
+#          {{ item }}
+#  args:
+#    executable: /bin/bash
+#  with_items:
+#    - "-key com.ibm.iis.ug11_7.autoclassification.enabled -value true"
+#    - "-key com.ibm.iis.ug11_7.autoclassification.dopublish -value true"
+#    - "-key com.ibm.iis.ia.server.jobs.results.bridge -value odf"
+#    - "-key com.ibm.iis.odf.autoclassification.configuration -value 'CA,TM,DQ'"
+#  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.7")
+#
+#- name: configure-ia - enable Unified Governance IA additions (v11.7)
+#  shell: >
+#          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+#          -user {{ ibm_infosvr_user_isadmin }}
+#          -password {{ ibm_infosvr_upwd_isadmin }}
+#          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+#          {{ item }}
+#  args:
+#    executable: /bin/bash
+#  with_items:
+#    - "-setODFParams -content /tmp/ODFParams.json"
+#    - "-setODFParams -content /tmp/ODFParams.json -projectName UGDefaultWorkspace"
+#  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.7")
+#
+#- name: configure-ia - enable ML-based term classification (Finley v11.7)
+#  shell: >
+#          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+#          -set
+#          {{ item }}
+#  args:
+#    executable: /bin/bash
+#  with_items:
+#    - "-key com.ibm.iis.odf.PredictorServiceEndpoint -value '{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn|lower }}:{{ ibm_infosvr_ports.ug_console }}'"
+#    - "-key com.ibm.iis.ug11_7.odfservices.ta -value 'com.ibm.iis.odf.services.termassignment.finley.FinleyPredictorService,com.ibm.iis.odf.services.termclassification.matching.bg.MatcherDiscoveryService,com.ibm.iis.odf.iisext.services.cbta.ClassBasedTermAssignmentService'"
+#  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_features.ml_term_assignment) and (__ibm_infosvr_version == "11.7")

@@ -92,15 +92,16 @@
     validate_certs: no
   ignore_errors: yes
 
-- name: configure - enable Unified Governance additions (v11.7)
-  shell: >
-          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
-          -set
-          {{ item }}
-  args:
-    executable: /bin/bash
-  with_items:
-    - "-key com.ibm.iis.isf.security.AllowedRefererDomainNames -value '{{ hostvars[ibm_infosvr_hosts.ug].ansible_domain|lower }}'"
-    - "-key com.ibm.iis.ug.11_7_da_datasets_index_schema -value true"
-    - "-key com.ibm.iis.ug.host.name -value '{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn|lower }}'"
-  when: (__ibm_infosvr_version == "11.7")
+# MOVED to separate ibm-infosvr-ug role
+#- name: configure - enable Unified Governance additions (v11.7)
+#  shell: >
+#          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+#          -set
+#          {{ item }}
+#  args:
+#    executable: /bin/bash
+#  with_items:
+#    - "-key com.ibm.iis.isf.security.AllowedRefererDomainNames -value '{{ hostvars[ibm_infosvr_hosts.ug].ansible_domain|lower }}'"
+#    - "-key com.ibm.iis.ug.11_7_da_datasets_index_schema -value true"
+#    - "-key com.ibm.iis.ug.host.name -value '{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn|lower }}'"
+#  when: (__ibm_infosvr_version == "11.7")
