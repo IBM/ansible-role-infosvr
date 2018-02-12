@@ -15,32 +15,6 @@
 # limitations under the License.
 ###
 
-- name: drain IBM InfoSphere Information Server k8s node
-  shell: "kubectl drain {{ hostvars[inventory_hostname].ansible_fqdn }} --delete-local-data"
-  args:
-    executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
-  become: yes
-  ignore_errors: yes
-  changed_when: False
-  when: ('ibm-information-server-ug' in group_names)
-  listen:
-    - "restart IBM InfoSphere Information Server"
-    - "stop IBM InfoSphere Information Server"
-
-- name: remove all running IBM InfoSphere Information Server pods
-  shell: "kubectl get pods | cut -d' ' -f 1 | grep -v 'NAME' | xargs kubectl delete pod"
-  args:
-    executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
-  become: yes
-  ignore_errors: yes
-  changed_when: False
-  when: ('ibm-information-server-ug' in group_names)
-  listen:
-    - "restart IBM InfoSphere Information Server"
-    - "stop IBM InfoSphere Information Server"
-
 - name: stop IBM InfoSphere Information Server Data Flow Designer
   shell: "./stopCognitiveDesignerServer.sh"
   args:
@@ -223,19 +197,6 @@
   ignore_errors: yes
   changed_when: False
   when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
-  listen:
-    - "restart IBM InfoSphere Information Server"
-    - "start IBM InfoSphere Information Server"
-
-- name: uncordon IBM InfoSphere Information Server k8s node
-  shell: "kubectl uncordon {{ hostvars[inventory_hostname].ansible_fqdn }}"
-  args:
-    executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
-  become: yes
-  ignore_errors: yes
-  changed_when: False
-  when: ('ibm-information-server-ug' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
