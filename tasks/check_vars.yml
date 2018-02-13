@@ -36,7 +36,7 @@
       domain: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_fqdn }}"
       domain_ip: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_default_ipv4.address }}"
       repo: "{{ hostvars[ibm_infosvr_hosts.repo].ansible_fqdn }}"
-      repo_ip: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_default_ipv4.address }}"
+      repo_ip: "{{ hostvars[ibm_infosvr_hosts.repo].ansible_default_ipv4.address }}"
 
 - name: default any missing features to disabled
   set_fact:
