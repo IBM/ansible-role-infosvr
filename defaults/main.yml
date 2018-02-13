@@ -29,15 +29,14 @@ ibm_infosvr_tmp:
   linux: /opt/IBM/install
   win: C:\IBM\install
 
-# MOVED to separate ibm-infosvr-ug role
-#ibm_infosvr_ug_storage: /dev/sdb
+ibm_infosvr_ug_storage: /dev/sdb
 
 # MEDIA / FILES
 ibm_infosvr_media_dir: ../media
 
 ibm_infosvr_media_bin:
   server_tarball: "IS_V11.7_LINUX_X86_64_MULTILING.tar.gz"  # https://www.ibm.com/software/passportadvantage/pao_customer.html
-#  ug_tarball: "INFO_SERVER_ENTERPRISE_SEARCH_V11.tar.gz"    # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  ug_tarball: "INFO_SERVER_ENTERPRISE_SEARCH_V11.tar.gz"    # https://www.ibm.com/software/passportadvantage/pao_customer.html
   client_zip: "IS_V11.7_WINDOWS_CLIENT_MULTILI.zip"         # https://www.ibm.com/software/passportadvantage/pao_customer.html
   entitlements: "IIS_ENTERPRISE_EDITION_V11.7_BUND.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
@@ -58,7 +57,7 @@ ibm_infosvr_features:
   wisd: True                # Information Services Director
   fasttrack: True           # FastTrack
   dqec: True                # Data Quality Exception Console (DQEC)
-  ml_term_assignment: True  # Machine Learning-based automatic term assignment
+#  ml_term_assignment: True  # Machine Learning-based automatic term assignment
   igd: False                # Information Governance Dashboard (for integration with Cognos)
   wlp: False                # Use WebSphere Liberty profile instead of full WAS
 
@@ -113,8 +112,8 @@ ibm_infosvr_ports:
 
 # MOVED to separate ibm-infosvr-ug role
 ## Default config for k8s and weave-net -- modify only if they conflict with a pre-existing network
-#ibm_infosvr_k8s_network:
-#  weave_ip_range: "10.32.0.0/12"
+ibm_infosvr_k8s_network:
+  weave_ip_range: "10.32.0.0/12"
 #  service_cidr: "10.96.0.0/12"
 #  cluster_dns: "10.96.0.10"
 #
