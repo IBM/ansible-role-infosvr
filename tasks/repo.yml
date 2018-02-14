@@ -64,7 +64,7 @@
           {{ ibm_infosvr_tmp.linux }}/is-suite/setup
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/repo.rsp
           -force
-  when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
+  when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
 
 # Next two tasks for RHEL 7 and v11.5 only (http://www-01.ibm.com/support/docview.wss?uid=swg21964393)
 - name: repo - configure systemd restartability
