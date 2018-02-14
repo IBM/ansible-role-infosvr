@@ -69,7 +69,9 @@
   shell: >
           {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/DB2/payload/db2setup
           -r {{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp
-  args: creates={{ ibm_infosvr_install_location.db2 }}/bin/db2
+  args:
+    executable: /bin/bash
+    creates: "{{ ibm_infosvr_install_location.db2 }}/bin/db2"
   when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
 
 - name: domain - install Installation Manager update utility
