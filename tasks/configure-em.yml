@@ -54,12 +54,18 @@
 #    mode: 0600
 #  when: ('ibm-information-server-domain' in group_names)
 
+- name: configure-em - fetch esdb_repository.properties
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/esdb_repository.properties"
+    dest: cache/esdb_repository.properties
+    flat: yes
+  when: ('ibm-information-server-engine' in group_names)
+
 - name: configure-em - deploy esdb_repository.properties
   copy:
-    src: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/esdb_repository.properties"
+    src: cache/esdb_repository.properties
     dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
     mode: 0600
-    remote_src: yes
   when: ('ibm-information-server-domain' in group_names)
 
 - name: configure-em - configure esdb_repository.properties
