@@ -74,6 +74,7 @@
     regexp: "{{ item.match }}"
     replace: "{{ item.value }}"
     backup: no
+  no_log: True
   with_items:
     - { match: '(^DatabasePlatform.databaseType)=.*', value: '\1=DB2' }
     - { match: '(^DatabasePlatform.version)=.*', value: '\1={% if __ibm_infosvr_version == "11.5" %}10.5{% else %}11.1{% endif %}' }
