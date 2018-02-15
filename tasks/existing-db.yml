@@ -37,10 +37,12 @@
     state: directory
     owner: "{{ ibm_infosvr_user_db2_instance }}"
     group: "{{ ibm_infosvr_group_db2_instance }}"
-    mode: 0755
+    mode: "0755"
   with_items:
     - "{{ ibm_infosvr_repository_location }}/xmeta"
+    - "{{ ibm_infosvr_repository_location }}/iadb"
     - "{{ ibm_infosvr_repository_location }}/xmeta/{{ ibm_infosvr_user_db2_instance }}"
+    - "{{ ibm_infosvr_repository_location }}/iadb/{{ ibm_infosvr_user_db2_instance }}"
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - ensure required groups exist on remote database
@@ -69,19 +71,19 @@
 - name: existing-db - deploy setup scripts to remote database
   copy:
     src: cache/{{ item.file }}
-    dest: "{{ ibm_infosvr_repository_location }}/xmeta/{{ item.file }}"
+    dest: "{{ ibm_infosvr_repository_location }}/{{ item.dest }}/{{ item.file }}"
     owner: "{{ ibm_infosvr_user_db2_instance }}"
     group: "{{ ibm_infosvr_group_db2_instance }}"
     mode: "{{ item.mode }}"
   with_items:
-    - { file: "configure_staging_area.sh", mode: 0755 }
-    - { file: "create_xmeta_db.sh", mode: 0755 }
-    - { file: "create_xmeta_db.sql", mode: 0600 }
-    - { file: "db2_grant_Permissions.sql", mode: 0600 }
-    - { file: "createUserPref.sql", mode: 0600 }
-    - { file: "create_ia_db.sh", mode: 0755 }
-    - { file: "create_ia_db_sp.sql", mode: 0600 }
-    - { file: "create_ia_db.sql", mode: 0600 }
+    - { file: "configure_staging_area.sh", mode: "0755", dest: "xmeta" }
+    - { file: "create_xmeta_db.sh", mode: "0755", dest: "xmeta" }
+    - { file: "create_xmeta_db.sql", mode: "0600", dest: "xmeta" }
+    - { file: "db2_grant_Permissions.sql", mode: "0600", dest: "xmeta" }
+    - { file: "createUserPref.sql", mode: "0600", dest: "xmeta" }
+    - { file: "create_ia_db.sh", mode: "0755", dest: "iadb" }
+    - { file: "create_ia_db_sp.sql", mode: "0600", dest: "iadb" }
+    - { file: "create_ia_db.sql", mode: "0600", dest: "iadb" }
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure XMETA database creation script
@@ -91,10 +93,10 @@
     replace: "{{ item.value }}"
     backup: no
   with_items:
-    - { match: '(\@DATABASE_NAME\@)', value: 'xmeta' }
-    - { match: '(\@INSTALL_ROOT\@)', value: '{{ ibm_infosvr_repository_location }}/xmeta' }
-    - { match: '(\@DATABASE_ALIAS\@)', value: 'xmeta' }
-    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_xmeta }}' }
+    - { match: '@DATABASE_NAME@', value: 'xmeta' }
+    - { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/xmeta' }
+    - { match: '@DATABASE_ALIAS@', value: 'xmeta' }
+    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_xmeta }}' }
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure XMETA database grant script
@@ -104,8 +106,8 @@
     replace: "{{ item.value }}"
     backup: no
   with_items:
-    - { match: '(\@DATABASE_NAME\@)', value: 'xmeta' }
-    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_staging }}' }
+    - { match: '@DATABASE_NAME@', value: 'xmeta' }
+    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_staging }}' }
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure DFD settings script
@@ -115,8 +117,8 @@
     replace: "{{ item.value }}"
     backup: no
   with_items:
-    - { match: '(\@DATABASE_NAME\@)', value: 'xmeta' }
-    - { match: ('\@DATABASE_USERNAME\@'), value: "{{ ibm_infosvr_user_xmeta }}"}
+    - { match: '@DATABASE_NAME@', value: 'xmeta' }
+    - { match: '@DATABASE_USERNAME@', value: "{{ ibm_infosvr_user_xmeta }}"}
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure IADB database creation script
@@ -126,10 +128,10 @@
     replace: "{{ item.value }}"
     backup: no
   with_items:
-    - { match: '(\@DATABASE_NAME\@)', value: 'iadb' }
-    - { match: '(\@INSTALL_ROOT\@)', value: '{{ ibm_infosvr_repository_location }}/iadb' }
-    - { match: '(\@DATABASE_ALIAS\@)', value: 'iadb' }
-    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_ia }}' }
+    - { match: '@DATABASE_NAME@', value: 'iadb' }
+    - { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/iadb' }
+    - { match: '@DATABASE_ALIAS@', value: 'iadb' }
+    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' }
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure IADB stored procedures script
@@ -139,7 +141,7 @@
     replace: "{{ item.value }}"
     backup: no
   with_items:
-    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_ia }}' }
+    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' }
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - create XMETA database
