@@ -1,0 +1,187 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: existing-db - retrieve database setup scripts from installer
+  fetch:
+    src: "{{ item.path }}/{{ item.file }}"
+    dest: cache/{{ item.file }}
+    flat: yes
+  with_items:
+    - { file: "configure_staging_area.sh", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/MetadataRepository/DB2_LUW_11_1" }
+    - { file: "create_xmeta_db.sh", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/MetadataRepository/DB2_LUW_11_1" }
+    - { file: "create_xmeta_db.sql", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/MetadataRepository/DB2_LUW_11_1" }
+    - { file: "db2_grant_Permissions.sql", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/MetadataRepository/DB2_LUW_11_1" }
+    - { file: "createUserPref.sql", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/CognitiveDesignerRepository/DB2_LUW_11_1" }
+    - { file: "create_ia_db.sh", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/InformationAnalyzer/DB2_LUW" }
+    - { file: "create_ia_db_sp.sql", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/InformationAnalyzer/DB2_LUW" }
+    - { file: "create_ia_db.sql", path: "{{ ibm_infosvr_tmp.linux }}/is-suite/DatabaseSupport/UNIX_Linux/InformationAnalyzer/DB2_LUW" }
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)
+
+- name: existing-db - ensure storage location exists on remote database
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ibm_infosvr_user_db2_instance }}"
+    group: "{{ ibm_infosvr_group_db2_instance }}"
+    mode: 0755
+  with_items:
+    - "{{ ibm_infosvr_repository_location }}/xmeta"
+    - "{{ ibm_infosvr_repository_location }}/xmeta/{{ ibm_infosvr_user_db2_instance }}"
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - ensure required groups exist on remote database
+  group: name={{ item }}
+  with_items:
+    - "{{ ibm_infosvr_group_db2_instance }}"
+    - "{{ ibm_infosvr_group_db2_fenced }}"
+    - "{{ ibm_infosvr_user_xmeta }}"
+    - "{{ ibm_infosvr_user_odb }}"
+    - "{{ ibm_infosvr_user_staging }}"
+    - "{{ ibm_infosvr_user_ia }}"
+    - "{{ ibm_infosvr_user_srd }}"
+
+- name: existing-db - create required users on remote database
+  user: name={{ item.user }} group={{ item.group }} password={{ item.password }} shell=/bin/bash
+  with_items:
+    # NOTE: the passwords must be sha512-hashed to work properly with Ansible's user setup (second parameter is a salt to avoid changes)
+    - { group: "{{ ibm_infosvr_group_db2_instance }}", user: "{{ ibm_infosvr_user_db2_instance }}", password: "{{ ibm_infosvr_upwd_db2_instance |password_hash('sha512', ibm_infosvr_salt) }}" }
+    - { group: "{{ ibm_infosvr_group_db2_fenced }}", user: "{{ ibm_infosvr_user_db2_fenced }}", password: "{{ ibm_infosvr_upwd_db2_fenced |password_hash('sha512', ibm_infosvr_salt) }}" }
+    - { group: "{{ ibm_infosvr_user_xmeta }}", user: "{{ ibm_infosvr_user_xmeta }}", password: "{{ ibm_infosvr_upwd_xmeta |password_hash('sha512', ibm_infosvr_salt) }}" }
+    - { group: "{{ ibm_infosvr_user_odb }}", user: "{{ ibm_infosvr_user_odb }}", password: "{{ ibm_infosvr_upwd_odb |password_hash('sha512', ibm_infosvr_salt) }}" }
+    - { group: "{{ ibm_infosvr_user_staging }}", user: "{{ ibm_infosvr_user_staging }}", password: "{{ ibm_infosvr_upwd_staging |password_hash('sha512', ibm_infosvr_salt) }}" }
+    - { group: "{{ ibm_infosvr_user_ia }}", user: "{{ ibm_infosvr_user_ia }}", password: "{{ ibm_infosvr_upwd_ia |password_hash('sha512', ibm_infosvr_salt) }}" }
+    - { group: "{{ ibm_infosvr_user_srd }}", user: "{{ ibm_infosvr_user_srd }}", password: "{{ ibm_infosvr_upwd_srd |password_hash('sha512', ibm_infosvr_salt) }}" }
+
+- name: existing-db - deploy setup scripts to remote database
+  copy:
+    src: cache/{{ item.file }}
+    dest: "{{ ibm_infosvr_repository_location }}/xmeta/{{ item.file }}"
+    owner: "{{ ibm_infosvr_user_db2_instance }}"
+    group: "{{ ibm_infosvr_group_db2_instance }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { file: "configure_staging_area.sh", mode: 0755 }
+    - { file: "create_xmeta_db.sh", mode: 0755 }
+    - { file: "create_xmeta_db.sql", mode: 0600 }
+    - { file: "db2_grant_Permissions.sql", mode: 0600 }
+    - { file: "createUserPref.sql", mode: 0600 }
+    - { file: "create_ia_db.sh", mode: 0755 }
+    - { file: "create_ia_db_sp.sql", path: 0600 }
+    - { file: "create_ia_db.sql", path: 0600 }
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - configure XMETA database creation script
+  replace:
+    dest: "{{ ibm_infosvr_repository_location }}/xmeta/create_xmeta_db.sql"
+    regexp: "{{ item.match }}"
+    replace: "{{ item.value }}"
+    backup: no
+  with_items:
+    - { match: '(\@DATABASE_NAME\@)', value: 'xmeta' }
+    - { match: '(\@INSTALL_ROOT\@)', value: '{{ ibm_infosvr_repository_location }}/xmeta' }
+    - { match: '(\@DATABASE_ALIAS\@)', value: 'xmeta' }
+    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_xmeta }}' }
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - configure XMETA database grant script
+  replace:
+    dest: "{{ ibm_infosvr_repository_location }}/xmeta/db2_grant_Permissions.sql"
+    regexp: "{{ item.match }}"
+    replace: "{{ item.value }}"
+    backup: no
+  with_items:
+    - { match: '(\@DATABASE_NAME\@)', value: 'xmeta' }
+    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_staging }}' }
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - configure DFD settings script
+  replace:
+    dest: "{{ ibm_infosvr_repository_location }}/xmeta/createUserPref.sql"
+    regexp: "{{ item.match }}"
+    replace: "{{ item.value }}"
+    backup: no
+  with_items:
+    - { match: '(\@DATABASE_NAME\@)', value: 'xmeta' }
+    - { match: ('\@DATABASE_USERNAME\@'), value: "{{ ibm_infosvr_user_xmeta }}"}
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - configure IADB database creation script
+  replace:
+    dest: "{{ ibm_infosvr_repository_location }}/iadb/create_ia_db.sql"
+    regexp: "{{ item.match }}"
+    replace: "{{ item.value }}"
+    backup: no
+  with_items:
+    - { match: '(\@DATABASE_NAME\@)', value: 'iadb' }
+    - { match: '(\@INSTALL_ROOT\@)', value: '{{ ibm_infosvr_repository_location }}/iadb' }
+    - { match: '(\@DATABASE_ALIAS\@)', value: 'iadb' }
+    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_ia }}' }
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - configure IADB stored procedures script
+  replace:
+    dest: "{{ ibm_infosvr_repository_location }}/iadb/create_ia_db_sp.sql"
+    regexp: "{{ item.match }}"
+    replace: "{{ item.value }}"
+    backup: no
+  with_items:
+    - { match: '(\@DATABASE_USERNAME\@)', value: '{{ ibm_infosvr_user_ia }}' }
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - create XMETA database
+  shell: >
+          0 | ./create_xmeta_db.sh create_xmeta_db.log
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
+    creates: "{{ ibm_infosvr_repository_location }}/xmeta/create_xmeta_db.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - grant staging privileges on XMETA database
+  shell: >
+          0 | ./configure_staging_area.sh configure_staging_area.log
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
+    creates: "{{ ibm_infosvr_repository_location }}/xmeta/configure_staging_area.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - create DFD settings table
+  shell: >
+          db2 -tvf ./createUserPref.sql | tee createUserPref.log
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
+    creates: "{{ ibm_infosvr_repository_location }}/xmeta/createUserPref.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+
+- name: existing-db - create IADB database
+  shell: >
+          ./create_ia_db.sh create_ia_db.log
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/iadb"
+    creates: "{{ ibm_infosvr_repository_location }}/iadb/create_ia_db.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
