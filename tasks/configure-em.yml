@@ -51,7 +51,7 @@
 #  template:
 #    src: esdb_repository.properties-v{{ __ibm_infosvr_version|replace(".", "") }}.j2
 #    dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
-#    mode: 0600
+#    mode: "0600"
 #  when: ('ibm-information-server-domain' in group_names)
 
 - name: configure-em - fetch esdb_repository.properties
@@ -65,7 +65,7 @@
   copy:
     src: cache/esdb_repository.properties
     dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
-    mode: 0600
+    mode: "0600"
     force: no
   when: ('ibm-information-server-domain' in group_names)
 

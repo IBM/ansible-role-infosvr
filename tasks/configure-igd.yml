@@ -106,7 +106,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: ('ibm-information-server-repo' in group_names)
 
 - name: configure-igd - copy IGD scripts

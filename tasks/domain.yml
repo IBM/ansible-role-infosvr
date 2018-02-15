@@ -32,7 +32,7 @@
     dest: "{{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and __ibm_infosvr_features.wlp
 
 - name: domain - apply response file template (ND)
@@ -41,7 +41,7 @@
     dest: "{{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and (not __ibm_infosvr_features.wlp)
 
 - name: domain - parse domain-specific variables
@@ -134,7 +134,7 @@
     dest: /etc/systemd/system/{{ item.svc }}
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   with_items:
     - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
     - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }

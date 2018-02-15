@@ -46,7 +46,7 @@
     dest: /etc/systemd/system/{{ item.svc }}
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   with_items:
     - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
     - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
