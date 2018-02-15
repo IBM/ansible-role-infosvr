@@ -66,6 +66,7 @@
     src: cache/esdb_repository.properties
     dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
     mode: 0600
+    force: no
   when: ('ibm-information-server-domain' in group_names)
 
 - name: configure-em - configure esdb_repository.properties
@@ -119,6 +120,7 @@
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
+    creates: /tmp/esdb/esdb_table_creation.sql
   when: ('ibm-information-server-domain' in group_names)
 
 - name: configure-em - cache database generation scripts
@@ -195,6 +197,7 @@
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB"
+    creates: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/ESDBConnect.cfg"
   when: ('ibm-information-server-engine' in group_names)
 
 - name: configure-em - add ODBC entry for exceptions database
