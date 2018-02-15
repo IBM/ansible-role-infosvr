@@ -168,7 +168,7 @@
 
 - name: existing-db - create DFD settings table
   shell: >
-          db2 -tvf ./createUserPref.sql | tee createUserPref.log
+          db2 -l createUserPref.log -tvf ./createUserPref.sql
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
@@ -179,7 +179,7 @@
 
 - name: existing-db - create IADB database
   shell: >
-          ./create_ia_db.sh create_ia_db.log
+          0 | ./create_ia_db.sh create_ia_db.log
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_repository_location }}/iadb"
