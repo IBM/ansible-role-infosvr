@@ -4,6 +4,7 @@
   template: src={{ item.file }} dest={{ item.target }} owner=root group=root mode=0644
   with_items:
     - { file: 'db2client.j2', target: "{{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp" }
+  when: not ('ibm-information-server-external-db' in group_names)
 
 - name: db2client - install DB2 client
   shell: >
@@ -12,3 +13,4 @@
   args:
     executable: /bin/bash
     creates: "{{ ibm_infosvr_install_location.db2 }}/bin/db2"
+  when: not ('ibm-information-server-external-db' in group_names)
