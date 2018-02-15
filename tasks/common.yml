@@ -99,13 +99,22 @@
   file: path={{ ibm_infosvr_tmp.linux }} state=directory owner=root group=root mode=0755
   when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
 
+- name: common - check for extracted media
+  stat:
+    path: "{{ ibm_infosvr_tmp.linux }}/is-suite/setup"
+  changed_when: False
+  register: __ibm_infosvr_extracted_media
+
 # This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
 - name: common - copy installation media
   copy:
     src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_media_bin.server_tarball }}"
     dest: "{{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_media_bin.server_tarball }}"
     force: no
-  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1) and (not 'ibm-information-server-external-db' in group_names)
+  when: >
+        (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+        and (not 'ibm-information-server-external-db' in group_names)
+        and (not __ibm_infosvr_extracted_media.stat.exists)
 
 - name: common - extract installation media
   unarchive:
