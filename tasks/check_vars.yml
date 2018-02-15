@@ -29,6 +29,14 @@
       ug: "{{ groups['ibm-information-server-ug'][0] }}"
       cognos: "{{ groups['ibm-cognos-report-server'][0] }}"
       bpm: "{{ groups['ibm-bpm'][0] }}"
+      exdb: "{% if groups['ibm-information-server-external-db'] is defined and (groups['ibm-information-server-external-db']|length > 0) %}{{ groups['ibm-information-server-external-db'][0] }}{% else %}{% endif %}"
+
+- name: setup external db variable
+  set_fact:
+    __ibm_infosvr_use_external_db: "{{ ibm_infosvr_hosts.exdb != '' }}"
+
+- debug: var=__ibm_infosvr_use_external_db
+- fail: msg="Stopping"
 
 - name: setup unified governance external service IPs
   set_fact:
