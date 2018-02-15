@@ -35,9 +35,6 @@
   set_fact:
     __ibm_infosvr_use_external_db: "{{ ibm_infosvr_hosts.exdb != '' }}"
 
-- debug: var=__ibm_infosvr_use_external_db
-- fail: msg="Stopping"
-
 - name: setup unified governance external service IPs
   set_fact:
     __ibm_infosvr_k8s_externals:
