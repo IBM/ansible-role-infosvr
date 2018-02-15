@@ -42,7 +42,7 @@
 - import_tasks: repo.yml
   become_user: root
   become: yes
-  when: ('ibm-information-server-repo' in group_names)
+  when: ('ibm-information-server-repo' in group_names) or ('ibm-information-server-external-db' in group_names)
 
 - import_tasks: domain.yml
   become_user: root

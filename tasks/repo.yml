@@ -25,7 +25,6 @@
   yum: state=latest name={{ item }}
   with_items:
     - libaio
-  when: not __ibm_infosvr_use_external_db
 
 - name: repo - create required groups
   group: name={{ item }}
@@ -37,7 +36,6 @@
     - "{{ ibm_infosvr_user_staging }}"
     - "{{ ibm_infosvr_user_ia }}"
     - "{{ ibm_infosvr_user_srd }}"
-  when: not __ibm_infosvr_use_external_db
 
 - name: repo - create required users
   user: name={{ item.user }} group={{ item.group }} password={{ item.password }} shell=/bin/bash
@@ -50,11 +48,10 @@
     - { group: "{{ ibm_infosvr_user_staging }}", user: "{{ ibm_infosvr_user_staging }}", password: "{{ ibm_infosvr_upwd_staging |password_hash('sha512', ibm_infosvr_salt) }}" }
     - { group: "{{ ibm_infosvr_user_ia }}", user: "{{ ibm_infosvr_user_ia }}", password: "{{ ibm_infosvr_upwd_ia |password_hash('sha512', ibm_infosvr_salt) }}" }
     - { group: "{{ ibm_infosvr_user_srd }}", user: "{{ ibm_infosvr_user_srd }}", password: "{{ ibm_infosvr_upwd_srd |password_hash('sha512', ibm_infosvr_salt) }}" }
-  when: not __ibm_infosvr_use_external_db
 
 - name: repo - apply response file template
   template: src=repo-v{{ __ibm_infosvr_version|replace(".", "") }}.j2 dest={{ ibm_infosvr_tmp.linux }}/is-suite/repo.rsp owner=root group=root mode=0644
-  when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
+  when: (ibm_infosvr_version_xml.find('repository="true"') == -1) and (not 'ibm-information-server-external-db' in group_names)
 
 - name: repo - parse repository-specific variables
   include_vars: file=repo.yml
@@ -69,7 +66,7 @@
           {{ ibm_infosvr_tmp.linux }}/is-suite/setup
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/repo.rsp
           -force
-  when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
+  when: (ibm_infosvr_version_xml.find('repository="true"') == -1) and (not 'ibm-information-server-external-db' in group_names)
 
 - import_tasks: db2client.yml
 
@@ -85,7 +82,7 @@
         (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
         and (__ibm_infosvr_version == "11.5")
-        and (not __ibm_infosvr_use_external_db)
+        and (not 'ibm-information-server-external-db' in group_names)
 
 - name: repo - register DB2 in systemd
   systemd: name=db2fmcd enabled=yes state=started daemon_reload=yes
@@ -93,4 +90,4 @@
         (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
         and (__ibm_infosvr_version == "11.5")
-        and (not __ibm_infosvr_use_external_db)
+        and (not 'ibm-information-server-external-db' in group_names)
