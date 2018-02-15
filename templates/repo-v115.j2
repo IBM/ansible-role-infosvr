@@ -17,7 +17,9 @@
 suite.installLocation={{ ibm_infosvr_install_location.linux }}
 
 #Tier selection
+{% if not __ibm_infosvr_use_external_db %}
 suite.tier[database.tier].selected=true
+{% endif %}
 
 
 #Product selection
@@ -36,6 +38,7 @@ product[InformationGovernanceDashboard].selected={{ __ibm_infosvr_features.igd |
 
 #Variable setting
 LIC_AGREEMENT=ACCEPT
+{% if not __ibm_infosvr_use_external_db %}
 db2.fenced.group={{ ibm_infosvr_group_db2_fenced }}
 db2.fenced.home.directory=/home/{{ ibm_infosvr_user_db2_fenced }}
 db2.fenced.user.name={{ ibm_infosvr_user_db2_fenced }}
@@ -44,12 +47,21 @@ db2.install.location={{ ibm_infosvr_install_location.db2 }}
 db2.instance.group={{ ibm_infosvr_group_db2_instance }}
 db2.instance.home.directory=/home/{{ ibm_infosvr_user_db2_instance }}
 db2.instance.name={{ ibm_infosvr_user_db2_instance }}
-db2.instance.user.name={{ ibm_infosvr_user_db2_instance }}
-db2.instance.user.password={{ ibm_infosvr_upwd_db2_instance }}
 db2.port.number={{ ibm_infosvr_ports.db2 }}
+db2.instance.user.password={{ ibm_infosvr_upwd_db2_instance }}
+{% else %}
+db.driver=com.ibm.db2.jcc.DB2Driver
+db.url=jdbc:db2://{{ ibm_infosvr_hosts.exdb }}:{{ ibm_infosvr_ports.db2 }}/xmeta
+{% endif %}
+db2.instance.user.name={{ ibm_infosvr_user_db2_instance }}
 ds.client.language.acronym=ENU
+{% if not __ibm_infosvr_use_external_db %}
 ia.db.hostname={{ ansible_hostname }}
 ia.db.location={{ ibm_infosvr_repository_location }}/iadb
+{% else %}
+ia.db.hostname={{ ibm_infosvr_hosts.exdb }}
+ia.db.location=
+{% endif %}
 ia.db.name=iadb
 ia.db.password={{ ibm_infosvr_upwd_ia }}
 ia.db.port={{ ibm_infosvr_ports.db2 }}
@@ -59,7 +71,11 @@ install.path=1
 is.ha.selected=false
 nls.language=English-UTF8
 nls.language.code=ENU
+{% if not __ibm_infosvr_use_external_db %}
 srd.db.location={{ ibm_infosvr_repository_location }}/xmeta
+{% else %}
+srd.db.location=
+{% endif %}
 srd.db.name=xmeta
 srd.db.schemaName={{ ibm_infosvr_user_srd }}
 srd.db.tablespace=QSSRDSPACE
@@ -67,22 +83,42 @@ srd.db.user.name={{ ibm_infosvr_user_srd }}
 srd.db.user.password={{ ibm_infosvr_upwd_srd }}
 target.country.code=US
 target.language.code=en
+{% if not __ibm_infosvr_use_external_db %}
 use.bundled.db2=true
 use.remote.db=false
+{% else %}
+use.bundled.db2=false
+use.remote.db=true
+{% endif %}
 xmeta.db.collection=
+{% if not __ibm_infosvr_use_external_db %}
 xmeta.db.hostname={{ ansible_hostname }}
 xmeta.db.location={{ ibm_infosvr_repository_location }}/xmeta
+{% else %}
+xmeta.db.hostname={{ ibm_infosvr_hosts.exdb }}
+xmeta.db.location=
+{% endif %}
 xmeta.db.name=xmeta
 xmeta.db.password={{ ibm_infosvr_upwd_xmeta }}
 xmeta.db.port={{ ibm_infosvr_ports.db2 }}
 xmeta.db.tablespace=
+{% if not __ibm_infosvr_use_external_db %}
 xmeta.db.type=db2
+{% else %}
+xmeta.db.type=db2_10
+xmeta.oracle.db.type=
+{% endif %}
 xmeta.db.username={{ ibm_infosvr_user_xmeta }}
 xmeta.driver.type=DB2_10
 xmeta.odb.db.collection=
 xmeta.odb.db.config.type=db2_10_5_nls
+{% if not __ibm_infosvr_use_external_db %}
 xmeta.odb.db.hostname={{ ansible_hostname }}
 xmeta.odb.db.location={{ ibm_infosvr_repository_location }}/xmeta
+{% else %}
+xmeta.odb.db.hostname={{ ibm_infosvr_hosts.exdb }}
+xmeta.odb.db.location=
+{% endif %}
 xmeta.odb.db.name=xmeta
 xmeta.odb.db.port={{ ibm_infosvr_ports.db2 }}
 xmeta.odb.db.registration=true
