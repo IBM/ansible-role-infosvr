@@ -97,7 +97,7 @@
   args:
     executable: /bin/bash
   with_items:
-    - "catalog tcpip node REPO remote {{ hostvars[ibm_infosvr_hosts.repo].ansible_fqdn|upper }} server {{ ibm_infosvr_ports.db2 }}"
+    - "catalog tcpip node REPO remote {{ hostvars[__ibm_infosvr_db_host].ansible_fqdn|upper }} server {{ ibm_infosvr_ports.db2 }}"
     - "catalog database XMETA at node REPO"
     - "catalog database IADB at node REPO"
     - "terminate"

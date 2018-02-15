@@ -79,7 +79,7 @@
   with_items:
     - { match: '(^DatabasePlatform.databaseType)=.*', value: '\1=DB2' }
     - { match: '(^DatabasePlatform.version)=.*', value: '\1={% if __ibm_infosvr_version == "11.5" %}10.5{% else %}11.1{% endif %}' }
-    - { match: '(^DatabaseServer.host)=.*', value: '\1={{ hostvars[ibm_infosvr_hosts.repo].ansible_fqdn }}' }
+    - { match: '(^DatabaseServer.host)=.*', value: '\1={{ hostvars[__ibm_infosvr_db_host].ansible_fqdn }}' }
     - { match: '(^DatabaseServer.port)=.*', value: '\1={{ ibm_infosvr_ports.db2 }}' }
     - { match: '(^Database.name)=.*', value: '\1=ESDBDB2' }
     - { match: '(^Database.alias)=.*', value: '\1=' }
@@ -108,7 +108,7 @@
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
   when: >
         ('ibm-information-server-domain' in group_names)
-        and ((__ibm_infosvr_em_esdb_registered.stdout.find(hostvars[ibm_infosvr_hosts.repo].ansible_fqdn|lower) == -1)
+        and ((__ibm_infosvr_em_esdb_registered.stdout.find(hostvars[__ibm_infosvr_db_host].ansible_fqdn|lower) == -1)
         and (__ibm_infosvr_em_esdb_registered.stdout.find('localhost') == -1))
 
 - name: configure-em - create location for database scripts
@@ -216,7 +216,7 @@
       DynamicSections=100
       GrantAuthid=PUBLIC
       GrantExecute=1
-      IpAddress={{ hostvars[ibm_infosvr_hosts.repo].ansible_fqdn | upper }}
+      IpAddress={{ hostvars[__ibm_infosvr_db_host].ansible_fqdn | upper }}
       IsolationLevel=CURSOR_STABILITY
       Location=
       LogonID=

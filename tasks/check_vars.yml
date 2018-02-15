@@ -35,13 +35,17 @@
   set_fact:
     __ibm_infosvr_use_external_db: "{{ ibm_infosvr_hosts.exdb != '' }}"
 
+- name: set database host
+  set_fact:
+    __ibm_infosvr_db_host: "{% if __ibm_infosvr_use_external_db %}{{ ibm_infosvr_hosts.exdb }}{% else %}{{ ibm_infosvr_hosts.repo }}{% endif %}"
+
 - name: setup unified governance external service IPs
   set_fact:
     __ibm_infosvr_k8s_externals:
       domain: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_fqdn }}"
       domain_ip: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_default_ipv4.address }}"
-      repo: "{{ hostvars[ibm_infosvr_hosts.repo].ansible_fqdn }}"
-      repo_ip: "{{ hostvars[ibm_infosvr_hosts.repo].ansible_default_ipv4.address }}"
+      repo: "{{ hostvars[__ibm_infosvr_db_host].ansible_fqdn }}"
+      repo_ip: "{{ hostvars[__ibm_infosvr_db_host].ansible_default_ipv4.address }}"
 
 - name: default any missing features to disabled
   set_fact:
