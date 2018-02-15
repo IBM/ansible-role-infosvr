@@ -80,8 +80,8 @@
     - { file: "db2_grant_Permissions.sql", mode: 0600 }
     - { file: "createUserPref.sql", mode: 0600 }
     - { file: "create_ia_db.sh", mode: 0755 }
-    - { file: "create_ia_db_sp.sql", path: 0600 }
-    - { file: "create_ia_db.sql", path: 0600 }
+    - { file: "create_ia_db_sp.sql", mode: 0600 }
+    - { file: "create_ia_db.sql", mode: 0600 }
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure XMETA database creation script
