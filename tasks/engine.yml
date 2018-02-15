@@ -44,7 +44,6 @@
   template: src={{ item.file }} dest={{ item.target }} owner=root group=root mode=0644
   with_items:
     - { file: 'engine-v{{ __ibm_infosvr_version|replace(".", "") }}.j2', target: "{{ ibm_infosvr_tmp.linux }}/is-suite/engine.rsp" }
-    - { file: 'db2client.j2', target: "{{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp" }
   when: (ibm_infosvr_version_xml.find('engine="true"') == -1)
 
 - name: engine - parse engine-specific variables
@@ -59,14 +58,7 @@
   shell: "{{ ibm_infosvr_tmp.linux }}/is-suite/setup -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/engine.rsp -force"
   when: (ibm_infosvr_version_xml.find('engine="true"') == -1)
 
-- name: engine - install DB2 client
-  shell: >
-          {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/DB2/payload/db2setup
-          -r {{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp
-  args:
-    executable: /bin/bash
-    creates: "{{ ibm_infosvr_install_location.db2 }}/bin/db2"
-  when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
+- import_tasks: db2client.yml
 
 # Next two tasks for RHEL 7 only with v11.5 (http://www.ibm.com/support/docview.wss?uid=swg21974325)
 - name: engine - configure engine tier systemd restartability (v11.5 + RHEL7)

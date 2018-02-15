@@ -44,12 +44,6 @@
     mode: 0644
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and (not __ibm_infosvr_features.wlp)
 
-- name: domain - apply DB2 client response file template
-  template: src={{ item.file }} dest={{ item.target }} owner=root group=root mode=0644
-  with_items:
-    - { file: 'db2client.j2', target: "{{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp" }
-  when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
-
 - name: domain - parse domain-specific variables
   include_vars: file=domain.yml
 
@@ -65,14 +59,7 @@
           -force
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
 
-- name: domain - install DB2 client
-  shell: >
-          {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/DB2/payload/db2setup
-          -r {{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp
-  args:
-    executable: /bin/bash
-    creates: "{{ ibm_infosvr_install_location.db2 }}/bin/db2"
-  when: (ibm_infosvr_version_xml.find('repository="true"') == -1)
+- import_tasks: db2client.yml
 
 - name: domain - install Installation Manager update utility
   shell: >
