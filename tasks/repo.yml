@@ -75,6 +75,9 @@
           {{ ibm_infosvr_tmp.linux }}/is-suite/setup
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/repo.rsp
           -force
+  args:
+    executable: /bin/bash
+    creates: "{{ ibm_infosvr_install_location.linux }}/Version.xml"
   when: (ibm_infosvr_version_xml.find('repository="true"') == -1) and ('ibm-information-server-repo' in group_names))
 
 - import_tasks: db2client.yml
