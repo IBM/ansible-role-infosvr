@@ -55,7 +55,7 @@
         or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
 
 - import_tasks: existing-db.yml
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: repo - apply response file template
   template: src=repo-v{{ __ibm_infosvr_version|replace(".", "") }}.j2 dest={{ ibm_infosvr_tmp.linux }}/is-suite/repo.rsp owner=root group=root mode=0644
