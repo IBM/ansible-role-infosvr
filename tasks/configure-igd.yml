@@ -74,7 +74,9 @@
 
 - name: configure-igd - create IGD user
   user: name={{ ibm_infosvr_user_igd }} group={{ ibm_infosvr_group_db2_instance }} password={{ ibm_infosvr_upwd_igd |password_hash('sha512', ibm_infosvr_salt) }} shell=/bin/bash
-  when: ('ibm-information-server-repo' in group_names)
+  when: >
+        (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
 
 - name: configure-igd - grant read access to IGD user
   shell: "source ~/.bashrc && {{ item }}"
@@ -85,7 +87,9 @@
     - "db2 connect to IADB && db2 'GRANT DATAACCESS on database to user {{ ibm_infosvr_user_igd }}'"
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
   become: yes
-  when: ('ibm-information-server-repo' in group_names)
+  when: >
+        (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
 
 - name: configure-igd - check existing IGD configuration
   shell: >
@@ -96,7 +100,9 @@
     executable: /bin/bash
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
   become: yes
-  when: ('ibm-information-server-repo' in group_names)
+  when: >
+        (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
   register: __ibm_infosvr_igd_schemas
   changed_when: False
 
@@ -107,7 +113,9 @@
     owner: root
     group: root
     mode: "0755"
-  when: ('ibm-information-server-repo' in group_names)
+  when: >
+        (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
 
 - name: configure-igd - copy IGD scripts
   copy:
@@ -116,7 +124,10 @@
   with_items:
     - PopulateIGDConfigTables.sql
     - CreateIGDConfigTables_DB2.sql
-  when: ('ibm-information-server-repo' in group_names) and (__ibm_infosvr_igd_schemas.stdout.find('IGDCONFG') == -1)
+  when: >
+        ((__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)))
+        and (__ibm_infosvr_igd_schemas.stdout.find('IGDCONFG') == -1)
 
 - name: configure-igd - create IGD configuration
   shell: "source ~/.bashrc && {{ item }}"
@@ -129,7 +140,10 @@
     - "db2 connect to XMETA user {{ ibm_infosvr_user_xmeta }} using {{ ibm_infosvr_upwd_xmeta }} && db2 -tf {{ ibm_infosvr_install_location.linux }}/Clients/InformationGovernanceDashboard/setup/configuration/PopulateIGDConfigTables.sql"
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
   become: yes
-  when: ('ibm-information-server-repo' in group_names) and (__ibm_infosvr_igd_schemas.stdout.find('IGDCONFG') == -1)
+  when: >
+        ((__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)))
+        and (__ibm_infosvr_igd_schemas.stdout.find('IGDCONFG') == -1)
 
 - name: configure-igd - copy IGD package to Cognos
   copy: src=cache/IGD_Deployment_Archive.zip dest={{ cognos_install_location }}/deployment/IGD_Deployment_Archive.zip
