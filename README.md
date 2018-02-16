@@ -21,7 +21,7 @@ and the following modules of Enterprise Edition, which can be disabled through t
 - Optim Masking within DataStage
 - Machine Learning Term Classification (v11.7+)
 
-Currently the deployment only caters for installing and configuring DB2 as the repository tier; either a full WebSphere Application Server Network Deployment configuration or a WebSphere Liberty Profile configuration can be installed (see variables below for more details).
+Currently the deployment only caters for DB2 as the back-end, though works for both installing and configuring the bundled DB2 as well as configuring a pre-existing DB2. Either a full WebSphere Application Server Network Deployment configuration or a WebSphere Liberty Profile configuration will be installed (see variables below for more details); currently the role is not able to configure a pre-existing WebSphere installation.
 
 ## Requirements
 
@@ -87,6 +87,10 @@ client.somewhere.com
 [ibm-information-server-ug]
 # Linux host where the v11.7+ Unified Governance tier shuold be installed (kubernetes)
 serverC.somewhere.com
+
+[ibm-information-server-external-db]
+# Linux host that holds a pre-existing database into which to deploy XMETA, etc -- if no host provided, or this group is missing entirely, will install the bundled DB2 onto ibm-information-server-repo server
+serverD.somewhere.com
 
 [ibm-cognos-report-server]
 # Linux host where a pre-existing Cognos BI installation exists (for Information Governance Dashboard)
