@@ -24,7 +24,6 @@
     dest: cache/{{ item.file }}
     flat: yes
   with_items: "{{ __ibm_infosvr_external_db_scripts }}"
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)
 
 - name: existing-db - ensure storage location exists on remote database
   file:
@@ -38,7 +37,6 @@
     - "{{ ibm_infosvr_repository_location }}/iadb"
     - "{{ ibm_infosvr_repository_location }}/xmeta/{{ ibm_infosvr_user_db2_instance }}"
     - "{{ ibm_infosvr_repository_location }}/iadb/{{ ibm_infosvr_user_db2_instance }}"
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - deploy setup scripts to remote database
   copy:
@@ -48,7 +46,6 @@
     group: "{{ ibm_infosvr_group_db2_instance }}"
     mode: "{{ item.mode }}"
   with_items: "{{ __ibm_infosvr_external_db_scripts }}"
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure XMETA database creation script
   replace:
@@ -61,7 +58,6 @@
     - { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/xmeta' }
     - { match: '@DATABASE_ALIAS@', value: 'xmeta' }
     - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_xmeta }}' }
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure XMETA database grant script
   replace:
@@ -72,7 +68,6 @@
   with_items:
     - { match: '@DATABASE_NAME@', value: 'xmeta' }
     - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_staging }}' }
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - configure DFD settings script (v11.7+)
   replace:
@@ -84,10 +79,7 @@
     - { match: '@DATABASE_NAME@', value: 'xmeta' }
     - { match: '@DATABASE_USERNAME@', value: "{{ ibm_infosvr_user_xmeta }}"}
     - { match: '^CONNECT RESET;$', value: "" }
-  when: >
-        __ibm_infosvr_use_external_db
-        and ('ibm-information-server-external-db' in group_names)
-        and (__ibm_infosvr_version == "11.7")
+  when: __ibm_infosvr_version == "11.7"
 
 - name: existing-db - configure IADB database creation script
   replace:
@@ -100,10 +92,7 @@
     - { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/iadb' }
     - { match: '@DATABASE_ALIAS@', value: 'iadb' }
     - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' }
-  when: >
-        __ibm_infosvr_use_external_db
-        and ('ibm-information-server-external-db' in group_names)
-        and __ibm_infosvr_features.ia
+  when: __ibm_infosvr_features.ia
 
 - name: existing-db - configure IADB stored procedures script
   replace:
@@ -113,10 +102,7 @@
     backup: no
   with_items:
     - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' }
-  when: >
-        __ibm_infosvr_use_external_db
-        and ('ibm-information-server-external-db' in group_names)
-        and __ibm_infosvr_features.ia
+  when: __ibm_infosvr_features.ia
 
 - name: existing-db - create XMETA database
   shell: >
@@ -130,7 +116,6 @@
   become: yes
   register: __ibm_infosvr_exdb_xmeta
   failed_when: __ibm_infosvr_exdb_xmeta.rc not in [0,2]
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - grant staging privileges on XMETA database
   shell: >
@@ -144,7 +129,6 @@
   become: yes
   register: __ibm_infosvr_exdb_privs
   failed_when: __ibm_infosvr_exdb_privs.rc not in [0,2]
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
 - name: existing-db - create DFD settings table
   shell: >
@@ -158,7 +142,7 @@
   become: yes
   register: __ibm_infosvr_exdb_dfd
   failed_when: __ibm_infosvr_exdb_dfd.rc not in [0,2]
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+  when: __ibm_infosvr_version == "11.7"
 
 - name: existing-db - create IADB database
   shell: >
@@ -179,7 +163,4 @@
   become: yes
   register: __ibm_infosvr_exdb_iadb
   failed_when: __ibm_infosvr_exdb_iadb.rc not in [0,2]
-  when: >
-        __ibm_infosvr_use_external_db
-        and ('ibm-information-server-external-db' in group_names)
-        and __ibm_infosvr_features.ia
+  when: __ibm_infosvr_features.ia
