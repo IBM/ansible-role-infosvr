@@ -15,16 +15,6 @@
 # limitations under the License.
 ###
 
-- name: existing-db - parse external-db-specific variables
-  include_vars: file=existing-db-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
-
-- name: existing-db - retrieve database setup scripts from installer
-  fetch:
-    src: "{{ item.src }}/{{ item.file }}"
-    dest: cache/{{ item.file }}
-    flat: yes
-  with_items: "{{ __ibm_infosvr_external_db_scripts }}"
-
 - name: existing-db - ensure storage location exists on remote database
   file:
     path: "{{ item }}"
@@ -46,63 +36,6 @@
     group: "{{ ibm_infosvr_group_db2_instance }}"
     mode: "{{ item.mode }}"
   with_items: "{{ __ibm_infosvr_external_db_scripts }}"
-
-- name: existing-db - configure XMETA database creation script
-  replace:
-    dest: "{{ ibm_infosvr_repository_location }}/xmeta/create_xmeta_db.sql"
-    regexp: "{{ item.match }}"
-    replace: "{{ item.value }}"
-    backup: no
-  with_items:
-    - { match: '@DATABASE_NAME@', value: 'xmeta' }
-    - { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/xmeta' }
-    - { match: '@DATABASE_ALIAS@', value: 'xmeta' }
-    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_xmeta }}' }
-
-- name: existing-db - configure XMETA database grant script
-  replace:
-    dest: "{{ ibm_infosvr_repository_location }}/xmeta/db2_grant_Permissions.sql"
-    regexp: "{{ item.match }}"
-    replace: "{{ item.value }}"
-    backup: no
-  with_items:
-    - { match: '@DATABASE_NAME@', value: 'xmeta' }
-    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_staging }}' }
-
-- name: existing-db - configure DFD settings script (v11.7+)
-  replace:
-    dest: "{{ ibm_infosvr_repository_location }}/xmeta/createUserPref.sql"
-    regexp: "{{ item.match }}"
-    replace: "{{ item.value }}"
-    backup: no
-  with_items:
-    - { match: '@DATABASE_NAME@', value: 'xmeta' }
-    - { match: '@DATABASE_USERNAME@', value: "{{ ibm_infosvr_user_xmeta }}"}
-    - { match: '^CONNECT RESET;$', value: "" }
-  when: __ibm_infosvr_version == "11.7"
-
-- name: existing-db - configure IADB database creation script
-  replace:
-    dest: "{{ ibm_infosvr_repository_location }}/iadb/create_ia_db.sql"
-    regexp: "{{ item.match }}"
-    replace: "{{ item.value }}"
-    backup: no
-  with_items:
-    - { match: '@DATABASE_NAME@', value: 'iadb' }
-    - { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/iadb' }
-    - { match: '@DATABASE_ALIAS@', value: 'iadb' }
-    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' }
-  when: __ibm_infosvr_features.ia
-
-- name: existing-db - configure IADB stored procedures script
-  replace:
-    dest: "{{ ibm_infosvr_repository_location }}/iadb/create_ia_db_sp.sql"
-    regexp: "{{ item.match }}"
-    replace: "{{ item.value }}"
-    backup: no
-  with_items:
-    - { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' }
-  when: __ibm_infosvr_features.ia
 
 - name: existing-db - create XMETA database
   shell: >

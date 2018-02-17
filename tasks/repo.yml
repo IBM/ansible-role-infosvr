@@ -54,6 +54,82 @@
         (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
         or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
 
+- name: repo - parse external-db-specific variables
+  include_vars: file=existing-db-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
+
+- name: repo - configure XMETA database creation scripts
+  replace:
+    dest: "{{ item[0].src }}/{{ item[0].file }}"
+    regexp: "{{ item[1].match }}"
+    replace: "{{ item[1].value }}"
+    backup: no
+  when: >
+        __ibm_infosvr_use_external_db
+        and (item[0].file == 'create_xmeta_db.sql' or item[0].file == 'createUserPref.sql')
+        and ('ibm-information-server-repo' in group_names)
+  with_nested:
+    - "{{ __ibm_infosvr_external_db_scripts }}"
+    - [ { match: '@DATABASE_NAME@', value: 'xmeta' },
+        { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/xmeta' },
+        { match: '@DATABASE_ALIAS@', value: 'xmeta' },
+        { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_xmeta }}' } ]
+
+- name: repo - configure XMETA database grant script
+  replace:
+    dest: "{{ item[0].src }}/{{ item[0].file }}"
+    regexp: "{{ item[1].match }}"
+    replace: "{{ item[1].value }}"
+    backup: no
+  when: >
+        __ibm_infosvr_use_external_db
+        and (item[0].file == 'db2_grant_Permissions.sql')
+        and ('ibm-information-server-repo' in group_names)
+  with_nested:
+    - "{{ __ibm_infosvr_external_db_scripts }}"
+    - [ { match: '@DATABASE_NAME@', value: 'xmeta' },
+        { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_staging }}' } ]
+
+- name: repo - fix DFD settings script (v11.7+)
+  replace:
+    dest: "{{ item[0].src }}/{{ item[0].file }}"
+    regexp: "{{ item[1].match }}"
+    replace: "{{ item[1].value }}"
+    backup: no
+  when: >
+        __ibm_infosvr_use_external_db
+        and (item[0].file == 'createUserPref.sql')
+        and ('ibm-information-server-repo' in group_names)
+        and (__ibm_infosvr_version == "11.7")
+  with_nested:
+    - "{{ __ibm_infosvr_external_db_scripts }}"
+    - [ { match: '^CONNECT RESET;$', value: "" } ]
+
+- name: repo - configure IADB database creation scripts
+  replace:
+    dest: "{{ item[0].src }}/{{ item[0].file }}"
+    regexp: "{{ item[1].match }}"
+    replace: "{{ item[1].value }}"
+    backup: no
+  when: >
+        __ibm_infosvr_use_external_db
+        and (item[0].file == 'create_ia_db.sql' or item[0].file == 'create_ia_db_sp.sql')
+        and ('ibm-information-server-repo' in group_names)
+        and __ibm_infosvr_features.ia
+  with_nested:
+    - "{{ __ibm_infosvr_external_db_scripts }}"
+    - [ { match: '@DATABASE_NAME@', value: 'iadb' },
+        { match: '@INSTALL_ROOT@', value: '{{ ibm_infosvr_repository_location }}/iadb' },
+        { match: '@DATABASE_ALIAS@', value: 'iadb' },
+        { match: '@DATABASE_USERNAME@', value: '{{ ibm_infosvr_user_ia }}' } ]
+
+- name: repo - retrieve database setup scripts from installer
+  fetch:
+    src: "{{ item.src }}/{{ item.file }}"
+    dest: cache/{{ item.file }}
+    flat: yes
+  with_items: "{{ __ibm_infosvr_external_db_scripts }}"
+  when: __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)
+
 - import_tasks: existing-db.yml
   when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
 
