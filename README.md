@@ -49,7 +49,7 @@ The configuration of Information Analyzer makes use of the `cmgrote.ibm-infosvr-
 
 ## Example Playbook
 
-The following example playbook will do a complete installation and configuration of IBM InfoSphere Information Server using the default parameters from `defaults/main.yml` (and any overrides you've placed in eg. `host_vars`).
+The following example playbook will do a complete installation and configuration of IBM InfoSphere Information Server using the default parameters from `defaults/main.yml` (and any overrides you've placed in eg. `group_vars/all.yml`). Note that because the entire installation is done across multiple tiers by this single role, you should use `any_errors_fatal` to avoid partial install / configuration of a tier in the event an earlier step fails on a different tier.
 
 ```
 - name: install and configure IBM InfoSphere Information Server
@@ -59,6 +59,7 @@ The following example playbook will do a complete installation and configuration
     - ibm-information-server-engine
     - ibm-information-server-clients
     - ibm-information-server-ug
+  any_errors_fatal: true
   roles:
     - ibm-infosvr
 ```
