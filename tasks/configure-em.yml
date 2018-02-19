@@ -54,28 +54,19 @@
 #    mode: "0600"
 #  when: ('ibm-information-server-domain' in group_names)
 
-- name: configure-em - fetch esdb_repository.properties
-  fetch:
-    src: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/esdb_repository.properties"
-    dest: cache/esdb_repository.properties
-    flat: yes
+- name: configure-em - restrict access to esdb_repository.properties
+  file:
+    path: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/esdb_repository.properties"
+    mode: "0600"
   when: ('ibm-information-server-engine' in group_names)
 
-- name: configure-em - deploy esdb_repository.properties
-  copy:
-    src: cache/esdb_repository.properties
-    dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
-    mode: "0600"
-    force: no
-  when: ('ibm-information-server-domain' in group_names)
-
 - name: configure-em - configure esdb_repository.properties
+  no_log: True
   replace:
-    dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
+    dest: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/esdb_repository.properties"
     regexp: "{{ item.match }}"
     replace: "{{ item.value }}"
     backup: no
-  no_log: True
   with_items:
     - { match: '(^DatabasePlatform.databaseType)=.*', value: '\1=DB2' }
     - { match: '(^DatabasePlatform.version)=.*', value: '\1={% if __ibm_infosvr_version == "11.5" %}10.5{% else %}11.1{% endif %}' }
@@ -89,6 +80,21 @@
     - { match: '(^RepositoryConnection.password)=.*', value: '\1={{ ibm_infosvr_upwd_esdb }}' }
     - { match: '(^RepositoryConnection.managedDataSourceName)=.*', value: '\1=ESDB' }
     - { match: '(^RepositoryConnection.properties)=.*', value: '\1=' }
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure-em - fetch esdb_repository.properties
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/Server/ESDB/esdb_repository.properties"
+    dest: cache/esdb_repository.properties
+    flat: yes
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure-em - deploy esdb_repository.properties
+  copy:
+    src: cache/esdb_repository.properties
+    dest: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/esdb_repository.properties"
+    mode: "0600"
+    force: no
   when: ('ibm-information-server-domain' in group_names)
 
 - name: configure-em - check esdb repository registration
