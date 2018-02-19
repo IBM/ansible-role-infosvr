@@ -84,20 +84,41 @@
     - "restart IBM InfoSphere Information Server"
     - "stop IBM InfoSphere Information Server"
 
-- name: stop IBM InfoSphere Information Server open source utilities
-  systemd: state=stopped name={{ item }}
+- name: stop IBM InfoSphere Information Server Kafka
+  systemd: state=stopped name=InfoSrvKafka
   become_user: root
   become: yes
   ignore_errors: yes
-  with_items:
-    - "InfoSrvKafka"
-    - "InfoSrvSolrCloud"
-    - "InfoSrvZookeeper"
   changed_when: False
   when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: stop IBM InfoSphere Information Server Solr
+  systemd: state=stopped name=InfoSrvSolrCloud
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: stop IBM InfoSphere Information Server Zookeeper
+  systemd: state=stopped name=InfoSrvZookeeper
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
 - name: stop IBM InfoSphere Information Server ODFEngine (v11.7)
   systemd: state=stopped name=ODFEngine
@@ -109,21 +130,64 @@
   listen:
     - "restart IBM InfoSphere Information Server"
     - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
-- name: start IBM InfoSphere Information Server open source utilities
-  systemd: state=started name={{ item }}
+- name: re-generate open source utilities configuration
+  shell: "{{ item }}"
+  with_items:
+    - "{{ ibm_infosvr_install_location.linux }}/shared-open-source/zookeeper/update-config.sh"
+    - "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/update-config.sh"
+    - "{{ ibm_infosvr_install_location.linux }}/shared-open-source/kafka/update-config.sh"
   become_user: root
   become: yes
-  ignore_errors: yes
-  with_items:
-    - "InfoSrvZookeeper"
-    - "InfoSrvSolrCloud"
-    - "InfoSrvKafka"
+  when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "re-generate config for open source utilities"
+
+- name: start IBM InfoSphere Information Server Zookeeper
+  systemd: state=started name=InfoSrvZookeeper
+  become_user: root
+  become: yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_os_start_zookeeper_result
+  until: __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
   changed_when: False
   when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: start IBM InfoSphere Information Server Solr
+  systemd: state=started name=InfoSrvSolrCloud
+  become_user: root
+  become: yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_os_start_solr_result
+  until: __ibm_infosvr_os_start_solr_result.status.Result == "success"
+  changed_when: False
+  when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: start IBM InfoSphere Information Server open source utilities
+  systemd: state=started name=InfoSrvKafka
+  become_user: root
+  become: yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_os_start_kafka_result
+  until: __ibm_infosvr_os_start_kafka_result.status.Result == "success"
+  changed_when: False
+  when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
 - name: start IBM InfoSphere Information Server ODFEngine (v11.7)
   systemd: state=started name=ODFEngine
@@ -135,6 +199,7 @@
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
 - name: start IBM InfoSphere Information Server application server
   shell: "./MetadataServer.sh run"
@@ -194,7 +259,6 @@
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBNode/CognitiveDesignerEngine"
   become_user: root
   become: yes
-  ignore_errors: yes
   changed_when: False
   when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
   listen:
