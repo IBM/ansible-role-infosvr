@@ -123,9 +123,10 @@
     replace: '\1if [ -n \2 -a \2 != `whoami` ]; then'
     backup: yes
   with_items:
-    - "/etc/init.d/InfoSrvKafka"
-    - "/etc/init.d/InfoSrvSolrCloud"
     - "/etc/init.d/InfoSrvZookeeper"
+    - "/etc/init.d/InfoSrvSolrCloud"
+    - "/etc/init.d/InfoSrvKafka"
+  notify: re-generate config for open source utilities
 
 # Next two tasks for RHEL 7 only (extrapolated from other services)
 - name: domain - configure domain tier systemd restartability
@@ -136,15 +137,35 @@
     group: root
     mode: "0644"
   with_items:
-    - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
-    - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
     - { src: InfoSrvZookeeper.service.j2, svc: InfoSrvZookeeper.service }
+    - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
+    - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
+  notify: re-generate config for open source utilities
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
 
-- name: domain - register open source services in systemd
-  systemd: name={{ item }} enabled=yes state=started daemon_reload=yes
-  with_items:
-    - "InfoSrvKafka.service"
-    - "InfoSrvSolrCloud.service"
-    - "InfoSrvZookeeper.service"
+- name: domain - register Zookeeper service in systemd
+  systemd: name=InfoSrvZookeeper.service enabled=yes state=started daemon_reload=yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_osreg_zookeeper_result
+  until: __ibm_infosvr_osreg_zookeeper_result.status.Result == "success"
+  notify: re-generate config for open source utilities
+  when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
+
+- name: domain - register Solr service in systemd
+  systemd: name=InfoSrvSolrCloud.service enabled=yes state=started daemon_reload=yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_dom_osreg_solr_result
+  until: __ibm_infosvr_dom_osreg_solr_result.status.Result == "success"
+  notify: re-generate config for open source utilities
+  when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
+
+- name: domain - register Kafka service in systemd
+  systemd: name=InfoSrvKafka.service enabled=yes state=started daemon_reload=yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_dom_osreg_kafka_result
+  until: __ibm_infosvr_dom_osreg_kafka_result.status.Result == "success"
+  notify: re-generate config for open source utilities
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")

@@ -21,6 +21,8 @@
 
 - import_tasks: update.yml
 
+- meta: flush_handlers
+
 - import_tasks: configure.yml
   become_user: root
   become: yes

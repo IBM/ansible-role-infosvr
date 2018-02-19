@@ -80,6 +80,7 @@
           -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
           -force
   with_items: "{{ ibm_infosvr_patches_list }}"
+  notify: re-generate config for open source utilities
   when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
 
 - name: patch - clean up installation files

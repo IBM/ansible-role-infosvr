@@ -17,55 +17,6 @@
 
 ##########
 # POST-INSTALL CONFIG
-- name: configure - re-generate config for open source utilities
-  shell: "{{ item }}"
-  with_items:
-    - "{{ ibm_infosvr_install_location.linux }}/shared-open-source/zookeeper/update-config.sh"
-    - "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/update-config.sh"
-    - "{{ ibm_infosvr_install_location.linux }}/shared-open-source/kafka/update-config.sh"
-
-# This if statement in the open source scripts doesn't really work
-# -- if you're already the user the command needs to execute as it should just execute, without su
-#    (trying to use su in a more secure environment where root has nologin defined won't work, for example)
-- name: configure - modify open source services scripts (v11.5)
-  replace:
-    dest: "{{ item }}"
-    regexp: '(\s+)if \[ -n (\S+) \]; then'
-    replace: '\1if [ -n \2 -a \2 != `whoami` ]; then'
-    backup: yes
-  with_items:
-    - "/etc/init.d/InfoSrvKafka"
-    - "/etc/init.d/InfoSrvSolrCloud"
-    - "/etc/init.d/InfoSrvZookeeper"
-  when: (__ibm_infosvr_version == "11.5")
-
-# Next two tasks for RHEL 7 only (extrapolated from other services)
-- name: configure - configure open source services systemd restartability
-  template:
-    src: "{{ item.src }}"
-    dest: /etc/systemd/system/{{ item.svc }}
-    owner: root
-    group: root
-    mode: "0644"
-  with_items:
-    - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
-    - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
-    - { src: InfoSrvZookeeper.service.j2, svc: InfoSrvZookeeper.service }
-  when: >
-        (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-        and (ansible_distribution_major_version == "7")
-        and (__ibm_infosvr_version == "11.5")
-
-- name: configure - register services in systemd (RHEL7 + v11.5)
-  systemd: name={{ item }} enabled=yes state=started daemon_reload=yes
-  with_items:
-    - "InfoSrvKafka.service"
-    - "InfoSrvSolrCloud.service"
-    - "InfoSrvZookeeper.service"
-  when: >
-        (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-        and (ansible_distribution_major_version == "7")
-        and (__ibm_infosvr_version == "11.5")
 
 - name: configure - configure solr for Information Analyzer (linux) (v11.5)
   shell: >
