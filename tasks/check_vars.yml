@@ -25,10 +25,10 @@
       domain: "{{ groups['ibm-information-server-domain'][0] }}"
       repo: "{{ groups['ibm-information-server-repo'][0] }}"
       engine: "{{ groups['ibm-information-server-engine'][0] }}"
-      client: "{{ groups['ibm-information-server-clients'][0] }}"
-      ug: "{{ groups['ibm-information-server-ug'][0] }}"
-      cognos: "{{ groups['ibm-cognos-report-server'][0] }}"
-      bpm: "{{ groups['ibm-bpm'][0] }}"
+      client: "{% if groups['ibm-information-server-clients'] is defined and (groups['ibm-information-server-clients']|length > 0) %}{{ groups['ibm-information-server-clients'][0] }}{% else %}{% endif %}"
+      ug: "{% if groups['ibm-information-server-ug'] is defined and (groups['ibm-information-server-ug']|length > 0) %}{{ groups['ibm-information-server-ug'][0] }}{% else %}{% endif %}"
+      cognos: "{% if groups['ibm-cognos-report-server'] is defined and (groups['ibm-cognos-report-server']|length > 0) %}{{ groups['ibm-cognos-report-server'][0] }}{% else %}{% endif %}"
+      bpm: "{% if groups['ibm-bpm'] is defined and (groups['ibm-bpm']|length > 0) %}{{ groups['ibm-bpm'][0] }}{% else %}{% endif %}"
       exdb: "{% if groups['ibm-information-server-external-db'] is defined and (groups['ibm-information-server-external-db']|length > 0) %}{{ groups['ibm-information-server-external-db'][0] }}{% else %}{% endif %}"
 
 - name: setup external db variable
