@@ -56,7 +56,7 @@
   shell: >
           {{ ibm_infosvr_tmp.linux }}/is-suite/setup
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp
-          -force
+          {% if ibm_infosvr_force.domain is defined and ibm_infosvr_force.domain %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
 
 - import_tasks: db2client.yml

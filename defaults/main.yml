@@ -61,6 +61,13 @@ ibm_infosvr_features:
   igd: False                # Information Governance Dashboard (for integration with Cognos)
   wlp: False                # Use WebSphere Liberty profile instead of full WAS
 
+ibm_infosvr_force:          # Set to true to force installs (ignore errors or warnings)
+  repo: False
+  domain: False
+  engine: False
+  client: False
+  patch: True
+
 # MOVED to separate ibm-infosvr-ug role
 # UNIFIED GOVERNANCE CONFIG -- defaults below, override to expand or reduce resource requirements
 #ibm_infosvr_ug_cassandra_mem: "16G"

@@ -84,7 +84,7 @@
               -acceptlicense
               -dbadmin {{ ibm_infosvr_user_db2_instance }}
               -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
-              -force
+              {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
   with_items: "{{ ibm_infosvr_patches_list }}"
   when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
 

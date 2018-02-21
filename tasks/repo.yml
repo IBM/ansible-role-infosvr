@@ -152,7 +152,7 @@
   shell: >
           {{ ibm_infosvr_tmp.linux }}/is-suite/setup
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/repo.rsp
-          -force
+          {% if ibm_infosvr_force.repo is defined and ibm_infosvr_force.repo %}-force{% endif %}
   args:
     executable: /bin/bash
     creates: "{{ ibm_infosvr_install_location.linux }}/Version.xml"

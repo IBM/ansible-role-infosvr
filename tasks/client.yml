@@ -87,5 +87,5 @@
   win_shell: >
               {{ ibm_infosvr_tmp.win }}\is-client\setup.exe
               -rsp {{ ibm_infosvr_tmp.win }}\is-client\client.rsp
-              -force
+              {% if ibm_infosvr_force.client is defined and ibm_infosvr_force.client %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)

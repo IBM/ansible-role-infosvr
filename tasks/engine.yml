@@ -55,7 +55,10 @@
 # BASE INSTALLATION
 - name: engine - install engine tier silently
   # Force the install to ensure it bypasses a check that at least 4GB memory is available
-  shell: "{{ ibm_infosvr_tmp.linux }}/is-suite/setup -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/engine.rsp -force"
+  shell: >
+          {{ ibm_infosvr_tmp.linux }}/is-suite/setup
+          -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/engine.rsp
+          {% if ibm_infosvr_force.engine is defined and ibm_infosvr_force.engine %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('engine="true"') == -1)
 
 - import_tasks: db2client.yml
