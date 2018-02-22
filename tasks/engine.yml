@@ -61,6 +61,9 @@
           {% if ibm_infosvr_force.engine is defined and ibm_infosvr_force.engine %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('engine="true"') == -1)
 
+- name: engine - confirm engine tier is fully started
+  wait_for: port={{ ibm_infosvr_ports.dsrpc }} host={{ inventory_hostname }} state=started delay=10 timeout=300
+
 - import_tasks: db2client.yml
 
 # Next two tasks for RHEL 7 only with v11.5 (http://www.ibm.com/support/docview.wss?uid=swg21974325)
