@@ -226,7 +226,7 @@
     block: |
 
       [ESDB]
-      Driver=/opt/IBM/InformationServer/Server/branded_odbc/lib/VMdb200.so
+      Driver={{ ibm_infosvr_install_location.linux }}/Server/branded_odbc/lib/VMdb200.so
       Description=DataDirect DB2 Wire Protocol Driver
       AddStringToCreateTable=
       AlternateID=
