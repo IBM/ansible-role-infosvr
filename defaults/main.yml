@@ -36,7 +36,7 @@ ibm_infosvr_media_dir: ../media
 
 ibm_infosvr_media_bin:
   server_tarball: "IS_V11.7_LINUX_X86_64_MULTILING.tar.gz"  # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  ug_tarball: "INFO_SERVER_ENTERPRISE_SEARCH_V11.tar.gz"    # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  ug_tarball: "INFO_SER_ENTERPRISE_SEARCH_V11.7.tar.gz"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
   client_zip: "IS_V11.7_WINDOWS_CLIENT_MULTILI.zip"         # https://www.ibm.com/software/passportadvantage/pao_customer.html
   entitlements: "IIS_ENTERPRISE_EDITION_V11.7_BUND.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
