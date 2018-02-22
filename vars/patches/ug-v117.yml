@@ -15,4 +15,8 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_patches_list: []
+ibm_infosvr_ug_patches_list:
+  - srcFile: "patch_JR58900_UG_11700.zip"
+    tarball: "gov-app-config-service_v11.7.0-patch.1.tar"
+    svc: "gov-app-config-service"
+    name: "igc-docker-local.artifactory.swg-devops.com/gov-app-config-service:v11.7.0-patch.1"
