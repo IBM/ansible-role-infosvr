@@ -52,22 +52,27 @@
 ##########
 # EXTRACT UPDATE MEDIA
 # This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
+- name: patch - check patch is downloaded
+  local_action: stat path={{ ibm_infosvr_media_dir }}/{{ item.srcFile }}
+  with_items: "{{ ibm_infosvr_patches_list }}"
+  register: __ibm_infosvr_patching_files
+
 - name: patch - transfer updates
   win_copy:
-    src: "{{ ibm_infosvr_media_dir }}/{{ item.srcFile }}"
-    dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.srcFile }}"
-    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.srcFile }}"
-  with_items: "{{ ibm_infosvr_patches_list }}"
-  when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
+    src: "{{ ibm_infosvr_media_dir }}/{{ item.item.srcFile }}"
+    dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
+    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
+  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
+  with_items: "{{ __ibm_infosvr_patching_files.results }}"
 
 - name: patch - extract updates
   win_unzip:
-    src: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.srcFile }}"
+    src: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
     dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads"
-    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.pkgFile }}"
+    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.pkgFile }}"
     rm: False
-  with_items: "{{ ibm_infosvr_patches_list }}"
-  when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
+  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
+  with_items: "{{ __ibm_infosvr_patching_files.results }}"
 
 ##########
 # INSTALL UPDATES
@@ -75,7 +80,7 @@
   win_shell: >
               {{ ibm_infosvr_install_location.win }}\Updates\bin\installUpdates.exe
               -installLocation {{ ibm_infosvr_install_location.win }}
-              -patchPackage {{ ibm_infosvr_install_location.win }}\Updates\Downloads\{{ item.pkgFile }}
+              -patchPackage {{ ibm_infosvr_install_location.win }}\Updates\Downloads\{{ item.item.pkgFile }}
               -user {{ ibm_infosvr_user_isadmin }}
               -password {{ ibm_infosvr_upwd_isadmin }}
               -console
@@ -85,8 +90,8 @@
               -dbadmin {{ ibm_infosvr_user_db2_instance }}
               -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
               {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
-  with_items: "{{ ibm_infosvr_patches_list }}"
-  when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
+  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
+  with_items: "{{ __ibm_infosvr_patching_files.results }}"
 
 - name: patch - clean up installation files
   win_file: path={{ item.file }} state={{ item.state }}

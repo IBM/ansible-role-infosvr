@@ -15,4 +15,10 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_patches_list: []
+ibm_infosvr_patches_list:
+  - srcFile: "patch_JR59080_DFD_all_11700.zip"
+    pkgFile: "patch_JR59080_DFD_all_11700.ispkg"
+    versionInfo: "patch_JR59080_DFD_all_11700"
+  - srcFile: "servicepack_11.7_SP1_linux64_11700.tar.gz"
+    pkgFile: "servicepack_11.7_SP1_linux64_11700.ispkg"
+    versionInfo: "patchbag_FP1_IS117_11700"

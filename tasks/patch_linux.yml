@@ -45,22 +45,27 @@
 ##########
 # EXTRACT UPDATE MEDIA
 # This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
+- name: patch - check patch is downloaded
+  local_action: stat path={{ ibm_infosvr_media_dir }}/{{ item.srcFile }}
+  with_items: "{{ ibm_infosvr_patches_list }}"
+  register: __ibm_infosvr_patching_files
+
 - name: patch - copy installation media
   copy:
-    src: "{{ ibm_infosvr_media_dir }}/{{ item.srcFile }}"
-    dest: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.srcFile }}"
+    src: "{{ ibm_infosvr_media_dir }}/{{ item.item.srcFile }}"
+    dest: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.srcFile }}"
     force: no
-  with_items: "{{ ibm_infosvr_patches_list }}"
-  when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
+  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
+  with_items: "{{ __ibm_infosvr_patching_files.results }}"
 
 - name: patch - extract updates
   unarchive:
-    src: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.srcFile }}"
+    src: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.srcFile }}"
     dest: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads"
-    creates: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.pkgFile }}"
+    creates: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.pkgFile }}"
     copy: no
-  with_items: "{{ ibm_infosvr_patches_list }}"
-  when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
+  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
+  with_items: "{{ __ibm_infosvr_patching_files.results }}"
 
 ##########
 # INSTALL UPDATES
@@ -69,7 +74,7 @@
           umask 022 &&
           {{ ibm_infosvr_install_location.linux }}/Updates/bin/installUpdates
           -installLocation {{ ibm_infosvr_install_location.linux }}
-          -patchPackage {{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.pkgFile }}
+          -patchPackage {{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.pkgFile }}
           -user {{ ibm_infosvr_user_isadmin }}
           -password {{ ibm_infosvr_upwd_isadmin }}
           -console
@@ -79,9 +84,9 @@
           -dbadmin {{ ibm_infosvr_user_db2_instance }}
           -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
           {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
-  with_items: "{{ ibm_infosvr_patches_list }}"
+  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
+  with_items: "{{ __ibm_infosvr_patching_files.results }}"
   notify: re-generate config for open source utilities
-  when: ibm_infosvr_version_xml.find(item.versionInfo) == -1
 
 - name: patch - clean up installation files
   file: path={{ item.file }} state={{ item.state }}
@@ -89,5 +94,6 @@
     - { file: "{{ ibm_infosvr_install_location.linux }}/Updates/Backup.*", state: 'absent' }
     - { file: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/*.zip", state: 'absent' }
     - { file: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/*.tar", state: 'absent' }
+    - { file: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/*.tar.gz", state: 'absent' }
   become_user: root
   become: yes
