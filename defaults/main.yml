@@ -22,6 +22,7 @@ ibm_infosvr_install_location:
   db2: /opt/IBM/DB2
   was: /opt/IBM/WebSphere/AppServer
   im: /opt/IBM/InstallationManager
+  ims: /opt/IBM/IMShared
 
 ibm_infosvr_repository_location: "{{ ibm_infosvr_install_location.linux }}/Repos"
 
