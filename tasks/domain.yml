@@ -58,6 +58,7 @@
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp
           {% if ibm_infosvr_force.domain is defined and ibm_infosvr_force.domain %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
+  notify: restart IBM InfoSphere Information Server
 
 - import_tasks: db2client.yml
 
@@ -144,28 +145,16 @@
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
 
 - name: domain - register Zookeeper service in systemd
-  systemd: name=InfoSrvZookeeper.service enabled=yes state=started daemon_reload=yes
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_osreg_zookeeper_result
-  until: __ibm_infosvr_osreg_zookeeper_result.status.Result == "success"
+  systemd: name=InfoSrvZookeeper.service enabled=yes daemon_reload=yes
   notify: re-generate config for open source utilities
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
 
 - name: domain - register Solr service in systemd
-  systemd: name=InfoSrvSolrCloud.service enabled=yes state=started daemon_reload=yes
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_dom_osreg_solr_result
-  until: __ibm_infosvr_dom_osreg_solr_result.status.Result == "success"
+  systemd: name=InfoSrvSolrCloud.service enabled=yes daemon_reload=yes
   notify: re-generate config for open source utilities
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
 
 - name: domain - register Kafka service in systemd
-  systemd: name=InfoSrvKafka.service enabled=yes state=started daemon_reload=yes
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_dom_osreg_kafka_result
-  until: __ibm_infosvr_dom_osreg_kafka_result.status.Result == "success"
+  systemd: name=InfoSrvKafka.service enabled=yes daemon_reload=yes
   notify: re-generate config for open source utilities
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
