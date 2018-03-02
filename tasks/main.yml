@@ -19,6 +19,8 @@
 
 - import_tasks: install.yml
 
+- meta: flush_handlers
+
 - import_tasks: update.yml
 
 - meta: flush_handlers
