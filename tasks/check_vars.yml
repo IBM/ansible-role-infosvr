@@ -19,7 +19,7 @@
   set_fact:
     __ibm_infosvr_version: "{{ ibm_infosvr_media_bin.server_tarball[4:8] }}"
 
-- name: setup host variables
+- name: setup variables for subsequent role use
   set_fact:
     ibm_infosvr_hosts:
       domain: "{{ groups['ibm-information-server-domain'][0] }}"
@@ -30,6 +30,21 @@
       cognos: "{% if groups['ibm-cognos-report-server'] is defined and (groups['ibm-cognos-report-server']|length > 0) %}{{ groups['ibm-cognos-report-server'][0] }}{% else %}{% endif %}"
       bpm: "{% if groups['ibm-bpm'] is defined and (groups['ibm-bpm']|length > 0) %}{{ groups['ibm-bpm'][0] }}{% else %}{% endif %}"
       exdb: "{% if groups['ibm-information-server-external-db'] is defined and (groups['ibm-information-server-external-db']|length > 0) %}{{ groups['ibm-information-server-external-db'][0] }}{% else %}{% endif %}"
+    ibm_infosvr_users:
+      isadmin: "{{ ibm_infosvr_user_isadmin }}"
+      dsadm: "{{ ibm_infosvr_user_dsadmin }}"
+    ibm_infosvr_groups:
+      dsadm: "{{ ibm_infosvr_group_dsadmin }}"
+    ibm_infosvr_upwds:
+      isadmin: "{{ ibm_infosvr_upwd_isadmin }}"
+    ibm_infosvr_locations:
+      linux: "{{ ibm_infosvr_install_location.linux }}"
+      win: "{{ ibm_infosvr_install_location.win }}"
+      db2: "{{ ibm_infosvr_install_location.db2 }}"
+      was: "{{ ibm_infosvr_install_location.was }}"
+    ibm_infosvr_ports_ext:
+      console: "{{ ibm_infosvr_ports.console }}"
+      db2: "{{ ibm_infosvr_ports.db2 }}"
 
 - name: setup external db variable
   set_fact:
