@@ -42,9 +42,3 @@
 
 - import_tasks: patch_win.yml
   when: ('ibm-information-server-clients' in group_names)
-
-- name: update - parse UG-specific patches
-  include_vars: file=patches/ug-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
-
-- import_tasks: patch_ug.yml
-  when: ('ibm-information-server-ug' in group_names)
