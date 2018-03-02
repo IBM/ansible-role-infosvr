@@ -86,7 +86,9 @@
           {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
-  notify: re-generate config for open source utilities
+  notify:
+    - re-generate config for open source utilities
+    - restart IBM InfoSphere Information Server
 
 - name: patch - clean up installation files
   file: path={{ item.file }} state={{ item.state }}
