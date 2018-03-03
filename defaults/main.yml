@@ -79,7 +79,7 @@ ibm_infosvr_force:          # Set to true to force installs (ignore errors or wa
 
 # NETWORK CONFIG
 ibm_infosvr_use_firewalld: False
-ibm_infosvr_firewall_chain: 'INPUT'   # chain for iptables (eg. 'INPUT'), zone (eg. 'public') for firewalld
+ibm_infosvr_firewall_chain: INPUT   # chain for iptables (eg. 'INPUT'), zone (eg. 'public') for firewalld
 
 ## PORTS -- if overridding, replace entire dictionary below (copy / paste and replace ports that need to be changed)
 ibm_infosvr_ports:
