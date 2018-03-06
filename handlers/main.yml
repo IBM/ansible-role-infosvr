@@ -15,6 +15,14 @@
 # limitations under the License.
 ###
 
+- name: setup variables
+  import_tasks: check_vars.yml
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
 - name: stop IBM InfoSphere Information Server Data Flow Designer
   shell: "./stopCognitiveDesignerServer.sh"
   args:
@@ -159,6 +167,18 @@
     - "start IBM InfoSphere Information Server"
     - "re-generate config for open source utilities"
 
+- name: confirm Zookeeper is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.zookeeper }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
 - name: start IBM InfoSphere Information Server Solr
   systemd: state=started name=InfoSrvSolrCloud
   become_user: root
@@ -174,7 +194,19 @@
     - "start IBM InfoSphere Information Server"
     - "re-generate config for open source utilities"
 
-- name: start IBM InfoSphere Information Server open source utilities
+- name: confirm Solr is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.solr }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: start IBM InfoSphere Information Server Kafka
   systemd: state=started name=InfoSrvKafka
   become_user: root
   become: yes
@@ -184,6 +216,18 @@
   until: __ibm_infosvr_os_start_kafka_result.status.Result == "success"
   changed_when: False
   when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: confirm Kafka is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.kafka }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -213,6 +257,18 @@
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
+
+- name: confirm application server is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.console }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
 - name: start IBM InfoSphere Information Server NodeAgents
   shell: "./NodeAgents.sh start"
