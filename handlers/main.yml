@@ -15,14 +15,6 @@
 # limitations under the License.
 ###
 
-- name: setup variables
-  import_tasks: check_vars.yml
-  listen:
-    - "restart IBM InfoSphere Information Server"
-    - "stop IBM InfoSphere Information Server"
-    - "start IBM InfoSphere Information Server"
-    - "re-generate config for open source utilities"
-
 - name: stop IBM InfoSphere Information Server Data Flow Designer
   shell: "./stopCognitiveDesignerServer.sh"
   args:
@@ -174,6 +166,7 @@
     state: started
     delay: 10
     timeout: 300
+  when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -201,6 +194,7 @@
     state: started
     delay: 10
     timeout: 300
+  when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -228,6 +222,7 @@
     state: started
     delay: 10
     timeout: 300
+  when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -265,6 +260,7 @@
     state: started
     delay: 10
     timeout: 300
+  when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
