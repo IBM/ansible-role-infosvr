@@ -15,6 +15,103 @@
 # limitations under the License.
 ###
 
+- name: determine version
+  set_fact:
+    __ibm_infosvr_version: "{{ ibm_infosvr_media_bin.server_tarball[4:8] }}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: setup variables for subsequent role use
+  set_fact:
+    ibm_infosvr_hosts:
+      domain: "{{ groups['ibm-information-server-domain'][0] }}"
+      repo: "{{ groups['ibm-information-server-repo'][0] }}"
+      engine: "{{ groups['ibm-information-server-engine'][0] }}"
+      client: "{% if groups['ibm-information-server-clients'] is defined and (groups['ibm-information-server-clients']|length > 0) %}{{ groups['ibm-information-server-clients'][0] }}{% else %}{% endif %}"
+      ug: "{% if groups['ibm-information-server-ug'] is defined and (groups['ibm-information-server-ug']|length > 0) %}{{ groups['ibm-information-server-ug'][0] }}{% else %}{% endif %}"
+      cognos: "{% if groups['ibm-cognos-report-server'] is defined and (groups['ibm-cognos-report-server']|length > 0) %}{{ groups['ibm-cognos-report-server'][0] }}{% else %}{% endif %}"
+      bpm: "{% if groups['ibm-bpm'] is defined and (groups['ibm-bpm']|length > 0) %}{{ groups['ibm-bpm'][0] }}{% else %}{% endif %}"
+      exdb: "{% if groups['ibm-information-server-external-db'] is defined and (groups['ibm-information-server-external-db']|length > 0) %}{{ groups['ibm-information-server-external-db'][0] }}{% else %}{% endif %}"
+    ibm_infosvr_users:
+      isadmin: "{{ ibm_infosvr_user_isadmin }}"
+      dsadm: "{{ ibm_infosvr_user_dsadmin }}"
+    ibm_infosvr_groups:
+      dsadm: "{{ ibm_infosvr_group_dsadmin }}"
+    ibm_infosvr_upwds:
+      isadmin: "{{ ibm_infosvr_upwd_isadmin }}"
+    ibm_infosvr_locations:
+      linux: "{{ ibm_infosvr_install_location.linux }}"
+      win: "{{ ibm_infosvr_install_location.win }}"
+      db2: "{{ ibm_infosvr_install_location.db2 }}"
+      was: "{{ ibm_infosvr_install_location.was }}"
+    ibm_infosvr_ports_ext:
+      console: "{{ ibm_infosvr_ports.console }}"
+      db2: "{{ ibm_infosvr_ports.db2 }}"
+      zookeeper: "{{ ibm_infosvr_ports.zookeeper }}"
+      solr: "{{ ibm_infosvr_ports.solr }}"
+      kafka: "{{ ibm_infosvr_ports.kafka }}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: setup external db variable
+  set_fact:
+    __ibm_infosvr_use_external_db: "{{ ibm_infosvr_hosts.exdb != '' }}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: set database host
+  set_fact:
+    __ibm_infosvr_db_host: "{% if __ibm_infosvr_use_external_db %}{{ ibm_infosvr_hosts.exdb }}{% else %}{{ ibm_infosvr_hosts.repo }}{% endif %}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: setup unified governance external service IPs
+  set_fact:
+    __ibm_infosvr_k8s_externals:
+      domain: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_fqdn }}"
+      domain_ip: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_default_ipv4.address }}"
+      repo: "{{ hostvars[__ibm_infosvr_db_host].ansible_fqdn }}"
+      repo_ip: "{{ hostvars[__ibm_infosvr_db_host].ansible_default_ipv4.address }}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: default any missing features to disabled
+  set_fact:
+    __ibm_infosvr_features:
+      opsdb: "{% if ibm_infosvr_features.opsdb is defined %}{{ ibm_infosvr_features.opsdb }}{% else %}False{% endif %}"
+      ia: "{% if ibm_infosvr_features.ia is defined %}{{ ibm_infosvr_features.ia }}{% else %}False{% endif %}"
+      igc: "{% if ibm_infosvr_features.igc is defined %}{{ ibm_infosvr_features.igc }}{% else %}False{% endif %}"
+      dataclick: "{% if ibm_infosvr_features.dataclick is defined %}{{ ibm_infosvr_features.dataclick }}{% else %}False{% endif %}"
+      masking: "{% if ibm_infosvr_features.masking is defined %}{{ ibm_infosvr_features.masking }}{% else %}False{% endif %}"
+      event_mgmt: "{% if ibm_infosvr_features.event_mgmt is defined %}{{ ibm_infosvr_features.event_mgmt }}{% else %}False{% endif %}"
+      qs: "{% if ibm_infosvr_features.qs is defined %}{{ ibm_infosvr_features.qs }}{% else %}False{% endif %}"
+      wisd: "{% if ibm_infosvr_features.wisd is defined %}{{ ibm_infosvr_features.wisd }}{% else %}False{% endif %}"
+      fasttrack: "{% if ibm_infosvr_features.fasttrack is defined %}{{ ibm_infosvr_features.fasttrack }}{% else %}False{% endif %}"
+      dqec: "{% if ibm_infosvr_features.dqec is defined %}{{ ibm_infosvr_features.dqec }}{% else %}False{% endif %}"
+      ml_term_assignment: "{% if ibm_infosvr_features.ml_term_assignment is defined %}{{ ibm_infosvr_features.ml_term_assignment }}{% else %}False{% endif %}"
+      igd: "{% if ibm_infosvr_features.igd is defined %}{{ ibm_infosvr_features.igd }}{% else %}False{% endif %}"
+      wlp: "{% if ibm_infosvr_features.wlp is defined %}{{ ibm_infosvr_features.wlp }}{% else %}False{% endif %}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
 - name: stop IBM InfoSphere Information Server Data Flow Designer
   shell: "./stopCognitiveDesignerServer.sh"
   args:
@@ -264,7 +361,6 @@
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
-    - "re-generate config for open source utilities"
 
 - name: start IBM InfoSphere Information Server NodeAgents
   shell: "./NodeAgents.sh start"

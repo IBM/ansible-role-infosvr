@@ -15,7 +15,12 @@
 # limitations under the License.
 ###
 
-- import_tasks: check_vars.yml
+- name: setting up variables
+  raw: "echo 0"
+  notify:
+    - "set IBM InfoSphere Information Server variables"
+
+- meta: flush_handlers
 
 - import_tasks: install.yml
 
