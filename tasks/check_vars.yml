@@ -45,6 +45,9 @@
     ibm_infosvr_ports_ext:
       console: "{{ ibm_infosvr_ports.console }}"
       db2: "{{ ibm_infosvr_ports.db2 }}"
+      zookeeper: "{{ ibm_infosvr_ports.zookeeper }}"
+      solr: "{{ ibm_infosvr_ports.solr }}"
+      kafka: "{{ ibm_infosvr_ports.kafka }}"
 
 - name: setup external db variable
   set_fact:
