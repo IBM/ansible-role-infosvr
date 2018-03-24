@@ -19,3 +19,6 @@ ibm_infosvr_patches_list:
   - srcFile: "servicepack_11.7_SP1_win_11700.zip"
     pkgFile: "servicepack_11.7_SP1_win_11700.ispkg"
     versionInfo: "patchbag_FP1_IS117_11700"
+  - srcFile: "servicepack_11.7_SP2_win_11700.zip"
+    pkgFile: "servicepack_11.7_SP2_win_11700.ispkg"
+    versionInfo: "patchbag_FP2_IS117_11700"
