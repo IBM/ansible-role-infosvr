@@ -34,7 +34,7 @@ ibm_infosvr_patches_list:
   - srcFile: "exchange_IIS_IGC_WKC_ALL_11700.zip"
     pkgFile: "IIS_IGC_WKC_ALL/IIS_IGC_WKC_ALL.ispkg"
     versionInfo: "IIS_IGC_WKC_ALL"
-  - srcFile: "PXE_DI_Feature_Patch_linux64_11700.zip"
+  - srcFile: "PXE_DI_Feature_Patch_linux64_11700.tar"
     pkgFile: "PXE_DI_Feature_Patch_linux64_11700.ispkg"
     versionInfo: "PXE_DI_Feature_Patch_linux64_11700"
   - srcFile: "patch_JR59291_cc-snowflake_all_11700.tar"
