@@ -42,9 +42,9 @@ ibm_infosvr_media_bin:
   entitlements: "IIS_ENTERPRISE_EDITION_V11.7_BUND.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
 ibm_infosvr_updater:
-  version: "IBM InfoSphere Information Server Update Installer Version 11.7.0.095"
-  win: "is-update-windows-11.7.0.095.zip"
-  linux: "is-update-linux64-11.7.0.095.tar"
+  version: "IBM InfoSphere Information Server Update Installer Version 11.7.0.101"
+  win: "is-update-windows-11.7.0.101.zip"
+  linux: "is-update-linux64-11.7.0.101.tar"
 
 # FEATURES TO INSTALL
 ibm_infosvr_features:
