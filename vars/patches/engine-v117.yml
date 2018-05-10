@@ -32,7 +32,7 @@ ibm_infosvr_patches_list:
     pkgFile: "patch_featureUpdate_DFD_all_11700.ispkg"
     versionInfo: "patch_featureUpdate_DFD_all_11700"
   - srcFile: "exchange_IIS_IGC_WKC_ALL_11700.zip"
-    pkgFile: "IIS_IGC_WKC_ALL.ispkg"
+    pkgFile: "IIS_IGC_WKC_ALL/IIS_IGC_WKC_ALL.ispkg"
     versionInfo: "IIS_IGC_WKC_ALL"
   - srcFile: "PXE_DI_Feature_Patch_linux64_11700.zip"
     pkgFile: "PXE_DI_Feature_Patch_linux64_11700.ispkg"
@@ -43,3 +43,6 @@ ibm_infosvr_patches_list:
   - srcFile: "patch_JR59380_azurestoragecc_all_11700.tar"
     pkgFile: "patch_JR59380_azurestoragecc_all_11700.ispkg"
     versionInfo: "patch_JR59380_azurestoragecc_all_11700"
+
+ibm_infosvr_jdk_update:
+  - { filename: "ibm-java-sdk-7.1-4.20-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-71", versionInfo: "pxa6470_27sr4fp1-20170215_01(SR4 FP20)" }

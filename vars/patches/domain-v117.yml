@@ -29,5 +29,8 @@ ibm_infosvr_patches_list:
     pkgFile: "patch_featureUpdate_DFD_all_11700.ispkg"
     versionInfo: "patch_featureUpdate_DFD_all_11700"
   - srcFile: "exchange_IIS_IGC_WKC_ALL_11700.zip"
-    pkgFile: "IIS_IGC_WKC_ALL.ispkg"
+    pkgFile: "IIS_IGC_WKC_ALL/IIS_IGC_WKC_ALL.ispkg"
     versionInfo: "IIS_IGC_WKC_ALL"
+
+ibm_infosvr_websphere_jdk_update:
+  - { filename: "ibm-java-sdk-8.0-5.11-linux-x64-installmgr.zip", extractedpath: "ibm-java-sdk-8", versionInfo: "pxa6460_26sr8fp20-20160111_01(SR8 FP20)" }
