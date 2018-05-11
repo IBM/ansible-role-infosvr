@@ -15,7 +15,7 @@
 # limitations under the License.
 ###
 
-- import_role: name=cmgrote.ibm-infosvr-metadata-asset-manager
+- import_role: name=IBM.infosvr-metadata-asset-manager
   vars:
     ibm_infosvr_metadata_asset_mgr_import_areas:
       - 

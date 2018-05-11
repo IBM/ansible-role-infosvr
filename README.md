@@ -1,4 +1,4 @@
-# ansible-role-ibm-infosvr
+# ansible-role-infosvr
 
 Ansible role for automating the deployment of an IBM InfoSphere Information Server environment, including:
 
@@ -45,7 +45,7 @@ Finally, the various credentials variables should be overridden to create a suff
 
 ## Dependencies
 
-The configuration of Information Analyzer makes use of the `cmgrote.ibm-infosvr-metadata-asset-manager` role indirectly, using the `import_role` directive.  Therefore `cmgrote.ibm-infosvr-metadata-asset-manager` is not explicitly in the dependencies of this role, but it does need to be installed for this role to work (if you are installing and configuring the Information Analyzer feature).
+The configuration of Information Analyzer makes use of the `IBM.infosvr-metadata-asset-manager` role indirectly, using the `import_role` directive.  Therefore `IBM.infosvr-metadata-asset-manager` is not explicitly in the dependencies of this role, but it does need to be installed for this role to work (if you are installing and configuring the Information Analyzer feature).
 
 ## Example Playbook
 
