@@ -15,10 +15,6 @@
 # limitations under the License.
 ###
 
-- import_tasks: refresh_install_details.yml
-
-##########
-# SETUP
 - name: common - update all existing packages
   yum: state=latest name=*
 
@@ -42,7 +38,10 @@
     - nss-softokn-freebl
     - bc
     - iptables-services
+    - python-lxml
   when: (not 'ibm-information-server-external-db' in group_names)
+
+- import_tasks: refresh_install_details.yml
 
 - name: common - disable selinux
   selinux: state=disabled
