@@ -43,6 +43,8 @@
 
 - name: kernel-and-firewall - save firewall config (iptables)
   shell: "service iptables save"
+  args:
+    warn: False
   when: __ibm_infosvr_iptables is changed
 
 - name: kernel-and-firewall - enable interface in firewall (firewalld)
