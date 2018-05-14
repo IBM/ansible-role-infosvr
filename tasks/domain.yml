@@ -88,14 +88,14 @@
           -set
           -key com.ibm.iis.gov.vr.setting.maxObjectsInMemory
           -value 4000000
-  when: __ibm_infosvr_websphere_jvm_heap|changed and (__ibm_infosvr_version == "11.5")
+  when: __ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5")
 
 - name: domain - restart WebSphere Application server
   shell: "{{ item }}"
   with_items:
     - "{{ ibm_infosvr_install_location.was }}/bin/stopServer.sh server1 -username {{ ibm_infosvr_user_was }} -password {{ ibm_infosvr_upwd_was }}"
     - "{{ ibm_infosvr_install_location.was }}/bin/startServer.sh server1 -username {{ ibm_infosvr_user_was }} -password {{ ibm_infosvr_upwd_was }}"
-  when: __ibm_infosvr_websphere_jvm_heap|changed and (__ibm_infosvr_version == "11.5")
+  when: __ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5")
 
 - name: domain - sleep for 5 minutes (Liberty only)
   wait_for: timeout=300

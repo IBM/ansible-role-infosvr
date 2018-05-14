@@ -43,7 +43,7 @@
 
 - name: kernel-and-firewall - save firewall config (iptables)
   shell: "service iptables save"
-  when: __ibm_infosvr_iptables|changed
+  when: __ibm_infosvr_iptables is changed
 
 - name: kernel-and-firewall - enable interface in firewall (firewalld)
   firewalld:
@@ -61,4 +61,4 @@
 
 - name: kernel-and-firewall - reload firewall to ensure ports are open (firewalld)
   shell: "firewall-cmd --complete-reload"
-  when: __ibm_infosvr_firewalld|changed
+  when: __ibm_infosvr_firewalld is changed

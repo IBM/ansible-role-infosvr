@@ -154,12 +154,12 @@
   async: 1
   poll: 0
   ignore_errors: true
-  when: (__ibm_infosvr_dsenv|changed) or (__ibm_infosvr_dsodb|changed)
+  when: (__ibm_infosvr_dsenv is changed) or (__ibm_infosvr_dsodb is changed)
 
 - name: engine - wait for restart
   local_action: wait_for host={{ ansible_hostname }} state=started delay=5 timeout=300
   become: no
-  when: (__ibm_infosvr_dsenv|changed) or (__ibm_infosvr_dsodb|changed)
+  when: (__ibm_infosvr_dsenv is changed) or (__ibm_infosvr_dsodb is changed)
 
 - name: engine - confirm engine tier is fully started
   wait_for:
