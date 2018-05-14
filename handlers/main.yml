@@ -254,7 +254,7 @@
   retries: 3
   delay: 5
   register: __ibm_infosvr_os_start_zookeeper_result
-  until: __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
+  until: __ibm_infosvr_os_start_zookeeper_result.status is defined and __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
   changed_when: False
   when: ('ibm-information-server-domain' in group_names)
   listen:
@@ -282,7 +282,7 @@
   retries: 3
   delay: 5
   register: __ibm_infosvr_os_start_solr_result
-  until: __ibm_infosvr_os_start_solr_result.status.Result == "success"
+  until: __ibm_infosvr_os_start_solr_result.status is defined and __ibm_infosvr_os_start_solr_result.status.Result == "success"
   changed_when: False
   when: ('ibm-information-server-domain' in group_names)
   listen:
@@ -310,7 +310,7 @@
   retries: 3
   delay: 5
   register: __ibm_infosvr_os_start_kafka_result
-  until: __ibm_infosvr_os_start_kafka_result.status.Result == "success"
+  until: __ibm_infosvr_os_start_kafka_result.status is defined and __ibm_infosvr_os_start_kafka_result.status.Result == "success"
   changed_when: False
   when: ('ibm-information-server-domain' in group_names)
   listen:
