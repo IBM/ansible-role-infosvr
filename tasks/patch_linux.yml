@@ -47,6 +47,7 @@
 # This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
 - name: patch - check patch is downloaded
   local_action: stat path={{ ibm_infosvr_media_dir }}/{{ item.srcFile }}
+  become: no
   with_items: "{{ ibm_infosvr_patches_list }}"
   register: __ibm_infosvr_patching_files
 
