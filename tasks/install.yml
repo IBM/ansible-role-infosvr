@@ -57,7 +57,7 @@
 - name: clean up server installation files
   file: path={{ item.file }} state={{ item.state }}
   with_items:
-    - { file: "{{ ibm_infosvr_tmp.linux }}/*", state: 'absent' }
+    - { file: "{{ ibm_infosvr_tmp.linux }}/", state: 'absent' }
   become_user: root
   become: yes
   when: not ('ibm-information-server-clients' in group_names)
@@ -68,5 +68,5 @@
 - name: clean up client installation files
   win_file: path={{ item.file }} state={{ item.state }}
   with_items:
-    - { file: "{{ ibm_infosvr_tmp.win }}/*", state: 'absent' }
+    - { file: "{{ ibm_infosvr_tmp.win }}/", state: 'absent' }
   when: ('ibm-information-server-clients' in group_names)
