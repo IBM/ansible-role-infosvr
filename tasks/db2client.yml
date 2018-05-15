@@ -1,10 +1,16 @@
 ---
 
+- name: db2client - check install location exists
+  stat:
+    path: "{{ ibm_infosvr_tmp.linux }}/is-suite"
+  changed_when: False
+  register: __ibm_infosvr_db2client_tmp
+
 - name: db2client - apply DB2 client response file template
   template: src={{ item.file }} dest={{ item.target }} owner=root group=root mode=0644
   with_items:
     - { file: 'db2client.j2', target: "{{ ibm_infosvr_tmp.linux }}/is-suite/db2client.rsp" }
-  when: not ('ibm-information-server-external-db' in group_names)
+  when: not ('ibm-information-server-external-db' in group_names) and __ibm_infosvr_db2client_tmp.stat.exists
 
 - name: db2client - install DB2 client
   shell: >
@@ -13,4 +19,4 @@
   args:
     executable: /bin/bash
     creates: "{{ ibm_infosvr_install_location.db2 }}/bin/db2"
-  when: not ('ibm-information-server-external-db' in group_names)
+  when: not ('ibm-information-server-external-db' in group_names) and __ibm_infosvr_db2client_tmp.stat.exists
