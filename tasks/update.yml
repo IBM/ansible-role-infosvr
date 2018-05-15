@@ -21,6 +21,32 @@
   become: yes
   when: not ('ibm-information-server-clients' in group_names)
 
+- name: update - close any active user sessions
+  shell: >
+          ./SessionAdmin.sh
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -kill-user-sessions
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: update - put server into maintenance mode
+  shell: >
+          ./SessionAdmin.sh
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -set-maint-mode ON
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-domain' in group_names)
+
 - name: update - parse domain-specific patches
   include_vars: file=patches/domain-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
 
@@ -36,6 +62,19 @@
   become_user: root
   become: yes
   when: ('ibm-information-server-engine' in group_names)
+
+- name: update - remove server from maintenance mode
+  shell: >
+          ./SessionAdmin.sh
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -set-maint-mode OFF
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-domain' in group_names)
 
 - name: update - parse client-specific patches
   include_vars: file=patches/client-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
