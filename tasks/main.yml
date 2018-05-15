@@ -30,21 +30,7 @@
 
 - meta: flush_handlers
 
-- name: stopping Information Server
-  raw: echo 0
-  notify:
-    - "stop IBM InfoSphere Information Server"
-
-- meta: flush_handlers
-
 - import_tasks: update-jdk.yml
-
-- name: starting Information Server
-  raw: echo 0
-  notify:
-    - "start IBM InfoSphere Information Server"
-
-- meta: flush_handlers
 
 - import_tasks: configure.yml
   become_user: root

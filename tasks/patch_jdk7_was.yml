@@ -15,12 +15,12 @@
 # limitations under the License.
 ###
 
-- name: patch_jdk_was - transfer JDK update
+- name: patch_jdk7_was - transfer JDK7 update
   copy: src={{ ibm_infosvr_media_dir }}/{{ item.filename }} dest={{ ibm_infosvr_tmp.linux }}/{{ item.filename }} force=no
   with_items:
-    - "{{ ibm_infosvr_websphere_jdk_update }}"
+    - "{{ ibm_infosvr_websphere_jdk7_update }}"
 
-- name: patch_jdk_was - patch WebSphere JDK
+- name: patch_jdk7_was - patch WebSphere JDK7
   shell: >
           {{ ibm_infosvr_install_location.im }}/eclipse/tools/imcl
           install
@@ -29,9 +29,9 @@
           -installationDirectory {{ ibm_infosvr_install_location.was }}
           -acceptLicense
   with_items:
-    - "{{ ibm_infosvr_websphere_jdk_update }}"
+    - "{{ ibm_infosvr_websphere_jdk7_update }}"
 
-- name: patch_jdk_was - ensure updated security of JDK
+- name: patch_jdk7_was - ensure updated security of JDK
   lineinfile:
     dest: "{{ ibm_infosvr_install_location.was }}/java/jre/lib/security/java.security"
     regexp: "^{{ item.property }}"
