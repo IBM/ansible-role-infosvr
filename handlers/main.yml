@@ -146,7 +146,7 @@
     - "stop IBM InfoSphere Information Server"
 
 - name: stop IBM InfoSphere Information Server NodeAgents
-  shell: "./NodeAgents.sh stop"
+  shell: ". `cat /.dshome`/dsenv && ./NodeAgents.sh stop"
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBNode/bin"
@@ -230,6 +230,32 @@
   ignore_errors: yes
   changed_when: False
   when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: list any remaining Java processes
+  shell: >
+          ps -e -o pid,command | grep '{{ ibm_infosvr_install_location.linux }}/jdk/bin/java' | grep -v 'grep' | awk '{ print $1 }'
+  become_user: root
+  become: yes
+  changed_when: False
+  when: ('ibm-information-server-domain' in group_names)
+  register: __ibm_infosvr_stale_java_processes
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: force exit any remaining Java processes
+  shell: >
+          kill {{ item }}
+  become_user: root
+  become: yes
+  changed_when: False
+  with_items: "{{ __ibm_infosvr_stale_java_processes.stdout_lines }}"
+  when: ('ibm-information-server-domain' in group_names)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "stop IBM InfoSphere Information Server"
@@ -369,7 +395,7 @@
     - "start IBM InfoSphere Information Server"
 
 - name: start IBM InfoSphere Information Server NodeAgents
-  shell: "./NodeAgents.sh start"
+  shell: ". `cat /.dshome`/dsenv && ./NodeAgents.sh start"
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBNode/bin"
