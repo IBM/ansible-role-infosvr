@@ -15,6 +15,9 @@
 # limitations under the License.
 ###
 
+- name: patch_jdk7_was - ensure tmp install location exists
+  file: path={{ ibm_infosvr_tmp.linux }} state=directory
+
 - name: patch_jdk7_was - transfer JDK7 update
   copy: src={{ ibm_infosvr_media_dir }}/{{ item.filename }} dest={{ ibm_infosvr_tmp.linux }}/{{ item.filename }} force=no
   with_items:
@@ -40,3 +43,6 @@
     - { property: "jdk.tls.disabledAlgorithms", value: "SSLv3, RC4, DH keySize <768, MD5withRSA" }
     - { property: "jdk.certpath.disabledAlgorithms", value: "MD2, RSA keySize <1024, MD5" }
   when: __ibm_infosvr_version == "11.5"
+
+- name: patch_jdk7_was - cleanup installation
+  file: path={{ ibm_infosvr_tmp.linux }} state=absent

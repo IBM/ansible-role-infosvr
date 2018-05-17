@@ -19,6 +19,9 @@
   stat: path={{ ibm_infosvr_install_location.linux }}/jdk
   register: __ibm_infosvr_existing_jdk
 
+- name: patch_jdk_infosvr - ensure tmp install location exists
+  file: path={{ ibm_infosvr_tmp.linux }} state=directory
+
 - name: patch_jdk_infosvr - backup existing JDK
   command: mv {{ ibm_infosvr_install_location.linux }}/jdk {{ ibm_infosvr_tmp.linux }}/is_jdk_backup.{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
 
@@ -39,3 +42,6 @@
 
 - name: patch_jdk_infosvr - restore ownership of JDK
   file: path={{ ibm_infosvr_install_location.linux }}/jdk owner={{ __ibm_infosvr_existing_jdk.stat.pw_name }} group={{ __ibm_infosvr_existing_jdk.stat.gr_name }}
+
+- name: patch_jdk_infosvr - cleanup installation
+  file: path={{ ibm_infosvr_tmp.linux }} state=absent
