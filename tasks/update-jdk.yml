@@ -42,9 +42,9 @@
 - name: stopping Information Server
   raw: echo 0
   when: >
-        (ibm_infosvr_jdk_update is defined and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update[0].versionInfo) == -1)
-        or (ibm_infosvr_websphere_jdk_update is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update[0].versionInfo) == -1)
-        or (ibm_infosvr_websphere_jdk7_update is defined and __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update[0].versionInfo) == -1)
+        (ibm_infosvr_jdk_update is defined and __ibm_infosvr_existing_jdk_version.stderr is defined and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update[0].versionInfo) == -1)
+        or (ibm_infosvr_websphere_jdk_update is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update[0].versionInfo) == -1)
+        or (ibm_infosvr_websphere_jdk7_update is defined and __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk7_update[0].versionInfo) == -1)
   notify:
     - "stop IBM InfoSphere Information Server"
 
@@ -79,9 +79,9 @@
 - name: starting Information Server
   raw: echo 0
   when: >
-        (ibm_infosvr_jdk_update is defined and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update[0].versionInfo) == -1)
-        or (ibm_infosvr_websphere_jdk_update is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update[0].versionInfo) == -1)
-        or (ibm_infosvr_websphere_jdk7_update is defined and __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update[0].versionInfo) == -1)
+        (ibm_infosvr_jdk_update is defined and __ibm_infosvr_existing_jdk_version.stderr is defined and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update[0].versionInfo) == -1)
+        or (ibm_infosvr_websphere_jdk_update is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr is defined and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update[0].versionInfo) == -1)
+        or (ibm_infosvr_websphere_jdk7_update is defined and __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update[0].versionInfo) == -1)
   notify:
     - "start IBM InfoSphere Information Server"
 
