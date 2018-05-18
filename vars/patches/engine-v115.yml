@@ -18,6 +18,9 @@
 ibm_infosvr_patches_list:
   - { srcFile: "rollup_RU8v6_ISF_all_11502.zip", pkgFile: "rollup_RU8v6_ISF_all_11502.ispkg", versionInfo: "rollup_RU8v6_ISF_all_11502" }
   - { srcFile: "servicepack_11.5_ServicePack_2_linux64_11502.tar", pkgFile: "servicepack_11.5_ServicePack_2_linux64_11502.ispkg", versionInfo: "rollup_11.5_GovernanceRollup_9_11502" }
+  - { srcFile: "patch_JR58660_PXE_linux64_11500-02.tar", pkgFile: "patch_JR58660_PXE_linux64_11500-02.ispkg", versionInfo: "patch_JR58660_PXE_linux64_11500-02" }
+  - { srcFile: "rollup_RU9_ISF_all_11502.zip", pkgFile: "rollup_RU9_ISF_all_11502.ispkg", versionInfo: "rollup_RU9_ISF_all_11502" }
+  - { srcFile: "servicepack_11.5_SP3_linux64_11502.tar.gz", pkgFile: "servicepack_11.5_SP3_linux64_11502.ispkg", versionInfo: "patchbag_SP3_IS11502_11502" }
 
 ibm_infosvr_jdk_update:  # https://www.ibm.com/support/fixcentral/
-  - { filename: "ibm-java-sdk-7.1-4.1-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-71", versionInfo: "pxa6470_27sr4fp1-20170215_01(SR4 FP1)" }
+  - { filename: "ibm-java-sdk-7.1-4.20-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-71", versionInfo: "pxa6470_27sr4fp20-20180221_01(SR4 FP20)" }
