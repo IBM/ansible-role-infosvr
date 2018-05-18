@@ -33,6 +33,9 @@
 - import_tasks: update-jdk.yml
   when: ('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names)
 
+- import_tasks: update-jdk-win.yml
+  when: ('ibm-information-server-clients' in group_names)
+
 - import_tasks: configure.yml
   become_user: root
   become: yes

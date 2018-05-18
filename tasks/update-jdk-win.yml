@@ -1,0 +1,82 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: update-jdk-win - parse client-specific patches
+  include_vars: file=patches/client-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
+
+- name: update-jdk-win - check existing InfoSvr JDK version
+  win_shell: >
+              {{ ibm_infosvr_install_location.win }}\jdk\bin\java -version
+  register: __ibm_infosvr_existing_jdk_version
+  changed_when: False
+
+- name: update-jdk-win - ensure tmp install location exists
+  win_file: path={{ ibm_infosvr_tmp.win }} state=directory
+
+- name: update-jdk-win - remove existing JDKs
+  win_file: path="{{ ibm_infosvr_install_location.win }}\\{{ item }}" state=absent
+  with_items:
+    - "jdk"
+    - "jdk32"
+
+- name: update-jdk-win - transfer JDK updates
+  win_copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ item.filename }}"
+    dest: "{{ ibm_infosvr_tmp.win }}\\{{ item.filename }}"
+    force: no
+  with_items:
+    - "{{ ibm_infosvr_jdk32_update }}"
+    - "{{ ibm_infosvr_jdk64_update }}"
+
+- name: update-jdk-win - extract Information Server 64-bit JDK updates
+  win_unzip:
+    src: "{{ ibm_infosvr_tmp.win }}\\{{ item.filename }}"
+    dest: "{{ ibm_infosvr_tmp.win }}"
+    creates: "{{ ibm_infosvr_tmp.win }}\\{{ item.extractedpath }}"
+    copy: no
+    rm: False
+  with_items:
+    - "{{ ibm_infosvr_jdk64_update }}"
+
+- name: update-jdk-win - move updated 64-bit JDK into position
+  win_shell: >
+              move
+              {{ ibm_infosvr_tmp.win }}\{{ item.extractedpath }}
+              {{ ibm_infosvr_install_location.win }}\jdk
+  with_items:
+    - "{{ ibm_infosvr_jdk64_update }}"
+
+- name: update-jdk-win - extract Information Server 32-bit JDK updates
+  win_unzip:
+    src: "{{ ibm_infosvr_tmp.win }}\\{{ item.filename }}"
+    dest: "{{ ibm_infosvr_tmp.win }}"
+    creates: "{{ ibm_infosvr_tmp.win }}\\{{ item.extractedpath }}"
+    copy: no
+    rm: False
+  with_items:
+    - "{{ ibm_infosvr_jdk32_update }}"
+
+- name: update-jdk-win - move updated 32-bit JDK into position
+  win_shell: >
+              move
+              {{ ibm_infosvr_tmp.win }}\{{ item.extractedpath }}
+              {{ ibm_infosvr_install_location.win }}\jdk32
+  with_items:
+    - "{{ ibm_infosvr_jdk32_update }}"
+
+- name: update-jdk-win - cleanup installation
+  file: path={{ ibm_infosvr_tmp.linux }} state=absent
