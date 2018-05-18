@@ -26,17 +26,11 @@
   register: __ibm_infosvr_existing_jdk_version
   changed_when: False
 
-- name: update-jdk - check existing WebSphere JDK version (v11.5)
-  shell: "{{ ibm_infosvr_install_location.was }}/java/bin/java -version"
+- name: update-jdk - check existing WebSphere JDK version
+  shell: >
+          {{ ibm_infosvr_install_location.was }}/java{{ (__ibm_infosvr_version == "11.5") | ternary('','/8.0') }}/bin/java -version
   register: __ibm_infosvr_websphere_existing_jdk_version
   changed_when: False
-  when: __ibm_infosvr_version == "11.5"
-
-- name: update-jdk - check existing WebSphere JDK version (v11.7)
-  shell: "{{ ibm_infosvr_install_location.was }}/java/8.0/bin/java -version"
-  register: __ibm_infosvr_websphere_existing_jdk_version
-  changed_when: False
-  when: __ibm_infosvr_version == "11.7"
 
 - name: update-jdk - check existing WebSphere JDK7 version (v11.5)
   shell: "{{ ibm_infosvr_install_location.was }}/java_1.7_64/bin/java -version"
