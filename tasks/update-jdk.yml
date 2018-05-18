@@ -31,12 +31,13 @@
           {{ ibm_infosvr_install_location.was }}/java{{ (__ibm_infosvr_version == "11.5") | ternary('','/8.0') }}/bin/java -version
   register: __ibm_infosvr_websphere_existing_jdk_version
   changed_when: False
+  when: ('ibm-information-server-domain' in group_names)
 
 - name: update-jdk - check existing WebSphere JDK7 version (v11.5)
   shell: "{{ ibm_infosvr_install_location.was }}/java_1.7_64/bin/java -version"
   register: __ibm_infosvr_websphere_existing_jdk7_version
   changed_when: False
-  when: __ibm_infosvr_version == "11.5"
+  when: ('ibm-information-server-domain' in group_names) and __ibm_infosvr_version == "11.5"
 
 - name: stopping Information Server
   raw: echo 0
