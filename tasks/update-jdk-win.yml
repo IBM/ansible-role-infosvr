@@ -108,4 +108,4 @@
         or (ibm_infosvr_jdk32_update is defined and __ibm_infosvr_existing_jdk32_version.stderr is defined and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk32_update[0].versionInfo) == -1)
 
 - name: update-jdk-win - cleanup installation
-  file: path={{ ibm_infosvr_tmp.linux }} state=absent
+  win_file: path={{ ibm_infosvr_tmp.linux }} state=absent
