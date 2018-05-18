@@ -127,7 +127,7 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
   listen:
     - "restart IBM InfoSphere Information Server"
     - "stop IBM InfoSphere Information Server"
