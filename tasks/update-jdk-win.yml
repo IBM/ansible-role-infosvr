@@ -33,14 +33,6 @@
 - name: update-jdk-win - ensure tmp install location exists
   win_file: path={{ ibm_infosvr_tmp.win }} state=directory
 
-- name: update-jdk-win - remove existing 64-bit JDK
-  win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk" state=absent
-  when: (ibm_infosvr_jdk64_update is defined and __ibm_infosvr_existing_jdk64_version.stderr is defined and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk64_update[0].versionInfo) == -1)
-
-- name: update-jdk-win - remove existing 32-bit JDK
-  win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk32" state=absent
-  when: (ibm_infosvr_jdk32_update is defined and __ibm_infosvr_existing_jdk32_version.stderr is defined and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk32_update[0].versionInfo) == -1)
-
 - name: update-jdk-win - transfer JDK updates
   win_copy:
     src: "{{ ibm_infosvr_media_dir }}/{{ item.filename }}"
@@ -59,6 +51,14 @@
   when: >
         (ibm_infosvr_jdk64_update is defined and __ibm_infosvr_existing_jdk64_version.stderr is defined and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk64_update[0].versionInfo) == -1)
         or (ibm_infosvr_jdk32_update is defined and __ibm_infosvr_existing_jdk32_version.stderr is defined and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk32_update[0].versionInfo) == -1)
+
+- name: update-jdk-win - remove existing 64-bit JDK
+  win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk" state=absent
+  when: (ibm_infosvr_jdk64_update is defined and __ibm_infosvr_existing_jdk64_version.stderr is defined and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk64_update[0].versionInfo) == -1)
+
+- name: update-jdk-win - remove existing 32-bit JDK
+  win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk32" state=absent
+  when: (ibm_infosvr_jdk32_update is defined and __ibm_infosvr_existing_jdk32_version.stderr is defined and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk32_update[0].versionInfo) == -1)
 
 - name: update-jdk-win - extract Information Server 64-bit JDK updates
   win_unzip:
