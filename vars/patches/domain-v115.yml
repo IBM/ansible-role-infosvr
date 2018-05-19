@@ -18,8 +18,10 @@
 ibm_infosvr_patches_list:
   - { srcFile: "rollup_RU8v6_ISF_all_11502.zip", pkgFile: "rollup_RU8v6_ISF_all_11502.ispkg", versionInfo: "rollup_RU8v6_ISF_all_11502" }
   - { srcFile: "servicepack_11.5_ServicePack_2_linux64_11502.tar", pkgFile: "servicepack_11.5_ServicePack_2_linux64_11502.ispkg", versionInfo: "rollup_11.5_GovernanceRollup_9_11502" }
+  - { srcFile: "rollup_RU9_ISF_all_11502.zip", pkgFile: "rollup_RU9_ISF_all_11502.ispkg", versionInfo: "rollup_RU9_ISF_all_11502" }
+  - { srcFile: "servicepack_11.5_SP3_linux64_11502.tar.gz", pkgFile: "servicepack_11.5_SP3_linux64_11502.ispkg", versionInfo: "patchbag_SP3_IS11502_11502" }
 
 ibm_infosvr_websphere_jdk_update:  # https://www.ibm.com/support/fixcentral/
-  - { filename: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI55778.zip", extractedpath: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI55778", versionInfo: "pxa6460_26sr8fp20-20160111_01(SR8 FP20)" }
+  - { filename: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099.zip", extractedpath: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099", versionInfo: "pxa6460_26sr8fp60-20180215_03(SR8 FP60)" }
 ibm_infosvr_websphere_jdk7_update:  # https://www.ibm.com/support/fixcentral/
-  - { filename: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI55776.zip", extractedpath: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI55776", versionInfo: "pxa6470sr9fp30-20160112_01(SR9 FP30)" }
+  - { filename: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI93098.zip", extractedpath: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI93098", versionInfo: "pxa6470sr10fp20-20180221_01(SR10 FP20)" }
