@@ -22,15 +22,18 @@ ibm_infosvr_patches_list:
 #  - srcFile: "servicepack_11.7_SP1_linux64_11700.tar.gz"
 #    pkgFile: "servicepack_11.7_SP1_linux64_11700.ispkg"
 #    versionInfo: "patchbag_FP1_IS117_11700"
-  - srcFile: "servicepack_11.7_SP2_linux64_11700.tar.gz"
-    pkgFile: "servicepack_11.7_SP2_linux64_11700.ispkg"
-    versionInfo: "patchbag_FP1_IS117_11700"
+#  - srcFile: "servicepack_11.7_SP2_linux64_11700.tar.gz"
+#    pkgFile: "servicepack_11.7_SP2_linux64_11700.ispkg"
+#    versionInfo: "patchbag_FP1_IS117_11700"
   - srcFile: "patch_featureUpdate_DFD_all_11700.zip"
     pkgFile: "patch_featureUpdate_DFD_all_11700.ispkg"
     versionInfo: "patch_featureUpdate_DFD_all_11700"
   - srcFile: "exchange_IIS_IGC_WKC_ALL_11700.zip"
     pkgFile: "IIS_IGC_WKC_ALL/IIS_IGC_WKC_ALL.ispkg"
     versionInfo: "IIS_IGC_WKC_ALL"
+  - srcFile: "servicepack_11.7_SP3_linux64_11700.tar.gz"
+    pkgFile: "servicepack_11.7_SP3_linux64_11700.ispkg"
+    versionInfo: "servicepack_11.7_SP3_linux64_11700"
 
 ibm_infosvr_websphere_jdk_update:
   - { filename: "ibm-java-sdk-8.0-5.11-linux-x64-installmgr.zip", extractedpath: "com.ibm.java.jdk.v8_8.0.5011.20180327_1251", versionInfo: "pxa6480sr5fp11-20180326_01(SR5 FP11)" }
