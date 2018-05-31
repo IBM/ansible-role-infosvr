@@ -33,6 +33,7 @@
   become_user: root
   become: yes
   when: ('ibm-information-server-domain' in group_names)
+  changed_when: False
 
 - name: update - put server into maintenance mode
   shell: >
