@@ -46,6 +46,7 @@
   become_user: root
   become: yes
   when: ('ibm-information-server-domain' in group_names)
+  changed_when: False
 
 - name: update - parse domain-specific patches
   include_vars: file=patches/domain-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
@@ -75,6 +76,7 @@
   become_user: root
   become: yes
   when: ('ibm-information-server-domain' in group_names)
+  changed_when: False
 
 - name: update - parse client-specific patches
   include_vars: file=patches/client-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
