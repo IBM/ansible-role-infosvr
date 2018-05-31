@@ -46,6 +46,9 @@ ibm_infosvr_patches_list:
   - srcFile: "servicepack_11.7_SP3_linux64_11700.tar.gz"
     pkgFile: "servicepack_11.7_SP3_linux64_11700.ispkg"
     versionInfo: "servicepack_SP3_IS117_11700"
+  - srcFile: "fixpack_FP1_IS117_linux64_11700.tar.gz"
+    pkgFile: "fixpack_FP1_IS117_linux64_11700.ispkg"
+    versionInfo: "fixpack_FP1_IS117_linux64_11700"
 
 ibm_infosvr_jdk_update:
   - { filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-80", versionInfo: "pxa6480sr5fp10-20180214_01(SR5 FP10)" }
