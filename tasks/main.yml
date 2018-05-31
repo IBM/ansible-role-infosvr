@@ -19,6 +19,8 @@
   raw: "echo 0"
   notify:
     - "set IBM InfoSphere Information Server variables"
+  tags:
+    - update
 
 - meta: flush_handlers
 
@@ -27,14 +29,20 @@
 - meta: flush_handlers
 
 - import_tasks: update.yml
+  tags:
+    - update
 
 - meta: flush_handlers
 
 - import_tasks: update-jdk.yml
   when: ('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names)
+  tags:
+    - update
 
 - import_tasks: update-jdk-win.yml
   when: ('ibm-information-server-clients' in group_names)
+  tags:
+    - update
 
 - import_tasks: configure.yml
   become_user: root
