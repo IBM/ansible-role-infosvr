@@ -36,7 +36,7 @@ ibm_infosvr_patches_list:
     versionInfo: "servicepack_SP3_IS117_11700"
   - srcFile: "fixpack_FP1_IS117_linux64_11700.tar.gz"
     pkgFile: "fixpack_FP1_IS117_linux64_11700.ispkg"
-    versionInfo: "fixpack_FP1_IS117_linux64_11700"
+    versionInfo: "fixpack_FP1_IS117_11700"
 
 ibm_infosvr_websphere_jdk_update:
   - { filename: "ibm-java-sdk-8.0-5.11-linux-x64-installmgr.zip", extractedpath: "com.ibm.java.jdk.v8_8.0.5011.20180327_1251", versionInfo: "pxa6480sr5fp11-20180326_01(SR5 FP11)" }
