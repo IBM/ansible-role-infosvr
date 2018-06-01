@@ -54,8 +54,7 @@
   become_user: root
   become: yes
   when: >
-        ('ibm-information-server-engine' in group_names)
-        and (ibm_infosvr_jdk_update is defined)
+        (ibm_infosvr_jdk_update is defined)
         and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update[0].versionInfo) == -1
 
 - import_tasks: patch_jdk_was.yml
