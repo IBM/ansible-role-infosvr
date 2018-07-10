@@ -28,6 +28,9 @@ ibm_infosvr_patches_list:
   - srcFile: "fixpack_FP1_IS117_win_11700.zip"
     pkgFile: "fixpack_FP1_IS117_win_11700.ispkg"
     versionInfo: "fixpack_FP1_IS117_11700"
+  - srcFile: "patch_JR59097_ISF_windows_113-117.zip"
+    pkgFile: "patch_JR59097_ISF_windows_113-117.ispkg"
+    versionInfo: "patch_JR59097_ISF_windows_113-117"
 
 ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
   - filename: "ibm-java-sdk-80-win-i386.zip"

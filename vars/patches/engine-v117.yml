@@ -49,6 +49,15 @@ ibm_infosvr_patches_list:
   - srcFile: "fixpack_FP1_IS117_linux64_11700.tar.gz"
     pkgFile: "fixpack_FP1_IS117_linux64_11700.ispkg"
     versionInfo: "fixpack_FP1_IS117_11700"
+  - srcFile: "patch_June2018_DFD_all_11701.zip"
+    pkgFile: "patch_June2018_DFD_all_11701.ispkg"
+    versionInfo: "patch_June2018_DFD_all_11701"
+  - srcFile: "patch_JR59564_IA_11701.zip"
+    pkgFile: "patch_JR59564_IA_11701.ispkg"
+    versionInfo: "patch_JR59564_IA_11701"
+  - srcFile: "patch_JR59097_ISF_linux64_113-117.tar.gz"
+    pkgFile: "patch_JR59097_ISF_linux64_113-117.ispkg"
+    versionInfo: "patch_JR59097_ISF_linux64_113-117"
 
 ibm_infosvr_jdk_update:
   - { filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-80", versionInfo: "pxa6480sr5fp10-20180214_01(SR5 FP10)" }
