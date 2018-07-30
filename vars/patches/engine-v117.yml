@@ -31,9 +31,9 @@ ibm_infosvr_patches_list:
 #  - srcFile: "patch_featureUpdate_DFD_all_11700.zip"
 #    pkgFile: "patch_featureUpdate_DFD_all_11700.ispkg"
 #    versionInfo: "patch_featureUpdate_DFD_all_11700"
-  - srcFile: "exchange_IIS_IGC_WKC_ALL_11700.zip"
-    pkgFile: "IIS_IGC_WKC_ALL/IIS_IGC_WKC_ALL.ispkg"
-    versionInfo: "IIS_IGC_WKC_ALL"
+#  - srcFile: "exchange_IIS_IGC_WKC_ALL_11700.zip"
+#    pkgFile: "IIS_IGC_WKC_ALL/IIS_IGC_WKC_ALL.ispkg"
+#    versionInfo: "IIS_IGC_WKC_ALL"
 #  - srcFile: "PXE_DI_Feature_Patch_linux64_11700.tar"
 #    pkgFile: "PXE_DI_Feature_Patch_linux64_11700.ispkg"
 #    versionInfo: "PXE_DI_Feature_Patch_linux64_11700"
@@ -58,6 +58,15 @@ ibm_infosvr_patches_list:
   - srcFile: "patch_JR59097_ISF_linux64_113-117.tar.gz"
     pkgFile: "patch_JR59097_ISF_linux64_113-117.ispkg"
     versionInfo: "patch_JR59097_ISF_linux64_113-117"
+  - srcFile: "patch_July2018_DFD_all_11701.zip"
+    pkgFile: "patch_July2018_DFD_all_11701.ispkg"
+    versionInfo: "patch_July2018_DFD_all_11701"
+  - srcFile: "servicepack_11.7.0.1_SP1_linux64_11701.tar.gz"
+    pkgFile: "servicepack.is_11_7_0_1.linux64.SP1.RC1.ispkg"
+    versionInfo: "servicepack_SP1_IS11701_11701"
+  - srcFile: "PXE_DI_Feature_Patch2_linux64_11700-01.tar"
+    pkgFile: "PXE_DI_Feature_Patch2_linux64_11700-01.ispkg"
+    versionInfo: "PXE_DI_Feature_Patch2_linux64_11700-01"
 
 ibm_infosvr_jdk_update:
   - { filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-80", versionInfo: "pxa6480sr5fp10-20180214_01(SR5 FP10)" }
