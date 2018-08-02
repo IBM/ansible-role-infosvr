@@ -220,30 +220,12 @@
   when: ('ibm-information-server-engine' in group_names)
 
 - name: configure-em - add ODBC entry for exceptions database
-  blockinfile:
-    dest: "{{ ibm_infosvr_install_location.linux }}/Server/DSEngine/.odbc.ini"
-    insertafter: EOF
-    block: |
-
-      [ESDB]
-      Driver={{ ibm_infosvr_install_location.linux }}/Server/branded_odbc/lib/VMdb200.so
-      Description=DataDirect DB2 Wire Protocol Driver
-      AddStringToCreateTable=
-      AlternateID=
-      Collection=
-      Database=ESDBDB2
-      DynamicSections=100
-      GrantAuthid=PUBLIC
-      GrantExecute=1
-      IpAddress={{ hostvars[__ibm_infosvr_db_host].ansible_fqdn | upper }}
-      IsolationLevel=CURSOR_STABILITY
-      Location=
-      LogonID=
-      Password=
-      Package=
-      PackageOwner=
-      TcpPort={{ ibm_infosvr_ports.db2 }}
-      WithHold=1
-  become_user: "{{ ibm_infosvr_user_dsadmin }}"
-  become: yes
+  import_role: name=IBM.infosvr-metadata-asset-manager
+  vars:
+    ibm_infosvr_metadata_asset_mgr_odbc_entries:
+      - name: ESDB
+        type: db2
+        database: ESDBDB2
+        host: "{{ hostvars[__ibm_infosvr_db_host].ansible_fqdn }}"
+        port: "{{ ibm_infosvr_ports.db2 }}"
   when: ('ibm-information-server-engine' in group_names)
