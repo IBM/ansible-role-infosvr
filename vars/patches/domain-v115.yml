@@ -18,7 +18,7 @@
 ibm_infosvr_patches_list:
   - { srcFile: "servicepack_11.5_SP3_linux64_11502.tar.gz", pkgFile: "servicepack_11.5_SP3_linux64_11502.ispkg", versionInfo: "patchbag_SP3_IS11502_11502" }
   - { srcFile: "rollup_RU10_ISF_all_11502.zip", pkgFile: "rollup_RU10_ISF_all_11502.ispkg", versionInfo: "rollup_RU10_ISF_all_11502" }
-  - { srcFile: "servicepack_11.5.0.0_ServicePack_4_linux64_11502.180709.tar.gz", pkgFile: "servicepack.is_11_5.linux64.SP4.RC2.ispkg", versionInfo: "patchbag_SP4_IS11502_11502" }
+  - { srcFile: "servicepack_11.5.0.0_ServicePack_4_linux64_11502.180709.tar.gz", pkgFile: "servicepack.is_11_5.linux64.SP4.RC2.ispkg", versionInfo: "servicepack_SP4_IS11502_11502" }
 
 ibm_infosvr_websphere_jdk_update:  # https://www.ibm.com/support/fixcentral/
   - { filename: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099.zip", extractedpath: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099", versionInfo: "pxa6460_26sr8fp60-20180215_03(SR8 FP60)" }

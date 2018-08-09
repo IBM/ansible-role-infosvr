@@ -19,7 +19,7 @@ ibm_infosvr_patches_list:
   - { srcFile: "servicepack_11.5_SP3_windows_11502.zip", pkgFile: "servicepack_11.5_SP3_windows_11502.ispkg", versionInfo: "patchbag_SP3_IS11502_11502" }
   - { srcFile: "rollup_RU10_ISF_all_11502.zip", pkgFile: "rollup_RU10_ISF_all_11502.ispkg", versionInfo: "rollup_RU10_ISF_all_11502" }
   - { srcFile: "patch_JR59097_ISF_windows_113-117.zip", pkgFile: "patch_JR59097_ISF_windows_113-117.ispkg", versionInfo: "patch_JR59097_ISF_windows_113-117" }
-  - { srcFile: "servicepack_11.5.0.0_ServicePack_4_win_11502.180709.zip", pkgFile: "servicepack.is_11_5.windows.SP4.RC2.ispkg", versionInfo: "patchbag_SP4_IS11502_11502" }
+  - { srcFile: "servicepack_11.5.0.0_ServicePack_4_win_11502.180709.zip", pkgFile: "servicepack.is_11_5.windows.SP4.RC2.ispkg", versionInfo: "servicepack_SP4_IS11502_11502" }
 
 ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
   - { filename: "ibm-java-sdk-71-win-i386.zip", extractedpath: "sdk", versionInfo: "pwi3270_27sr4fp25-20180221_01(SR4 FP25)" }
