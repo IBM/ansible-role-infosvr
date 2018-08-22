@@ -69,4 +69,6 @@ ibm_infosvr_patches_list:
     versionInfo: "PXE_DI_Feature_Patch2_linux64_11700-01"
 
 ibm_infosvr_jdk_update:
-  - { filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-80", versionInfo: "pxa6480sr5fp10-20180214_01(SR5 FP10)" }
+  filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz"
+  extractedpath: "ibm-java-x86_64-80"
+  versionInfo: "pxa6480sr5fp10-20180214_01(SR5 FP10)"

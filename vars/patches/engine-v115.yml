@@ -23,4 +23,6 @@ ibm_infosvr_patches_list:
   - { srcFile: "patch_JR59300_AmazonS3CC_all_11502.tar", pkgFile: "patch_JR59300_AmazonS3CC_all_11502.ispkg", versionInfo: "patch_JR59300_AmazonS3CC_all_11502" }
 
 ibm_infosvr_jdk_update:  # https://www.ibm.com/support/fixcentral/
-  - { filename: "ibm-java-sdk-7.1-4.25-linux-x86_64.tgz", extractedpath: "ibm-java-x86_64-71", versionInfo: "pxa6470_27sr4fp25-20180221_01(SR4 FP25)" }
+  filename: "ibm-java-sdk-7.1-4.25-linux-x86_64.tgz"
+  extractedpath: "ibm-java-x86_64-71"
+  versionInfo: "pxa6470_27sr4fp25-20180221_01(SR4 FP25)"

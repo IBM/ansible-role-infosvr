@@ -21,6 +21,10 @@ ibm_infosvr_patches_list:
   - { srcFile: "servicepack_11.5.0.0_ServicePack_4_linux64_11502.180709.tar.gz", pkgFile: "servicepack.is_11_5.linux64.SP4.RC2.ispkg", versionInfo: "servicepack_SP4_IS11502_11502" }
 
 ibm_infosvr_websphere_jdk_update:  # https://www.ibm.com/support/fixcentral/
-  - { filename: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099.zip", extractedpath: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099", versionInfo: "pxa6460_26sr8fp60-20180215_03(SR8 FP60)" }
+  filename: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099.zip"
+  extractedpath: "8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPI93099"
+  versionInfo: "pxa6460_26sr8fp60-20180215_03(SR8 FP60)"
 ibm_infosvr_websphere_jdk7_update:  # https://www.ibm.com/support/fixcentral/
-  - { filename: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI93098.zip", extractedpath: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI93098", versionInfo: "pxa6470sr10fp20-20180221_01(SR10 FP20)" }
+  filename: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI93098.zip"
+  extractedpath: "7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPI93098"
+  versionInfo: "pxa6470sr10fp20-20180221_01(SR10 FP20)"
