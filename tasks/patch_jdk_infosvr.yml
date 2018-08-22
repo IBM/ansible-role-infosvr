@@ -15,33 +15,46 @@
 # limitations under the License.
 ###
 
+- name: patch_jdk_infosvr - check patch is downloaded
+  local_action: stat path={{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_jdk_update.filename }}
+  become: no
+  register: __ibm_infosvr_jdk_update_file
+
 - name: patch_jdk_infosvr - retain ownership of existing JDK
   stat: path={{ ibm_infosvr_install_location.linux }}/jdk
   register: __ibm_infosvr_existing_jdk
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - ensure tmp install location exists
   file: path={{ ibm_infosvr_tmp.linux }} state=directory
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - backup existing JDK
   command: mv {{ ibm_infosvr_install_location.linux }}/jdk {{ ibm_infosvr_tmp.linux }}/is_jdk_backup.{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - transfer JDK updates
   copy: src={{ ibm_infosvr_media_dir }}/{{ item.filename }} dest={{ ibm_infosvr_tmp.linux }}/{{ item.filename }} force=no
   with_items:
     - "{{ ibm_infosvr_jdk_update }}"
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - extract Information Server JDK updates
   unarchive: src={{ ibm_infosvr_tmp.linux }}/{{ item.filename }} dest={{ ibm_infosvr_tmp.linux }} creates={{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }} copy=no
   with_items:
     - "{{ ibm_infosvr_jdk_update }}"
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - move updated JDK into position
   command: mv {{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }} {{ ibm_infosvr_install_location.linux }}/jdk
   with_items:
     - "{{ ibm_infosvr_jdk_update }}"
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - restore ownership of JDK
   file: path={{ ibm_infosvr_install_location.linux }}/jdk owner={{ __ibm_infosvr_existing_jdk.stat.pw_name }} group={{ __ibm_infosvr_existing_jdk.stat.gr_name }}
+  when: __ibm_infosvr_jdk_update_file.stat.exists
 
 - name: patch_jdk_infosvr - cleanup installation
   file: path={{ ibm_infosvr_tmp.linux }} state=absent
+  when: __ibm_infosvr_jdk_update_file.stat.exists
