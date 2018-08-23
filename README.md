@@ -51,7 +51,7 @@ The configuration of Information Analyzer makes use of the `IBM.infosvr-metadata
 
 The following example playbook will do a complete installation and configuration of IBM InfoSphere Information Server using the default parameters from `defaults/main.yml` (and any overrides you've placed in eg. `group_vars/all.yml`). Note that because the entire installation is done across multiple tiers by this single role, you should use `any_errors_fatal` to avoid partial install / configuration of a tier in the event an earlier step fails on a different tier.
 
-```
+```yml
 - name: install and configure IBM InfoSphere Information Server
   hosts:
     - ibm-information-server-repo
@@ -68,7 +68,7 @@ The following example playbook will do a complete installation and configuration
 
 The following groups are expected in the inventory, as they are used to distinguish where various components are installed. Of course, if you want to install multiple components on a single server this can be done by simply providing the same hostname under each group. In the example below, for instance, the repository and domain tiers are both placed on 'serverA' while the engine tier will be installed separately on 'serverB' and the Unified Governance tier is also given its own system 'serverC'.
 
-```
+```ini
 [ibm-information-server-repo]
 # Linux host where the repository tier (database) should be installed (DB2)
 serverA.somewhere.com
