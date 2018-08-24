@@ -28,6 +28,8 @@
     value: "{% if item.item.set == 'max' and item.stdout|int > item.item.value|int %}{{ item.stdout }}{% else %}{{ item.item.value }}{% endif %}"
     reload: yes
   with_items: "{{ __ibm_infosvr_existing_kernel_params.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
 
 - name: kernel-and-firewall - open ports in firewall (iptables)
   iptables:

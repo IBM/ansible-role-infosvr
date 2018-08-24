@@ -53,6 +53,8 @@
   when: >
         (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
         or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
+  loop_control:
+    label: "{{ item.user }} - {{ item.group }}"
 
 - name: repo - parse external-db-specific variables
   include_vars: file=existing-db-v{{ __ibm_infosvr_version|replace(".", "") }}.yml

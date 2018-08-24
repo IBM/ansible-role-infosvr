@@ -39,6 +39,8 @@
   with_items:
     # NOTE: the passwords must be sha512-hashed to work properly with Ansible's user setup (second parameter is a salt to avoid changes)
     - { group: "{{ ibm_infosvr_group_dsadmin }}", user: "{{ ibm_infosvr_user_dsadmin }}", password: "{{ ibm_infosvr_upwd_dsadmin |password_hash('sha512', ibm_infosvr_salt) }}" }
+  loop_control:
+    label: "{{ item.user }} - {{ item.group }}"
 
 - name: engine - apply response file templates
   template: src={{ item.file }} dest={{ item.target }} owner=root group=root mode=0644

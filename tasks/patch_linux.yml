@@ -50,6 +50,8 @@
   become: no
   with_items: "{{ ibm_infosvr_patches_list }}"
   register: __ibm_infosvr_patching_files
+  loop_control:
+    label: "{{ ibm_infosvr_media_dir }}/{{ item.srcFile }}"
 
 - name: patch - copy installation media
   copy:
@@ -58,6 +60,8 @@
     force: no
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
+  loop_control:
+    label: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.srcFile }}"
 
 - name: patch - extract updates
   unarchive:
@@ -67,6 +71,8 @@
     copy: no
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
+  loop_control:
+    label: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.srcFile }}"
 
 ##########
 # INSTALL UPDATES
@@ -87,6 +93,8 @@
           {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
+  loop_control:
+    label: "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads/{{ item.item.pkgFile }}"
   notify:
     - re-generate config for open source utilities
     - restart IBM InfoSphere Information Server

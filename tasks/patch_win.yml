@@ -65,6 +65,8 @@
     creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
+  loop_control:
+    label: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
 
 - name: patch - extract updates
   win_unzip:
@@ -74,6 +76,8 @@
     rm: False
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
+  loop_control:
+    label: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
 
 ##########
 # INSTALL UPDATES
@@ -93,6 +97,8 @@
               {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
   when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
   with_items: "{{ __ibm_infosvr_patching_files.results }}"
+  loop_control:
+    label: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.pkgFile }}"
 
 - name: patch - clean up installation files
   win_file: path={{ item.file }} state={{ item.state }}
