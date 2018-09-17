@@ -40,12 +40,14 @@
       isadmin: "{{ ibm_infosvr_user_isadmin }}"
       dsadm: "{{ ibm_infosvr_user_dsadmin }}"
       db2inst1: "{{ ibm_infosvr_user_db2_instance }}"
+      xmeta: "{{ ibm_infosvr_user_xmeta }}"
     ibm_infosvr_groups:
       dsadm: "{{ ibm_infosvr_group_dsadmin }}"
       db2iadm1: "{{ ibm_infosvr_group_db2_instance }}"
     ibm_infosvr_upwds:
       isadmin: "{{ ibm_infosvr_upwd_isadmin }}"
       db2inst1: "{{ ibm_infosvr_upwd_db2_instance }}"
+      xmeta: "{{ ibm_infosvr_upwd_xmeta }}"
     ibm_infosvr_locations:
       linux: "{{ ibm_infosvr_install_location.linux }}"
       win: "{{ ibm_infosvr_install_location.win }}"
