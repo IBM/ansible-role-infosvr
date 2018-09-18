@@ -104,6 +104,39 @@ bpm.somewhere.com
 
 As with any Ansible inventory, sufficient details should be provided to ensure connectivity to the servers is possible (see http://docs.ansible.com/ansible/latest/intro_inventory.html#list-of-behavioral-inventory-parameters).
 
+## Re-usable tasks
+
+The role also includes the following re-usable tasks, meant for inclusion in other roles that need to make use of the characteristics of the Information Server installation without necessarily running through all of the installation steps themselves.
+
+### setup_vars.yml
+
+The configuration variables used in deploying an Information Server environment can be retrieved later by using the `setup_vars.yml` set of tasks, for example by including the following play in your playbook:
+
+```yml
+---
+
+- name: setup Information Server vars
+  hosts: all
+  tasks:
+    - import_role: name=IBM.infosvr tasks_from=setup_vars.yml
+```
+
+### get_certificate.yml
+
+The root SSL certificate of the domain tier of an Information Server environment can be retrieved later by using the `get_certificate.yml` set of tasks, for example by including the following play in your playbook:
+
+```yml
+---
+
+- name: setup Information Server vars
+  hosts: all
+  tasks:
+    - import_role: name=IBM.infosvr tasks_from=setup_vars.yml
+    - import_role: name=IBM.infosvr tasks_from=get_certificate.yml
+```
+
+Note that this set of tasks depends on the `setup_vars.yml` being run already as well, so it may be worth including them in the same play (as in the example above). The domain tier's SSL certificate will be stored into `cache/__ibm_infosvr_cert_root.crt` relative to the path where the playbook is executing on the control machine.
+
 ## License
 
 Apache 2.0
