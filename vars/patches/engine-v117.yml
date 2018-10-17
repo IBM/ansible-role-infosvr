@@ -39,7 +39,7 @@ ibm_infosvr_patches_list:
 #    versionInfo: "PXE_DI_Feature_Patch2_linux64_11700-01"
   - srcFile: "fixpack_FP2_IS117_linux64_11700-11701.tar.gz"
     pkgFile: "fixpack_FP2_IS117_linux64_11700-11701.ispkg"
-    versionInfo: "fixpack_FP2_IS117_11700"
+    versionInfo: "fixpack_FP2_IS117_11701"
 
 ibm_infosvr_jdk_update:
   filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz"

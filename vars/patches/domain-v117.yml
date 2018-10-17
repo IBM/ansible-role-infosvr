@@ -33,7 +33,7 @@ ibm_infosvr_patches_list:
 #    versionInfo: "servicepack_SP1_IS11701_11701"
   - srcFile: "fixpack_FP2_IS117_linux64_11700-11701.tar.gz"
     pkgFile: "fixpack_FP2_IS117_linux64_11700-11701.ispkg"
-    versionInfo: "fixpack_FP2_IS117_11700"
+    versionInfo: "fixpack_FP2_IS117_11701"
 
 ibm_infosvr_websphere_jdk_update:
   filename: "ibm-java-sdk-8.0-5.11-linux-x64-installmgr.zip"

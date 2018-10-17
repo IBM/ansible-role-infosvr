@@ -27,7 +27,7 @@ ibm_infosvr_patches_list:
 #    versionInfo: "servicepack_SP1_IS117-11701"
   - srcFile: "fixpack_FP2_IS117_win_11700-11701.zip"
     pkgFile: "fixpack_FP2_IS117_win_11700-11701.ispkg"
-    versionInfo: "fixpack_FP2_IS117_11700"
+    versionInfo: "fixpack_FP2_IS117_11701"
 
 ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
   filename: "ibm-java-sdk-80-win-i386.zip"
