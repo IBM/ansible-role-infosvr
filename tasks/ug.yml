@@ -144,6 +144,11 @@
   file: path={{ ibm_infosvr_install_location.ises }} state=directory owner=root group=root mode=0755
   when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
 
+- name: ug - copy install media
+  copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
+    dest: "{{ ibm_infosvr_tmp.ises }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
+
 ##########
 # BASE INSTALLATION
 - name: ug - install UG (ISES) tier silently
