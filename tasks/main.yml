@@ -71,30 +71,69 @@
   become: yes
   when: __ibm_infosvr_features.igd
 
+# Optional Unified Governance (UG) / Enterprise Search (ISES) tier
+- name: get list of schemas
+  shell: >
+          db2 connect to xmeta &&
+          db2 "select schemaname from syscat.schemata"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  changed_when: False
+  register: __ibm_infosvr_repo_schema_list
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
+
+- name: ensure AUDIT_TRAIL schema exists
+  shell: >
+          db2 connect to xmeta &&
+          db2 create schema AUDIT_TRAIL &&
+          db2 grant CREATEIN, ALTERIN, DROPIN ON SCHEMA AUDIT_TRAIL TO USER {{ ibm_infosvr_user_xmeta }}
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
+          and __ibm_infosvr_repo_schema_list.stdout.find('AUDIT_TRAIL') == -1
+
 - name: copy UG archive from domain tier
   fetch:
     src: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/kubeselfextract.bsx"
     dest: cache/kubeselfextract.bsx
     flat: yes
-  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - name: copy token certificate from domain tier
   fetch:
     src: "{{ ibm_infosvr_install_location.linux }}/ASBServer/apps/lib/iis/tknproperties/tokenservicepublic.cer"
     dest: cache/tokenservicepublic.cer
     flat: yes
-  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - import_tasks: ug.yml
   become: yes
-  when: ('ibm-information-server-ug' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - name: apply UG (ISES) template to domain tier
   template:
     src: uginfo.rsp.j2
     dest: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/uginfo.rsp"
   become: yes
-  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - name: configure domain tier to use UG (ISES) tier
   shell: "{{ item }}"
@@ -105,7 +144,10 @@
     - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.ug.host.name -value {{ ibm_infosvr_hosts.ug }}"
     - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.isf.security.AllowedRefererDomainNames -value {{ ibm_infosvr_hosts.ug.split('.')[1:] | join('.') }}"
   become: yes
-  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - name: update engine tier zookeeper config for UG (ISES) tier
   lineinfile:
@@ -115,7 +157,10 @@
     line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}\\:2181/kafka"
     backup: yes
   become: yes
-  when: ('ibm-information-server-engine' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - name: configure ODF to use UG (ISES) tier
   shell: "{{ item }}"
@@ -125,7 +170,10 @@
     - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine stop"
     - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine start"
   become: yes
-  when: ('ibm-information-server-engine' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
 
 - name: configure domain tier to use UG (ISES) tier
   shell: >
@@ -134,7 +182,10 @@
   args:
     executable: /bin/bash
   become: yes
-  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and ibm_infosvr_features.ises is defined
+          and ibm_infosvr_features.ises
   notify: restart IBM InfoSphere Information Server
 
 - meta: flush_handlers
