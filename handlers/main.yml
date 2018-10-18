@@ -116,12 +116,21 @@
       ml_term_assignment: "{% if ibm_infosvr_features.ml_term_assignment is defined %}{{ ibm_infosvr_features.ml_term_assignment }}{% else %}False{% endif %}"
       igd: "{% if ibm_infosvr_features.igd is defined %}{{ ibm_infosvr_features.igd }}{% else %}False{% endif %}"
       wlp: "{% if ibm_infosvr_features.wlp is defined %}{{ ibm_infosvr_features.wlp }}{% else %}False{% endif %}"
+      ises: "{% if ibm_infosvr_features.ises is defined %}{{ ibm_infosvr_features.ises }}{% else %}False{% endif %}"
   listen:
     - "set IBM InfoSphere Information Server variables"
     - "restart IBM InfoSphere Information Server"
     - "stop IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
     - "re-generate config for open source utilities"
+
+- name: check if UG (ISES) is installed
+  shell: "kubectl get pods"
+  register: __ibm_infosvr_ug_pods_list
+  ignore_errors: True
+  changed_when: False
+  become: yes
+  when: ('ibm-information-server-ug' in group_names)
 
 - name: check status of Information Server services
   command: /usr/sbin/ss -tln -H
@@ -287,6 +296,32 @@
     - "stop IBM InfoSphere Information Server"
     - "re-generate config for open source utilities"
 
+- name: drain IBM InfoSphere Information Server k8s node
+  shell: "kubectl drain {{ hostvars[inventory_hostname].ansible_fqdn }} --delete-local-data"
+  args:
+    executable: /bin/bash
+  become_user: "{{ ibm_infosvr_ug_user_k8s }}"
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-ug' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+
+- name: remove all running IBM InfoSphere Information Server pods
+  shell: "kubectl get pods | cut -d' ' -f 1 | grep -v 'NAME' | xargs kubectl delete pod"
+  args:
+    executable: /bin/bash
+  become_user: "{{ ibm_infosvr_user_k8s }}"
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-ug' in group_names)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+
 #- name: list any remaining Java processes
 #  shell: >
 #          ps -e -o pid,command | grep '{{ ibm_infosvr_install_location.linux }}/jdk/bin/java' | grep -v 'grep' | awk '{ print $1 }'
@@ -334,7 +369,7 @@
   register: __ibm_infosvr_os_start_zookeeper_result
   until: __ibm_infosvr_os_start_zookeeper_result.status is defined and __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -347,7 +382,7 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -362,7 +397,7 @@
   register: __ibm_infosvr_os_start_solr_result
   until: __ibm_infosvr_os_start_solr_result.status is defined and __ibm_infosvr_os_start_solr_result.status.Result == "success"
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -375,7 +410,7 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -390,7 +425,7 @@
   register: __ibm_infosvr_os_start_kafka_result
   until: __ibm_infosvr_os_start_kafka_result.status is defined and __ibm_infosvr_os_start_kafka_result.status.Result == "success"
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -403,11 +438,27 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
     - "re-generate config for open source utilities"
+
+- name: uncordon IBM InfoSphere Information Server k8s node
+  shell: "kubectl uncordon {{ hostvars[inventory_hostname].ansible_fqdn }}"
+  args:
+    executable: /bin/bash
+  become_user: "{{ ibm_infosvr_user_k8s }}"
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_features.ises
+          and not (__ibm_infosvr_ug_pods_list.stdout.find('elasticsearch') == -1)
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
 
 - name: start IBM InfoSphere Information Server ODFEngine (v11.7)
   systemd: state=started name=ODFEngine
@@ -493,6 +544,27 @@
   become: yes
   changed_when: False
   when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+
+- name: ensure all pods are running
+  shell: "kubectl get pods --no-headers=true | awk '{ print $2 }'"
+  args:
+    executable: /bin/bash
+  become_user: "{{ ibm_infosvr_user_k8s }}"
+  become: yes
+  changed_when: False
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_features.ises
+          and not (__ibm_infosvr_ug_pods_list.stdout.find('elasticsearch') == -1)
+  register: __ibm_infosvr_ug_k8s_pods_status
+  until: >
+          (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1','2/2']
+          or ((__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1'])
+  retries: 48
+  delay: 10
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
