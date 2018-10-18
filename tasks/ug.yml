@@ -149,6 +149,19 @@
     src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
     dest: "{{ ibm_infosvr_tmp.ises }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
 
+# Installer relies on root-level passwordless SSH being configured within the host itself
+- name: ug - check existence of SSH key
+  stat: path="~/.ssh/id_rsa"
+  register: __ibm_infosvr_ug_ssh_key
+
+- name: ug - generate SSH key
+  shell: ssh-keygen -t rsa -f ~/.ssh/id_rsa -P ''
+  when: not __ibm_infosvr_ug_ssh_key.stat.exists
+
+- name: ug - add generated key to authorized keys
+  shell: cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+  when: not __ibm_infosvr_ug_ssh_key.stat.exists
+
 ##########
 # BASE INSTALLATION
 - name: ug - install UG (ISES) tier silently
