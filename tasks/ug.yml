@@ -50,8 +50,8 @@
     timeout: 300
   with_items:
     - "{{ ibm_infosvr_ports.console }}"
-    - "{{ ibm_infosvr_ports.zookeeper }}"
-    - "{{ ibm_infosvr_ports.kafka }}"
+#    - "{{ ibm_infosvr_ports.zookeeper }}"
+#    - "{{ ibm_infosvr_ports.kafka }}"
 
 #- name: ug - update all existing packages
 #  yum: state=latest name=*
