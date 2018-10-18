@@ -19,7 +19,7 @@
   yum: state=latest name=*
   become_user: root
   become: yes
-  when: not ('ibm-information-server-clients' in group_names)
+  when: not ('ibm-information-server-clients' in group_names) and not ('ibm-information-server-ug' in group_names)
 
 - name: update - close any active user sessions
   shell: >
