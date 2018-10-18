@@ -135,3 +135,6 @@
     executable: /bin/bash
   become: yes
   when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+  notify: restart IBM InfoSphere Information Server
+
+- meta: flush_handlers
