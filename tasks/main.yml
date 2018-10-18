@@ -110,7 +110,7 @@
     dest: cache/kubeselfextract.bsx
     flat: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-domain' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
@@ -120,14 +120,14 @@
     dest: cache/tokenservicepublic.cer
     flat: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-domain' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
 - import_tasks: ug.yml
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-ug' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
@@ -137,7 +137,7 @@
     dest: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/uginfo.rsp"
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-domain' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
@@ -151,7 +151,7 @@
     - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.isf.security.AllowedRefererDomainNames -value {{ ibm_infosvr_hosts.ug.split('.')[1:] | join('.') }}"
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-domain' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
@@ -164,7 +164,7 @@
     backup: yes
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-engine' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
@@ -177,7 +177,7 @@
     - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine start"
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-engine' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
 
@@ -189,7 +189,7 @@
     executable: /bin/bash
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
+          ('ibm-information-server-domain' in group_names)
           and ibm_infosvr_features.ises is defined
           and ibm_infosvr_features.ises
   notify: restart IBM InfoSphere Information Server
