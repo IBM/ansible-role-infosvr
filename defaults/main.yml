@@ -23,21 +23,23 @@ ibm_infosvr_install_location:
   was: /opt/IBM/WebSphere/AppServer
   im: /opt/IBM/InstallationManager
   ims: /opt/IBM/IMShared
+  ises: /opt/IBM/UGinstall
 
 ibm_infosvr_repository_location: "{{ ibm_infosvr_install_location.linux }}/Repos"
 
 ibm_infosvr_tmp:
   linux: /opt/IBM/install
   win: C:\IBM\install
+  ises: /tmp
 
-ibm_infosvr_ug_storage: /dev/sdb
+ibm_infosvr_ug_storage: /dev/vdb
 
 # MEDIA / FILES
 ibm_infosvr_media_dir: ../media
 
 ibm_infosvr_media_bin:
   server_tarball: "IS_V11.7_LINUX_X86_64_MULTILING.tar.gz"  # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  ug_tarball: "INFO_SER_ENTERPRISE_SEARCH_V11.7.tar.gz"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  ug_tarball: "fixpack_FP2_IS117_UGDocker_11700-11701.tar.gz"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
   client_zip: "IS_V11.7_WINDOWS_CLIENT_MULTILI.zip"         # https://www.ibm.com/software/passportadvantage/pao_customer.html
   entitlements: "IIS_ENTERPRISE_EDITION_V11.7_BUND.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
@@ -58,9 +60,10 @@ ibm_infosvr_features:
   wisd: True                # Information Services Director
   fasttrack: True           # FastTrack
   dqec: True                # Data Quality Exception Console (DQEC)
-#  ml_term_assignment: True  # Machine Learning-based automatic term assignment
   igd: False                # Information Governance Dashboard (for integration with Cognos)
   wlp: False                # Use WebSphere Liberty profile instead of full WAS
+  ises: True                # Install and configure Information Server Enterprise Search
+  ml_term_assignment: True  # Machine Learning-based automatic term assignment ('ises' above must also be True)
 
 ibm_infosvr_force:          # Set to true to force installs (ignore errors or warnings)
   repo: False
@@ -68,14 +71,6 @@ ibm_infosvr_force:          # Set to true to force installs (ignore errors or wa
   engine: False
   client: False
   patch: True
-
-# MOVED to separate ibm-infosvr-ug role
-# UNIFIED GOVERNANCE CONFIG -- defaults below, override to expand or reduce resource requirements
-#ibm_infosvr_ug_cassandra_mem: "16G"
-#ibm_infosvr_ug_elasticsearch_mem: "1G"
-#ibm_infosvr_ug_kafka_mem: "1G"
-#ibm_infosvr_ug_shop4info_mem_min: "1024M"
-#ibm_infosvr_ug_shop4info_mem_max: "4096M"
 
 # NETWORK CONFIG
 ibm_infosvr_use_firewalld: False
@@ -113,18 +108,17 @@ ibm_infosvr_ports:
   zookeeper: 52181
   solr: 58983
   kafka: 59092
-#  ug_console: 32500          # MOVED to separate ibm-infosvr-ug role
-#  k8s_admin: 30453
-#  k8s_api: 6443
-#  k8s_kubelet: 10250
+  ug_console: 32500
+  k8s_admin: 30453
+  k8s_api: 6443
+  k8s_kubelet: 10250
 
-# MOVED to separate ibm-infosvr-ug role
-## Default config for k8s and weave-net -- modify only if they conflict with a pre-existing network
+# Default config for k8s and weave-net -- modify only if they conflict with a pre-existing network
 ibm_infosvr_k8s_network:
   weave_ip_range: "10.32.0.0/12"
-#  service_cidr: "10.96.0.0/12"
-#  cluster_dns: "10.96.0.10"
-#
+  service_cidr: "10.96.0.0/12"
+  cluster_dns: "10.96.0.10"
+
 #ibm_infosvr_ug_external_svc_use_ip: True  # Use IP address (True) or hostname (False) as external service
 
 # SENSITIVE SETTINGS (credentials)
@@ -158,7 +152,7 @@ ibm_infosvr_group_db2_instance: db2iadm1
 ibm_infosvr_user_was: wasadmin
 ibm_infosvr_upwd_was: wasadmin
 ibm_infosvr_ssl_key_pwd_wlp: p4ssw0rd
-#ibm_infosvr_user_k8s: mykubeadm1         # MOVED to separate ibm-infosvr-ug role
+ibm_infosvr_user_k8s: mykubeadm1
 ibm_infosvr_user_bpm: bpm
 ibm_infosvr_upwd_bpm: bpm
 

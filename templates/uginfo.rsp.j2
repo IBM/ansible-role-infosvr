@@ -1,0 +1,52 @@
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+IS_INSTALL_HOME={{ ibm_infosvr_install_location.linux }}
+IS_SERVER_HOST={{ __ibm_infosvr_k8s_externals.domain }}
+IS_SERVER_PORT={{ ibm_infosvr_ports.console }}
+IS_ADMIN_USER={{ ibm_infosvr_user_isadmin }}
+IS_ADMIN_PASSWORD={{ ibm_infosvr_upwd_isadmin }}
+APP_SERVER_TYPE={% if ibm_infosvr_features.wlp is defined and ibm_infosvr_features.wlp %}lwas{% else %}was{% endif %}
+XMETA_DB_HOST={{ __ibm_infosvr_k8s_externals.repo }}
+XMETA_DB_PORT={{ ibm_infosvr_ports.db2 }}
+XMETA_DB_USER={{ ibm_infosvr_user_xmeta }}
+XMETA_DB_PASSWORD={{ ibm_infosvr_upwd_xmeta }}
+XMETA_DB_TYPE=db2
+XMETA_DB_NAME=xmeta
+SOCIAL_DB_HOST={{ __ibm_infosvr_k8s_externals.repo }}
+SOCIAL_DB_PORT={{ ibm_infosvr_ports.db2 }}
+SOCIAL_DB_USER={{ ibm_infosvr_user_xmeta }}
+SOCIAL_DB_PASSWORD={{ ibm_infosvr_upwd_xmeta }}
+SOCIAL_DB_NAME=xmeta
+MASTER_NODE_HOST={{ ibm_infosvr_hosts.ug }}
+MASTER_NODE_USER=root
+UG_IMAGES_TAR_PATH={{ ibm_infosvr_media_bin.ug_tarball }}
+NUMBER_OF_NODES=0
+WEAVE_NET_IP={{ ibm_infosvr_k8s_network.weave_ip_range }}
+ES_INSTALLDIR={{ ibm_infosvr_install_location.ises }}
+SERVICE_IP_RANGE={{ ibm_infosvr_k8s_network.service_cidr }}
+SHOP4INFO_BAK_DIR={{ ibm_infosvr_tmp.ises }}
+MASTER_DOCKER_VOLUME={{ ibm_infosvr_ug_storage }}
+UG.DOMAIN.NAME={{ ibm_infosvr_hosts.ug }}
+XMETA_SR_DB_HOST={{ __ibm_infosvr_k8s_externals.repo }}
+XMETA_SR_DB_USER={{ ibm_infosvr_user_staging }}
+XMETA_SR_DB_PASSWORD={{ ibm_infosvr_upwd_staging }}
+XMETA_SR_DB_PORT={{ ibm_infosvr_ports.db2 }}
+XMETA_SR_DB_URL=jdbc:db2://{{ ibm_infosvr_hosts.ug }}:{{ ibm_infosvr_ports.db2 }}/XMETA
+XMETA_SR_DB_TYPE=db2
+XMETA_SR_DB_DRIVER=com.ibm.db2.jcc.DB2Driver
+XMETA_SR_DB_NAME=xmeta
+XMETA_DB_URL=jdbc:db2://{{ ibm_infosvr_hosts.ug }}:{{ ibm_infosvr_ports.db2 }}/XMETA

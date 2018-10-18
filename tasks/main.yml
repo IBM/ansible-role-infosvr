@@ -70,3 +70,68 @@
   become_user: root
   become: yes
   when: __ibm_infosvr_features.igd
+
+- name: copy UG archive from domain tier
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/kubeselfextract.bsx"
+    dest: cache/kubeselfextract.bsx
+    flat: yes
+  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- name: copy token certificate from domain tier
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/ASBServer/apps/lib/iis/tknproperties/tokenservicepublic.cer"
+    dest: cache/tokenservicepublic.cer
+    flat: yes
+  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- import_tasks: ug.yml
+  become: yes
+  when: ('ibm-information-server-ug' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- name: apply UG (ISES) template to domain tier
+  template:
+    src: uginfo.rsp.j2
+    dest: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/uginfo.rsp"
+  become: yes
+  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- name: configure domain tier to use UG (ISES) tier
+  shell: "{{ item }}"
+  args:
+    executable: /bin/bash
+  with_items:
+    - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.odf.PredictorServiceEndpoint -value {{ ibm_infosvr_hosts.ug }}:{{ ibm_infosvr_ports.ug_console }}"
+    - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.ug.host.name -value {{ ibm_infosvr_hosts.ug }}"
+    - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.isf.security.AllowedRefererDomainNames -value {{ ibm_infosvr_hosts.ug.split('.')[1:] | join('.') }}"
+  become: yes
+  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- name: update engine tier zookeeper config for UG (ISES) tier
+  lineinfile:
+    path: "{{ ibm_infosvr_install_location.linux }}/ASBNode/conf/odf.properties"
+    state: present
+    regexp: "^odf.zookeeper.connect="
+    line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}\\:2181/kafka"
+    backup: yes
+  become: yes
+  when: ('ibm-information-server-engine' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- name: configure ODF to use UG (ISES) tier
+  shell: "{{ item }}"
+  args:
+    executable: /bin/bash
+  with_items:
+    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine stop"
+    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine start"
+  become: yes
+  when: ('ibm-information-server-engine' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
+
+- name: configure domain tier to use UG (ISES) tier
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/bin/SetSOSProperties.sh
+          {{ ibm_infosvr_hosts.ug }}
+  args:
+    executable: /bin/bash
+  become: yes
+  when: ('ibm-information-server-domain' in group_names) and ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises
