@@ -148,6 +148,7 @@
   copy:
     src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
     dest: "{{ ibm_infosvr_tmp.ises }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
+    force: no
 
 # Installer relies on root-level passwordless SSH being configured within the host itself
 - name: ug - check existence of SSH key
