@@ -131,5 +131,3 @@
   when: >
           __ibm_infosvr_features.ises
           and (('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names))
-
-- meta: flush_handlers
