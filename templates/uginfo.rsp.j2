@@ -20,6 +20,7 @@ IS_SERVER_PORT={{ ibm_infosvr_ports.console }}
 IS_ADMIN_USER={{ ibm_infosvr_user_isadmin }}
 IS_ADMIN_PASSWORD={{ ibm_infosvr_upwd_isadmin }}
 APP_SERVER_TYPE={% if ibm_infosvr_features.wlp is defined and ibm_infosvr_features.wlp %}lwas{% else %}was{% endif %}
+
 XMETA_DB_HOST={{ __ibm_infosvr_k8s_externals.repo }}
 XMETA_DB_PORT={{ ibm_infosvr_ports.db2 }}
 XMETA_DB_USER={{ ibm_infosvr_user_xmeta }}
