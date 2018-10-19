@@ -1,0 +1,178 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: apply UG (ISES) template to domain tier
+  template:
+    src: uginfo.rsp.j2
+    dest: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/uginfo.rsp"
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: get Unified Governance additions status
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -display
+          -key {{ item.key }}
+  args:
+    executable: /bin/bash
+  register: __ibm_infosvr_ug_additions
+  changed_when: False
+  with_items:
+    - { key: "com.ibm.iis.odf.PredictorServiceEndpoint", value: "{{ ibm_infosvr_hosts.ug }}:{{ ibm_infosvr_ports.ug_console }}" }
+    - { key: "com.ibm.iis.ug.host.name", value: "{{ ibm_infosvr_hosts.ug }}" }
+    - { key: "com.ibm.iis.isf.security.AllowedRefererDomainNames", value: "{{ ibm_infosvr_hosts.ug.split('.')[1:] | join('.') }}" }
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: enable Unified Governance additions
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -set
+          -key {{ item.item.key }}
+          -value '{{ item.item.value }}'
+  args:
+    executable: /bin/bash
+  when: >
+        ('ibm-information-server-domain' in group_names)
+        and (item.stdout.find(item.item.value) == -1)
+  with_items: "{{ __ibm_infosvr_ug_additions.results }}"
+
+- name: get Unified Governance IA additions status
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -display
+          -key {{ item.key }}
+  args:
+    executable: /bin/bash
+  register: __ibm_infosvr_ug_ia_additions
+  changed_when: False
+  with_items:
+    - { key: "com.ibm.iis.ug11_7.autoclassification.enabled", value: "true" }
+    - { key: "com.ibm.iis.ug11_7.autoclassification.dopublish", value: "true" }
+    - { key: "com.ibm.iis.ia.server.jobs.results.bridge", value: "odf" }
+    - { key: "com.ibm.iis.odf.autoclassification.configuration", value: "CA,TM,DQ" }
+  when: >
+        __ibm_infosvr_features.ia
+        and ('ibm-information-server-domain' in group_names)
+
+- name: enable Unified Governance IA additions
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -set
+          -key {{ item.item.key }}
+          -value '{{ item.item.value }}'
+  args:
+    executable: /bin/bash
+  when: >
+        __ibm_infosvr_features.ia
+        and ('ibm-information-server-domain' in group_names)
+        and (item.stdout.find(item.item.value) == -1)
+  with_items: "{{ __ibm_infosvr_ug_ia_additions.results }}"
+
+- name: update engine tier zookeeper config for UG (ISES) tier
+  lineinfile:
+    path: "{{ ibm_infosvr_install_location.linux }}/ASBNode/conf/odf.properties"
+    state: present
+    regexp: "^odf.zookeeper.connect="
+    line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}\\:2181/kafka"
+    backup: yes
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: transfer new default ODF parameters
+  template: src=ODFParams.json.j2 dest=/tmp/ODFParams.json
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: get Unified Governance ODF parameters
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -getODFParams
+          {{ item }}
+  args:
+    executable: /bin/bash
+  changed_when: False
+  register: __ibm_infosvr_ug_odf_params
+  with_items:
+    - ""
+    - "-projectName UGDefaultWorkspace"
+  when: >
+        __ibm_infosvr_features.ia
+        and ('ibm-information-server-domain' in group_names)
+
+# TODO: determine way to make idempotent
+- name: set Unified Governance ODF parameters
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -setODFParams
+          -content /tmp/ODFParams.json
+          {{ item.item }}
+  args:
+    executable: /bin/bash
+  with_items: "{{ __ibm_infosvr_ug_odf_params.results }}"
+  when: >
+        __ibm_infosvr_features.ia
+        and ('ibm-information-server-domain' in group_names)
+
+- name: get ML-based term classification status
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -display
+          -key {{ item.key }}
+  args:
+    executable: /bin/bash
+  register: __ibm_infosvr_ug_mlta_status
+  changed_when: False
+  with_items:
+    - { key: "com.ibm.iis.ug11_7.odfservices.ta", value: "com.ibm.iis.odf.services.termassignment.finley.FinleyPredictorService,com.ibm.iis.odf.services.termclassification.matching.bg.MatcherDiscoveryService,com.ibm.iis.odf.iisext.services.cbta.ClassBasedTermAssignmentService" }
+  when: >
+        ('ibm-information-server-domain' in group_names)
+        and __ibm_infosvr_features.ml_term_assignment
+
+- name: enable ML-based term classification
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -set
+          -key {{ item.item.key }}
+          -value '{{ item.item.value }}'
+  args:
+    executable: /bin/bash
+  when: >
+        ('ibm-information-server-domain' in group_names)
+        and (__ibm_infosvr_features.ml_term_assignment)
+        and (item.stdout.find(item.item.value) == -1)
+  with_items: "{{ __ibm_infosvr_ug_mlta_status.results }}"
+
+- name: configure ODF to use UG (ISES) tier
+  shell: "{{ item }}"
+  args:
+    executable: /bin/bash
+  with_items:
+    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine stop"
+    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine start"
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure domain tier to use UG (ISES) tier
+  shell: >
+          {{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/bin/SetSOSProperties.sh
+          {{ ibm_infosvr_hosts.ug }}
+  args:
+    executable: /bin/bash
+  when: ('ibm-information-server-domain' in group_names)
+  notify: restart IBM InfoSphere Information Server

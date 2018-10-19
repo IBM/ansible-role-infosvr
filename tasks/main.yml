@@ -85,8 +85,7 @@
   register: __ibm_infosvr_repo_schema_list
   when: >
           ('ibm-information-server-repo' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
+          and __ibm_infosvr_features.ises
 
 - name: ensure AUDIT_TRAIL schema exists
   shell: >
@@ -100,8 +99,7 @@
   become: yes
   when: >
           ('ibm-information-server-repo' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
+          and __ibm_infosvr_features.ises
           and __ibm_infosvr_repo_schema_list.stdout.find('AUDIT_TRAIL') == -1
 
 - name: copy UG archive from domain tier
@@ -111,8 +109,7 @@
     flat: yes
   when: >
           ('ibm-information-server-domain' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
+          and __ibm_infosvr_features.ises
 
 - name: copy token certificate from domain tier
   fetch:
@@ -121,77 +118,18 @@
     flat: yes
   when: >
           ('ibm-information-server-domain' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
+          and __ibm_infosvr_features.ises
 
 - import_tasks: ug.yml
   become: yes
   when: >
           ('ibm-information-server-ug' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
+          and __ibm_infosvr_features.ises
 
-- name: apply UG (ISES) template to domain tier
-  template:
-    src: uginfo.rsp.j2
-    dest: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/uginfo.rsp"
+- import_tasks: configure-ug.yml
   become: yes
   when: >
-          ('ibm-information-server-domain' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
-
-- name: configure domain tier to use UG (ISES) tier
-  shell: "{{ item }}"
-  args:
-    executable: /bin/bash
-  with_items:
-    - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.odf.PredictorServiceEndpoint -value {{ ibm_infosvr_hosts.ug }}:{{ ibm_infosvr_ports.ug_console }}"
-    - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.ug.host.name -value {{ ibm_infosvr_hosts.ug }}"
-    - "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh -set -key com.ibm.iis.isf.security.AllowedRefererDomainNames -value {{ ibm_infosvr_hosts.ug.split('.')[1:] | join('.') }}"
-  become: yes
-  when: >
-          ('ibm-information-server-domain' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
-
-- name: update engine tier zookeeper config for UG (ISES) tier
-  lineinfile:
-    path: "{{ ibm_infosvr_install_location.linux }}/ASBNode/conf/odf.properties"
-    state: present
-    regexp: "^odf.zookeeper.connect="
-    line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}\\:2181/kafka"
-    backup: yes
-  become: yes
-  when: >
-          ('ibm-information-server-engine' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
-
-- name: configure ODF to use UG (ISES) tier
-  shell: "{{ item }}"
-  args:
-    executable: /bin/bash
-  with_items:
-    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine stop"
-    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine start"
-  become: yes
-  when: >
-          ('ibm-information-server-engine' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
-
-- name: configure domain tier to use UG (ISES) tier
-  shell: >
-          {{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/bin/SetSOSProperties.sh
-          {{ ibm_infosvr_hosts.ug }}
-  args:
-    executable: /bin/bash
-  become: yes
-  when: >
-          ('ibm-information-server-domain' in group_names)
-          and ibm_infosvr_features.ises is defined
-          and ibm_infosvr_features.ises
-  notify: restart IBM InfoSphere Information Server
+          __ibm_infosvr_features.ises
+          and (('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names))
 
 - meta: flush_handlers
