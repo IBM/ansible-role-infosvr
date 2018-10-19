@@ -174,8 +174,6 @@
   shell: "kubectl get pods --no-headers=true | awk '{ print $2 }'"
   args:
     executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
-  become: yes
   changed_when: False
   register: __ibm_infosvr_ug_k8s_pods_status
   until: (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1']

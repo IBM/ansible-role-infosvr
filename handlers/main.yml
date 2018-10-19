@@ -300,7 +300,6 @@
   shell: "kubectl drain {{ hostvars[inventory_hostname].ansible_fqdn }} --delete-local-data"
   args:
     executable: /bin/bash
-  become_user: "{{ ibm_infosvr_ug_user_k8s }}"
   become: yes
   ignore_errors: yes
   changed_when: False
@@ -313,7 +312,6 @@
   shell: "kubectl get pods | cut -d' ' -f 1 | grep -v 'NAME' | xargs kubectl delete pod"
   args:
     executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
   become: yes
   ignore_errors: yes
   changed_when: False
@@ -448,7 +446,6 @@
   shell: "kubectl uncordon {{ hostvars[inventory_hostname].ansible_fqdn }}"
   args:
     executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
   become: yes
   ignore_errors: yes
   changed_when: False
@@ -552,7 +549,6 @@
   shell: "kubectl get pods --no-headers=true | awk '{ print $2 }'"
   args:
     executable: /bin/bash
-  become_user: "{{ ibm_infosvr_user_k8s }}"
   become: yes
   changed_when: False
   when: >
