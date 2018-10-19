@@ -66,7 +66,7 @@
   shell: "yum clean all"
   args:
     executable: /bin/bash
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
+  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - install common and ug-specific packages
   yum: state=latest name={{ item }}
@@ -121,7 +121,7 @@
 
 - name: ug - disable swap (not allowed by k8s)
   shell: "swapoff -a"
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
+  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - copy files fetched from domain tier
   copy:
@@ -132,17 +132,17 @@
   with_items:
     - { name: "kubeselfextract.bsx", mode: "0755" }
     - { name: "tokenservicepublic.cer", mode: "0644" }
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
+  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - apply response file template
   template:
     src: uginfo.rsp.j2
     dest: /tmp/uginfo.rsp
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
+  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - create installation location
   file: path={{ ibm_infosvr_install_location.ises }} state=directory owner=root group=root mode=0755
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
+  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - copy install media
   copy:
@@ -167,7 +167,7 @@
 # BASE INSTALLATION
 - name: ug - install UG (ISES) tier silently
   shell:  /tmp/kubeselfextract.bsx
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('igc-docker-local') == -1
+  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
   notify: restart IBM InfoSphere Information Server
 
 - name: ug - ensure all pods are running before proceeding
