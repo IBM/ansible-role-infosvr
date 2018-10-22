@@ -96,7 +96,6 @@
     - lvm2
     - ebtables
     - ethtool
-    - haproxy
 
 - name: ug - disable selinux
   selinux: state=disabled
