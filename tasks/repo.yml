@@ -20,9 +20,10 @@
 ##########
 # SETUP
 - name: repo - install repository-specific packages
-  yum: state=latest name={{ item }}
-  with_items:
-    - libaio
+  yum:
+    state: latest
+    name:
+      - libaio
   when: (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
 
 - name: repo - create required groups

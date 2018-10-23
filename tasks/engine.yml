@@ -20,14 +20,15 @@
 ##########
 # SETUP
 - name: engine - install engine-specific packages
-  yum: state=latest name={{ item }}
-  with_items:
-    - libgcc.i686
-    - ed
-    - util-linux-ng
-    - gcc
-    - gcc-c++
-    - perl
+  yum:
+    state: latest
+    name:
+      - libgcc.i686
+      - ed
+      - util-linux-ng
+      - gcc
+      - gcc-c++
+      - perl
 
 - name: engine - create required groups
   group: name={{ item }}

@@ -19,26 +19,27 @@
   yum: state=latest name=*
 
 - name: common - install baseline packages
-  yum: state=latest name={{ item }}
-  with_items:
-    - libselinux-python
-    - unzip
-    - glibc.i686
-    - libstdc++.i686
-    - libXp
-    - libXau
-    - libXext
-    - libX11
-    - libxcb
-    - libgcc.i686
-    - libXmu
-    - pam.i686
-    - net-tools
-    - bind-utils
-    - nss-softokn-freebl
-    - bc
-    - iptables-services
-    - python-lxml
+  yum:
+    state: latest
+    name:
+      - libselinux-python
+      - unzip
+      - glibc.i686
+      - libstdc++.i686
+      - libXp
+      - libXau
+      - libXext
+      - libX11
+      - libxcb
+      - libgcc.i686
+      - libXmu
+      - pam.i686
+      - net-tools
+      - bind-utils
+      - nss-softokn-freebl
+      - bc
+      - iptables-services
+      - python-lxml
   when: (not 'ibm-information-server-external-db' in group_names)
 
 - import_tasks: refresh_install_details.yml

@@ -20,11 +20,12 @@
 ##########
 # SETUP
 - name: domain - installing domain-specific packages
-  yum: state=latest name={{ item }}
-  with_items:
-    - compat-libstdc++-33
-    - libXtst
-    - elfutils
+  yum:
+    state: latest
+    name:
+      - compat-libstdc++-33
+      - libXtst
+      - elfutils
 
 - name: domain - apply response file template (Liberty)
   template:
