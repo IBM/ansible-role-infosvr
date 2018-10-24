@@ -125,12 +125,41 @@
     - "re-generate config for open source utilities"
 
 - name: check if UG (ISES) is installed
-  shell: "kubectl get pods"
-  register: __ibm_infosvr_ug_pods_list
+  shell: >
+          kubectl get pods -o wide > /tmp/ug_podlist.log
   ignore_errors: True
   changed_when: False
   become: yes
   when: ('ibm-information-server-ug' in group_names)
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: fetch UG installation status
+  fetch:
+    src: /tmp/ug_podlist.log
+    dest: cache/ug_podlist.log
+    flat: yes
+  when: ('ibm-information-server-ug' in group_names)
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
+
+- name: set UG installation status fact
+  set_fact:
+    __ibm_infosvr_ug_pods_list: "{% lookup('file', 'cache/ug_podlist.log') %}"
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
 - name: check status of Information Server services
   command: /usr/sbin/ss -tln -H
@@ -169,12 +198,12 @@
 
 - assert:
     that:
-      - "__ibm_infosvr_status.stdout.find(':' + ibm_infosvr_ports.dsrpc + ' ') > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + ibm_infosvr_ports.isf_agent + ' ') > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + ibm_infosvr_ports.isf_agent_object + ' ') > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + ibm_infosvr_ports.jobmon_port1 + ' ') > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + ibm_infosvr_ports.jobmon_port2 + ' ') > 0"
-    msg: "Port {{ item }} is not listening."
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.dsrpc | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.isf_agent | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.isf_agent_object | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.jobmon_port1 | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.jobmon_port2 | string) + ' ') > 0"
+    msg: "Engine tier is not fully operational."
   when: ('ibm-information-server-engine' in group_names)
   listen:
     - "status IBM InfoSphere Information Server"
@@ -367,7 +396,10 @@
   register: __ibm_infosvr_os_start_zookeeper_result
   until: __ibm_infosvr_os_start_zookeeper_result.status is defined and __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.stdout.find('zookeeper') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -380,7 +412,10 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.stdout.find('zookeeper') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -395,7 +430,10 @@
   register: __ibm_infosvr_os_start_solr_result
   until: __ibm_infosvr_os_start_solr_result.status is defined and __ibm_infosvr_os_start_solr_result.status.Result == "success"
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.stdout.find('solr') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -408,7 +446,10 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.stdout.find('solr') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -423,7 +464,10 @@
   register: __ibm_infosvr_os_start_kafka_result
   until: __ibm_infosvr_os_start_kafka_result.status is defined and __ibm_infosvr_os_start_kafka_result.status.Result == "success"
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.stdout.find('kafka') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -436,7 +480,10 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names) and not (ibm_infosvr_features.ises is defined and ibm_infosvr_features.ises)
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.stdout.find('kafka') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -452,7 +499,7 @@
   when: >
           ('ibm-information-server-ug' in group_names)
           and __ibm_infosvr_features.ises
-          and not (__ibm_infosvr_ug_pods_list.stdout.find('elasticsearch') == -1)
+          and not (__ibm_infosvr_ug_pods_list.stdout.find('cassandra') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -554,7 +601,7 @@
   when: >
           ('ibm-information-server-ug' in group_names)
           and __ibm_infosvr_features.ises
-          and not (__ibm_infosvr_ug_pods_list.stdout.find('elasticsearch') == -1)
+          and not (__ibm_infosvr_ug_pods_list.stdout.find('cassandra') == -1)
   register: __ibm_infosvr_ug_k8s_pods_status
   until: >
           (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1','2/2']
