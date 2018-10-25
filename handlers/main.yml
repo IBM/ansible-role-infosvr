@@ -180,19 +180,40 @@
     that:
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.console | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.admin | string) + ' ') > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.default | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.secure_admin | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.bootstrap | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.ipc_connector | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.mutual_auth_listener | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.orb_listener | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.server_auth_listener | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.soap_connector | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.zookeeper | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.solr | string) + ' ' ) > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.kafka | string) + ' ' ) > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.default | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.secure_admin | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.bootstrap | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.ipc_connector | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.mutual_auth_listener | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.orb_listener | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.server_auth_listener | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.soap_connector | string) + ' ') > 0"
     msg: "Domain tier is not fully operational."
   when: ('ibm-information-server-domain' in group_names)
+  listen:
+    - "status IBM InfoSphere Information Server"
+
+- assert:
+    that:
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.zookeeper | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.solr | string) + ' ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.kafka | string) + ' ') > 0"
+    msg: "Shared open source services are not fully operational."
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and not __ibm_infosvr_features.ises
+  listen:
+    - "status IBM InfoSphere Information Server"
+
+- assert:
+    that:
+      - "__ibm_infosvr_status.stdout.find(':2181 ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':8983 ') > 0"
+      - "__ibm_infosvr_status.stdout.find(':9092 ') > 0"
+    msg: "Shared open source services are not fully operational."
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and __ibm_infosvr_features.ises
   listen:
     - "status IBM InfoSphere Information Server"
 
