@@ -399,7 +399,7 @@
   when: >
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.stdout.find('zookeeper') == -1)
+          or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -415,7 +415,7 @@
   when: >
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.stdout.find('zookeeper') == -1)
+          or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -433,7 +433,7 @@
   when: >
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.stdout.find('solr') == -1)
+          or __ibm_infosvr_ug_pods_list.find('solr') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -449,7 +449,7 @@
   when: >
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.stdout.find('solr') == -1)
+          or __ibm_infosvr_ug_pods_list.find('solr') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -467,7 +467,7 @@
   when: >
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.stdout.find('kafka') == -1)
+          or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -483,7 +483,7 @@
   when: >
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.stdout.find('kafka') == -1)
+          or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -499,7 +499,7 @@
   when: >
           ('ibm-information-server-ug' in group_names)
           and __ibm_infosvr_features.ises
-          and not (__ibm_infosvr_ug_pods_list.stdout.find('cassandra') == -1)
+          and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
@@ -601,7 +601,7 @@
   when: >
           ('ibm-information-server-ug' in group_names)
           and __ibm_infosvr_features.ises
-          and not (__ibm_infosvr_ug_pods_list.stdout.find('cassandra') == -1)
+          and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
   register: __ibm_infosvr_ug_k8s_pods_status
   until: >
           (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1','2/2']
