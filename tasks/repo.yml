@@ -159,6 +159,7 @@
   args:
     executable: /bin/bash
     creates: "{{ ibm_infosvr_install_location.linux }}/Version.xml"
+  register: __ibm_infosvr_repo_install
   when: >
         (ibm_infosvr_version_xml.find('repository="true"') == -1)
         and ('ibm-information-server-repo' in group_names)
@@ -190,3 +191,9 @@
         and (ansible_distribution_major_version == "7")
         and (__ibm_infosvr_version == "11.5")
         and (not 'ibm-information-server-external-db' in group_names)
+
+- name: repo - restart repository tier
+  reboot:
+    msg: "Restarting to ensure restartability works"
+    test_command: "ss -tln | grep ':{{ ibm_infosvr_ports.db2 }} '"
+  when: ('ibm-information-server-repo' in group_names) and __ibm_infosvr_repo_install is changed

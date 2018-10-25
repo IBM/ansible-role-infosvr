@@ -63,6 +63,7 @@
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/engine.rsp
           {% if ibm_infosvr_force.engine is defined and ibm_infosvr_force.engine %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('engine="true"') == -1)
+  register: __ibm_infosvr_engine_install
   notify: restart IBM InfoSphere Information Server
 
 - name: engine - confirm engine tier is fully started
@@ -150,32 +151,11 @@
   when: __ibm_infosvr_features.opsdb
   register: __ibm_infosvr_dsodb
 
-##########
-# RESTART (only if dsenv config was changed)
 - name: engine - restart engine tier
-  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
-  async: 1
-  poll: 0
-  ignore_errors: true
-  when: (__ibm_infosvr_dsenv is changed) or (__ibm_infosvr_dsodb is changed)
-
-- name: engine - wait for restart
-  local_action: wait_for host={{ ansible_hostname }} state=started delay=5 timeout=300
-  become: no
-  when: (__ibm_infosvr_dsenv is changed) or (__ibm_infosvr_dsodb is changed)
-
-- name: engine - confirm engine tier is fully started
-  wait_for:
-    port: "{{ ibm_infosvr_ports.dsrpc }}"
-    host: "{{ inventory_hostname }}"
-    state: started
-    delay: 10
-    timeout: 300
-
-- name: engine - confirm domain tier is fully started
-  wait_for:
-    port: "{{ ibm_infosvr_ports.console }}"
-    host: "{{ ibm_infosvr_hosts.domain }}"
-    state: started
-    delay: 10
-    timeout: 300
+  reboot:
+    msg: "Restarting to ensure restartability works"
+    test_command: "ss -tln | grep ':{{ ibm_infosvr_ports.dsrpc }} '"
+  when: >
+          __ibm_infosvr_engine_install is changed
+          or __ibm_infosvr_dsenv is changed
+          or __ibm_infosvr_dsodb is changed

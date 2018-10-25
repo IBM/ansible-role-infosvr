@@ -59,6 +59,7 @@
           -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp
           {% if ibm_infosvr_force.domain is defined and ibm_infosvr_force.domain %}-force{% endif %}
   when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
+  register: __ibm_infosvr_domain_install
   notify: restart IBM InfoSphere Information Server
 
 - import_tasks: db2client.yml
@@ -159,3 +160,9 @@
   systemd: name=InfoSrvKafka.service enabled=yes daemon_reload=yes
   notify: re-generate config for open source utilities
   when: (ansible_distribution == "RedHat" or ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
+
+- name: domain - restart domain tier
+  reboot:
+    msg: "Restarting to ensure restartability works"
+    test_command: "ss -tln | grep ':{{ ibm_infosvr_ports.console }} '"
+  when: __ibm_infosvr_domain_install is changed
