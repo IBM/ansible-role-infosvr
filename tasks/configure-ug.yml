@@ -59,7 +59,8 @@
   register: __ibm_infosvr_ug_ia_additions
   changed_when: False
   with_items:
-    - { key: "com.ibm.iis.ug11_7.autoclassification.enabled", value: "true" }
+    # com.ibm.iis.ug11_7.autoclassification.enabled below -- if enabled -- will auto-discover any IMAM shares into UGDefaultWorkspace
+    - { key: "com.ibm.iis.ug11_7.autoclassification.enabled", value: "false" }
     - { key: "com.ibm.iis.ug11_7.autoclassification.dopublish", value: "true" }
     - { key: "com.ibm.iis.ia.server.jobs.results.bridge", value: "odf" }
     - { key: "com.ibm.iis.odf.autoclassification.configuration", value: "CA,TM,DQ" }
