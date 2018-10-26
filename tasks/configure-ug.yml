@@ -86,7 +86,7 @@
     path: "{{ ibm_infosvr_install_location.linux }}/ASBNode/conf/odf.properties"
     state: present
     regexp: "^odf.zookeeper.connect="
-    line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}\\:2181/kafka"
+    line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}:2181/kafka"
     backup: yes
   when: ('ibm-information-server-engine' in group_names)
 
