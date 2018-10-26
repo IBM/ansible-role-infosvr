@@ -167,6 +167,10 @@
   when: ('ibm-information-server-clients' not in group_names)
   listen:
     - "status IBM InfoSphere Information Server"
+    - "status IBM InfoSphere Information Server repo"
+    - "status IBM InfoSphere Information Server domain"
+    - "status IBM InfoSphere Information Server engine"
+    - "status IBM InfoSphere Information Server ug"
 
 - assert:
     that:
@@ -175,6 +179,7 @@
   when: ('ibm-information-server-repo' in group_names or 'ibm-information-server-external-db' in group_names)
   listen:
     - "status IBM InfoSphere Information Server"
+    - "status IBM InfoSphere Information Server repo"
 
 - assert:
     that:
@@ -192,6 +197,7 @@
   when: ('ibm-information-server-domain' in group_names)
   listen:
     - "status IBM InfoSphere Information Server"
+    - "status IBM InfoSphere Information Server domain"
 
 - assert:
     that:
@@ -204,6 +210,7 @@
           and not __ibm_infosvr_features.ises
   listen:
     - "status IBM InfoSphere Information Server"
+    - "status IBM InfoSphere Information Server domain"
 
 - assert:
     that:
@@ -212,10 +219,11 @@
       - "__ibm_infosvr_status.stdout.find(':9092 ') > 0"
     msg: "Shared open source services are not fully operational."
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm-information-server-ug' in group_names)
           and __ibm_infosvr_features.ises
   listen:
     - "status IBM InfoSphere Information Server"
+    - "status IBM InfoSphere Information Server ug"
 
 - assert:
     that:
@@ -228,6 +236,7 @@
   when: ('ibm-information-server-engine' in group_names)
   listen:
     - "status IBM InfoSphere Information Server"
+    - "status IBM InfoSphere Information Server engine"
 
 - name: stop IBM InfoSphere Information Server Data Flow Designer
   shell: "./stopCognitiveDesignerServer.sh"
