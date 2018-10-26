@@ -87,12 +87,12 @@
           ('ibm-information-server-repo' in group_names)
           and __ibm_infosvr_features.ises
 
-- name: ensure AUDIT_TRAIL schema exists
+- name: ensure UG schemas exist
   shell: >
           source ~/.bashrc &&
           db2 connect to xmeta &&
-          db2 create schema AUDIT_TRAIL &&
-          db2 grant CREATEIN, ALTERIN, DROPIN ON SCHEMA AUDIT_TRAIL TO USER {{ ibm_infosvr_user_xmeta }}
+          db2 create schema {{ item }} &&
+          db2 grant CREATEIN, ALTERIN, DROPIN ON SCHEMA {{ item }} TO USER {{ ibm_infosvr_user_xmeta }}
   args:
     executable: /bin/bash
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
@@ -100,7 +100,12 @@
   when: >
           ('ibm-information-server-repo' in group_names)
           and __ibm_infosvr_features.ises
-          and __ibm_infosvr_repo_schema_list.stdout.find('AUDIT_TRAIL') == -1
+          and __ibm_infosvr_repo_schema_list.stdout.find(item) == -1
+  with_items:
+    - AUDIT_TRAIL
+    - APP_CONFIG
+    - SOCIAL
+    - USER_PREFS
 
 - name: copy UG archive from domain tier
   fetch:
