@@ -344,7 +344,7 @@
     - "re-generate config for open source utilities"
 
 - name: stop IBM InfoSphere Information Server ODFEngine (v11.7)
-  systemd: state=stopped name=ODFEngine
+  service: state=stopped name=ODFEngine
   become_user: root
   become: yes
   ignore_errors: yes
@@ -535,7 +535,7 @@
     - "start IBM InfoSphere Information Server"
 
 - name: start IBM InfoSphere Information Server ODFEngine (v11.7)
-  systemd: state=started name=ODFEngine
+  service: state=started name=ODFEngine
   become_user: root
   become: yes
   ignore_errors: yes
