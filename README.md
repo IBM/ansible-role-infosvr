@@ -51,7 +51,7 @@ Finally, the various credentials variables should be overridden to create a suff
 
 ## Dependencies
 
-The configuration of Information Analyzer makes use of the [`IBM.infosvr-metadata-asset-manager`](https://galaxy.ansible.com/IBM/infosvr-metadata-asset-manager) role indirectly, using the `import_role` directive. This role has therefore been included as a dependency; however, it will be unused if you are not configuring Information Analyzer.
+The configuration of Information Analyzer makes use of the [`IBM.infosvr-metadata-asset-manager`](https://galaxy.ansible.com/IBM/infosvr-metadata-asset-manager) role indirectly, using the `import_role` directive. This role has not been listed as an explicit dependency to avoid circular dependencies, but it should be installed if you plan to configure Information Analyzer.
 
 ## Example Playbook
 

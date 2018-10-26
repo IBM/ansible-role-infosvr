@@ -33,5 +33,4 @@ galaxy_info:
     - infosphere
     - informationserver
 
-dependencies:
-  - { role: IBM.infosvr-metadata-asset-manager }
+dependencies: []
