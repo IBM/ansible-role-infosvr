@@ -1,10 +1,11 @@
 # ansible-role-infosvr
 
-Ansible role for automating the deployment of an IBM InfoSphere Information Server environment, including:
+Ansible role for automating the deployment of an IBM InfoSphere Information Server environment, both versions 11.5 and 11.7, including:
 
 - the repository (database) tier
 - domain (services) tier
 - engine tier
+- unified governance ("Enterprise Search") tier (v11.7 only)
 
 and the following modules of Enterprise Edition, which can be disabled through the variables described below (eg. if not entitled to use them or you do not want to install / configure them):
 
@@ -19,13 +20,18 @@ and the following modules of Enterprise Edition, which can be disabled through t
 - FastTrack
 - Information Governance Dashboard (requires a pre-existing Cognos environment)
 - Optim Masking within DataStage
-- Machine Learning Term Classification (v11.7+)
+- Including these extras only available in v11.7:
+  - New Information Governance Catalog (UI)
+  - Governance Monitor dashboards
+  - Enterprise Search (including Knowledge Graph)
+  - DataStage Flow Designer
+  - Machine Learning Term Classification (v11.7+)
 
 Currently the deployment only caters for DB2 as the back-end, though works for both installing and configuring the bundled DB2 as well as configuring a pre-existing DB2. Either a full WebSphere Application Server Network Deployment configuration or a WebSphere Liberty Profile configuration will be installed (see variables below for more details); currently the role is not able to configure a pre-existing WebSphere installation.
 
 ## Requirements
 
-- Ansible v2.4.x
+- Ansible v2.7
 - 'root'-become-able network access all servers
 - Administrator-access to Windows client machine(s)
 - Windows client machine(s) configured for WinRM access by Ansible (see http://docs.ansible.com/ansible/latest/intro_windows.html)
@@ -37,31 +43,69 @@ See `defaults/main.yml` for inline documentation, and the example below for the 
 The minimal variables that likely need to be overridden are as follows:
 
 - `ibm_infosvr_media_dir`: the location on your Ansible host where the installation binaries have already been downloaded (eg. from Passport Advantage)
-- `ibm_infosvr_media_bin` dict: the names of the binaries to use for the installation (by default the vanilla v11.7 files are there; if you want to install v11.5 these need to be replaced with the v11.5 file names)
+- `ibm_infosvr_media_bin` dict: the names of the binaries to use for the installation (by default the latest available v11.7 files are there; if you want to install v11.5 these need to be replaced with the v11.5 file names)
 - `ibm_infosvr_ug_storage`: the extra, raw storage device on the Unified Governance tier to be used by kubernetes (should be raw: unmounted, not in an lvm group, etc)
 - `ibm_infosvr_features` dict: defining the features you want (True) vs do not want (False)
 
-Finally, the various credentials variables should be overridden to create a sufficiently secure environment.  Searching for `_upwd_` will reveal all of the password variables in the `defaults/main.yml` that you will want to override.
+Finally, the various credentials variables should be overridden to create a sufficiently secure environment.  Searching for `_upwd_` will reveal all of the password variables in the `defaults/main.yml` that you will want to override.  (And feel free to replace this with references to other variables which are themselves further secured through an Ansible vault.)
 
 ## Dependencies
 
-The configuration of Information Analyzer makes use of the `IBM.infosvr-metadata-asset-manager` role indirectly, using the `import_role` directive.  Therefore `IBM.infosvr-metadata-asset-manager` is not explicitly in the dependencies of this role, but it does need to be installed for this role to work (if you are installing and configuring the Information Analyzer feature).
+The configuration of Information Analyzer makes use of the [`IBM.infosvr-metadata-asset-manager`](https://galaxy.ansible.com/IBM/infosvr-metadata-asset-manager) role indirectly, using the `import_role` directive. This role has therefore been included as a dependency; however, it will be unused if you are not configuring Information Analyzer.
 
 ## Example Playbook
 
 The following example playbook will do a complete installation and configuration of IBM InfoSphere Information Server using the default parameters from `defaults/main.yml` (and any overrides you've placed in eg. `group_vars/all.yml`). Note that because the entire installation is done across multiple tiers by this single role, you should use `any_errors_fatal` to avoid partial install / configuration of a tier in the event an earlier step fails on a different tier.
 
 ```yml
+---
+
 - name: install and configure IBM InfoSphere Information Server
-  hosts:
-    - ibm-information-server-repo
-    - ibm-information-server-domain
-    - ibm-information-server-engine
-    - ibm-information-server-clients
-    - ibm-information-server-ug
+  hosts: all
   any_errors_fatal: true
   roles:
-    - ibm-infosvr
+    - IBM.infosvr
+```
+
+In addition, a set of handlers is defined by default to simplify the operations of Information Server, particularly when an environment spans a number of different machines. You can save the following example playbook as something like `ops.yml` and then execute it to handle retrieving the status of the environment (`ansible-playbook ops.yml --tags=status`), shutting down the environment (`ansible-playbook ops.yml --tags=stop`), starting the environment (`ansible-playbook ops.yml --tags=start`) and restarting the environment (`ansible-playbook ops.yml --tags=restart`). Each option will take the specified action in the order required across your different tiers.
+
+```yml
+---
+
+- name: operate IBM InfoSphere Information Server
+  hosts: all
+  any_errors_fatal: true
+  roles:
+    - IBM.infosvr
+  tasks:
+    - name: check status of Information Server
+      raw: echo 0
+      notify:
+        - "status IBM InfoSphere Information Server"
+      tags:
+        - status
+
+    - meta: flush_handlers
+
+    - name: stopping Information Server
+      raw: echo 0
+      notify:
+        - "stop IBM InfoSphere Information Server"
+      tags:
+        - stop
+        - restart
+
+    - meta: flush_handlers
+
+    - name: starting Information Server
+      raw: echo 0
+      notify:
+        - "start IBM InfoSphere Information Server"
+      tags:
+        - start
+        - restart
+
+    - meta: flush_handlers
 ```
 
 ## Expected Inventory
