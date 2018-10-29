@@ -17,9 +17,8 @@
 
 - import_role: name=IBM.infosvr-metadata-asset-manager
   vars:
-    ibm_infosvr_metadata_asset_mgr_import_areas:
-      - 
-        name: IADB
+    import_areas:
+      - name: IADB
         type: DB2Connector
         description: "Automated ingestion of database tables used by Information Analyzer"
         metadata_interchange_server: "{{ hostvars[inventory_hostname].ansible_fqdn|lower }}"
