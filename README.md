@@ -30,6 +30,8 @@ and the following modules of Enterprise Edition, which can be disabled through t
 
 Currently the deployment only caters for DB2 as the back-end, though works for both installing and configuring the bundled DB2 as well as configuring a pre-existing DB2. Either a full WebSphere Application Server Network Deployment configuration or a WebSphere Liberty Profile configuration will be installed (see variables below for more details); currently the role is not able to configure a pre-existing WebSphere installation.
 
+New to Ansible? This [simple introduction](https://cmgrote.github.io/ansible-tutorial/) might help.
+
 ## Requirements
 
 - Ansible v2.7
