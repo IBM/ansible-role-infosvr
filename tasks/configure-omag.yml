@@ -21,28 +21,10 @@
     state: directory
     mode: 0700
 
-- name: get configuration files
-  find:
-    paths: "{{ ibm_infosvr_install_location.ises }}/OMAG"
-    patterns:
-      - '*.config'
-      - '*.registrystore'
-    file_type: file
-  register: __ibm_infosvr_omag_config
-
-- name: retrieve OMAG pod name
-  shell: >
-          kubectl get pods
-          | grep omag
-          | cut -d " " -f1
-  args:
-    executable: /bin/bash
-  register: __ibm_infosvr_omag_pod
-
 - name: ensure OMAG pod is running
   assert:
     that:
-      - __ibm_infosvr_omag_pod.stdout.find('omag') != -1
+      - __ibm_infosvr_ug_omag_pod.find('omag') != -1
     msg: "OMAG pod is not running -- unable to configure."
 
 - name: initialize OMAG server (no existing config)

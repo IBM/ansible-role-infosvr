@@ -90,7 +90,7 @@
 
 - name: get configuration filenames
   shell: >
-          kubectl exec {{ __ibm_infosvr_omag_pod.stdout | trim }} -- ls /
+          kubectl exec {{ __ibm_infosvr_ug_omag_pod | trim }} -- ls /
           | grep config
   args:
     executable: /bin/bash
@@ -98,7 +98,7 @@
 
 - name: copy configuration files from pod
   shell: >
-          kubectl cp {{ __ibm_infosvr_omag_pod.stdout }}:/{{ item }} ./{{ item }}
+          kubectl cp {{ __ibm_infosvr_ug_omag_pod }}:/{{ item }} ./{{ item }}
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
@@ -106,7 +106,7 @@
 
 - name: get registrystore filenames
   shell: >
-          kubectl exec {{ __ibm_infosvr_omag_pod.stdout | trim }} -- ls /
+          kubectl exec {{ __ibm_infosvr_ug_omag_pod | trim }} -- ls /
           | grep registrystore
   args:
     executable: /bin/bash
@@ -114,7 +114,7 @@
 
 - name: copy registrystore files from pod
   shell: >
-          kubectl cp {{ __ibm_infosvr_omag_pod.stdout }}:/{{ item }} ./{{ item }}
+          kubectl cp {{ __ibm_infosvr_ug_omag_pod }}:/{{ item }} ./{{ item }}
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"

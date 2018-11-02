@@ -24,7 +24,7 @@
 
 - name: restore configuration files to pod
   shell: >
-          kubectl cp {{ item.path }} {{ __ibm_infosvr_omag_pod.stdout }}:/{{ item.path | basename }}
+          kubectl cp {{ item.path }} {{ __ibm_infosvr_ug_omag_pod }}:/{{ item.path | basename }}
   args:
     executable: /bin/bash
   with_items: "{{ __ibm_infosvr_omag_config.files }}"

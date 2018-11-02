@@ -127,7 +127,9 @@
 
 - name: check if UG (ISES) is installed
   shell: >
-          kubectl get pods -o wide > /tmp/ug_podlist.log
+          kubectl get pods --no-headers=true
+          | awk '{ print $1 }'
+          > /tmp/ug_podlist.log
   ignore_errors: True
   changed_when: False
   become: yes
@@ -152,9 +154,20 @@
     - "start IBM InfoSphere Information Server"
     - "re-generate config for open source utilities"
 
+- name: get OMAG configuration files
+  find:
+    paths: "{{ ibm_infosvr_install_location.ises }}/OMAG"
+    patterns:
+      - '*.config'
+      - '*.registrystore'
+    file_type: file
+  when: ('ibm-information-server-ug' in group_names)
+  register: __ibm_infosvr_omag_config
+
 - name: set UG installation status fact
   set_fact:
     __ibm_infosvr_ug_pods_list: "{{ lookup('file', 'cache/ug_podlist.log', errors='ignore') }}"
+    __ibm_infosvr_ug_omag_pod: "{{ lookup('csvfile', 'omag file=cache/ug_podlist.log col=0', errors='ignore') }}"
   listen:
     - "set IBM InfoSphere Information Server variables"
     - "restart IBM InfoSphere Information Server"
@@ -642,6 +655,24 @@
           or ((__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1'])
   retries: 48
   delay: 10
+  listen:
+    - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+
+- name: ensure OMAG configuration is restored
+  shell: >
+          kubectl cp {{ item.path }} {{ __ibm_infosvr_ug_omag_pod }}:/{{ item.path | basename }}
+  args:
+    executable: /bin/bash
+  become: yes
+  with_items: "{{ __ibm_infosvr_omag_config.files }}"
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_features.ises
+          and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
+          and __ibm_infosvr_features.omag
+          and __ibm_infosvr_ug_omag_pod.find('omag') != -1
+          and __ibm_infosvr_omag_config.matched > 0
   listen:
     - "restart IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
