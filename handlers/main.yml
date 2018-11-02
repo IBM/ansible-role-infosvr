@@ -163,6 +163,12 @@
     file_type: file
   when: ('ibm-information-server-ug' in group_names)
   register: __ibm_infosvr_omag_config
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+    - "re-generate config for open source utilities"
 
 - name: set UG installation status fact
   set_fact:
