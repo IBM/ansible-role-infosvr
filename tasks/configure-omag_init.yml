@@ -16,9 +16,10 @@
 ###
 
 - name: apply OMAG config templates
-  template:
+  local_action:
+    module: template
     src: "{{ item }}"
-    dest: "{{ ibm_infosvr_install_location.ises }}/OMAG/{{ item | basename | replace('.j2', '') }}"
+    dest: cache/{{ item | basename | replace('.j2', '') }}
   with_items:
     - omag_IGC.json.j2
     - omag_IGC_eventmapper.json.j2
@@ -46,7 +47,7 @@
   uri:
     url: http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}/open-metadata/admin-services/users/admin/servers/{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/event-bus
     method: POST
-    body: "{{ lookup('file', ibm_infosvr_install_location.ises + '/OMAG/omag_OMRS_kafka.json') }}"
+    body: "{{ lookup('file', 'cache/omag_OMRS_kafka.json') }}"
     validate_certs: no
     status_code: 200
     headers:
@@ -56,7 +57,7 @@
   uri:
     url: http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}/open-metadata/admin-services/users/admin/servers/{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/local-repository/mode/repository-proxy/connection
     method: POST
-    body: "{{ lookup('file', ibm_infosvr_install_location.ises + '/OMAG/omag_IGC.json') }}"
+    body: "{{ lookup('file', 'cache/omag_IGC.json') }}"
     validate_certs: no
     status_code: 200
     headers:
@@ -66,7 +67,7 @@
   uri:
     url: http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}/open-metadata/admin-services/users/admin/servers/{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/local-repository/event-mapper-connection
     method: POST
-    body: "{{ lookup('file', ibm_infosvr_install_location.ises + '/OMAG/omag_IGC_eventmapper.json') }}"
+    body: "{{ lookup('file', 'cache/omag_IGC_eventmapper.json') }}"
     validate_certs: no
     status_code: 200
     headers:
@@ -123,6 +124,11 @@
   with_items: "{{ __ibm_infosvr_omag_registrystore_files.stdout_lines }}"
 
 - name: remove OMAG config templates
-  file:
-    path: "{{ ibm_infosvr_install_location.ises }}/OMAG/{{ item | basename | replace('.j2', '') }}"
+  local_action:
+    module: file
+    path: "cache/{{ item | basename | replace('.j2', '') }}"
     state: absent
+  with_items:
+    - omag_IGC.json.j2
+    - omag_IGC_eventmapper.json.j2
+    - omag_OMRS_kafka.json.j2
