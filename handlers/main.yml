@@ -174,7 +174,7 @@
 - name: set UG installation status fact
   set_fact:
     __ibm_infosvr_ug_pods_list: "{{ lookup('file', 'cache/ug_podlist.log', errors='ignore') }}"
-    __ibm_infosvr_ug_omag_pod: "{{ lookup('csvfile', 'omag file=cache/ug_podlist.log col=0', errors='ignore') }}"
+    __ibm_infosvr_ug_omag_pod: "{{ lookup('csvfile', 'omag file=cache/ug_podlist.log col=0 default=[NOT_FOUND]', errors='ignore') | first }}"
   listen:
     - "set IBM InfoSphere Information Server variables"
     - "restart IBM InfoSphere Information Server"
