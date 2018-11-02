@@ -161,6 +161,7 @@
       - '*.config'
       - '*.registrystore'
     file_type: file
+  become: yes
   when: ('ibm-information-server-ug' in group_names)
   register: __ibm_infosvr_omag_config
   listen:
