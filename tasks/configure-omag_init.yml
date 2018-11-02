@@ -48,30 +48,27 @@
     url: http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}/open-metadata/admin-services/users/admin/servers/{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/event-bus
     method: POST
     body: "{{ lookup('file', 'cache/omag_OMRS_kafka.json') }}"
+    body_format: json
     validate_certs: no
     status_code: 200
-    headers:
-      Content-Type: "application/json"
 
 - name: set connector provider properties
   uri:
     url: http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}/open-metadata/admin-services/users/admin/servers/{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/local-repository/mode/repository-proxy/connection
     method: POST
     body: "{{ lookup('file', 'cache/omag_IGC.json') }}"
+    body_format: json
     validate_certs: no
     status_code: 200
-    headers:
-      Content-Type: "application/json"
 
 - name: set event mapper provider properties
   uri:
     url: http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}/open-metadata/admin-services/users/admin/servers/{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/local-repository/event-mapper-connection
     method: POST
     body: "{{ lookup('file', 'cache/omag_IGC_eventmapper.json') }}"
+    body_format: json
     validate_certs: no
     status_code: 200
-    headers:
-      Content-Type: "application/json"
 
 - name: add server to cohort
   uri:
