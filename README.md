@@ -6,6 +6,7 @@ Ansible role for automating the deployment of an IBM InfoSphere Information Serv
 - domain (services) tier
 - engine tier
 - unified governance ("Enterprise Search") tier (v11.7 only)
+- patches / fixpacks
 
 and the following modules of Enterprise Edition, which can be disabled through the variables described below (eg. if not entitled to use them or you do not want to install / configure them):
 
@@ -147,6 +148,41 @@ bpm.somewhere.com
 ```
 
 As with any Ansible inventory, sufficient details should be provided to ensure connectivity to the servers is possible (see http://docs.ansible.com/ansible/latest/intro_inventory.html#list-of-behavioral-inventory-parameters).
+
+## Installing patches
+
+The role is intended to also be able to keep an installed environment up-to-date with patches and system packages. To apply patches, simply enter the relevant details into the files under `vars/patches/<tier>-<version>.yml`. For example, fixes for v11.7 engine tier should go into `vars/patches/engine-v117.yml` while fixes for v11.7 domain tier go into `vars/patches/domain-v117.yml`. Generally these are kept up-to-date within GitHub based on the availability of major patches in Fix Central; but should you wish to apply an interim fix or other that is not already in the list, simply follow the instructions below.
+
+- Each patch should be a list entry under the `ibm_infosvr_patches_list` variable.
+- Each entry should contain:
+  - `srcFile`: the name of the patch / fixpack file, as downloaded from IBM Fix Central
+  - `pkgFile`: the name of the `.ispkg` file contained within the `srcFile`
+  - `versionInfo`: the `installerId` tag that is added to your Version.xml once the patch / fixpack is installed
+
+For example:
+
+```yml
+ibm_infosvr_patches_list:
+  - srcFile: "fixpack_FP2_IS117_linux64_11700-11701.tar.gz"
+    pkgFile: "fixpack_FP2_IS117_linux64_11700-11701.ispkg"
+    versionInfo: "fixpack_FP2_IS117_11701"
+```
+
+JDK updates can also be included using the variables `ibm_infosvr_jdk_update` (for the Information Server JDK), `ibm_infosvr_websphere_jdk_update` (for the WebSphere Application Server JDK), and `ibm_infosvr_websphere_jdk7_update` (for the WebSphere Application Server Java 7 JDK -- v11.5 only). Each should contain sub-variables:
+
+- `filename`: the name of the JDK file as downloaded from IBM Fix Central
+- `extractedpath`: the path into which the JDK is extracted when unarchived
+- `versionInfo`: the unique version info you see when running `java -version` for the JDK
+
+These JDK updates are not a list, but a simple dictionary -- because each update will overwrite the previous update, you should only ever need to list the latest version of the JDK you wish to apply.
+
+To run through an update, use the `update` tag as follows:
+
+```shell
+ansible-playbook [-i hosts] [site.yml] --tags=update
+```
+
+This will ensure all system-level packages for the OS are up-to-date (ie. `yum update -y`) as well as applying any patches listed in the `vars/patches/...` files for your particular release that have not already been applied.
 
 ## Re-usable tasks
 
