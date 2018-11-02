@@ -1,0 +1,24 @@
+{
+  "class": "Connection",
+  "url": "https://iis-server:{{ ibm_infosvr_ports.console }}/ibm/iis/igc",
+  "displayName": "IGCEventMapper",
+  "connectorType": {
+    "class": "ConnectorType",
+    "connectorProviderClassName": "com.ibm.iis.openmetadata.adapters.igc.v2.eventmapper.IGCV2OMRSRepositoryEventMapperProvider"
+  },
+  "additionalProperties": {
+    "iis.rest.address": "https://iis-server:{{ ibm_infosvr_ports.console }}/",
+    "iis.rest.user": "{{ ibm_infosvr_user_isadmin }}",
+    "iis.rest.password": "{{ ibm_infosvr_upwd_isadmin }}",
+    "redis.host": "redis:6379",
+    "redis.key.expire": "86400",
+    "bootstrap.servers": "kafka:9092",
+    "group.id": "IGCOMRSConsumerGroup",
+    "zookeeper.session.timeout.ms": "300000",
+    "zookeeper.sync.time.ms": "2000",
+    "key.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "kafka.consumer.topic.id": "igc-kg-bridge-out",
+    "kafka.producer.topic.id": "igcunifiedgovevents"
+  }
+}

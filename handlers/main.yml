@@ -117,6 +117,7 @@
       igd: "{% if ibm_infosvr_features.igd is defined %}{{ ibm_infosvr_features.igd }}{% else %}False{% endif %}"
       wlp: "{% if ibm_infosvr_features.wlp is defined %}{{ ibm_infosvr_features.wlp }}{% else %}False{% endif %}"
       ises: "{% if ibm_infosvr_features.ises is defined %}{{ ibm_infosvr_features.ises }}{% else %}False{% endif %}"
+      omag: "{% if ibm_infosvr_features.omag is defined %}{{ ibm_infosvr_features.omag }}{% else %}False{% endif %}"
   listen:
     - "set IBM InfoSphere Information Server variables"
     - "restart IBM InfoSphere Information Server"

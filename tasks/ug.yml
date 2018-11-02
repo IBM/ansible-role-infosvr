@@ -168,3 +168,7 @@
   until: (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1']
   retries: 48
   delay: 10
+
+- name: ug - enable OMAG server
+  include_tasks: configure-omag.yml
+  when: __ibm_infosvr_features.omag
