@@ -24,7 +24,7 @@
 - name: ensure OMAG pod is running
   assert:
     that:
-      - __ibm_infosvr_ug_omag_pod.find('omag') != -1
+      - __ibm_infosvr_ug_omag_pod.stdout.find('omag') != -1
     msg: "OMAG pod is not running -- unable to configure."
 
 - name: initialize OMAG server (no existing config)
