@@ -167,7 +167,7 @@
   changed_when: False
   register: __ibm_infosvr_ug_k8s_pods_status
   until: (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1']
-  retries: 48
+  retries: 60
   delay: 10
 
 - name: ug - enable OMAG server
