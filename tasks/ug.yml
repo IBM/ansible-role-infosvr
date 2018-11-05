@@ -66,6 +66,7 @@
 - name: ug - install common and ug-specific packages
   yum:
     state: latest
+    exclude: docker*,kubelet*,kubectl*,kubeadm*
     name:
       - libselinux-python
       - zip

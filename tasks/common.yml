@@ -21,6 +21,7 @@
 - name: common - install baseline packages
   yum:
     state: latest
+    exclude: docker*,kubelet*,kubectl*,kubeadm*
     name:
       - libselinux-python
       - unzip
