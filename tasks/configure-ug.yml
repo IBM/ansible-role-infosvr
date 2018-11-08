@@ -161,12 +161,10 @@
   with_items: "{{ __ibm_infosvr_ug_mlta_status.results }}"
 
 - name: configure ODF to use UG (ISES) tier
-  shell: "{{ item }}"
-  args:
-    executable: /bin/bash
+  service: state={{ item }} name=ODFEngine
   with_items:
-    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine stop"
-    - "{{ ibm_infosvr_install_location.linux }}/ASBNode/odf/ODFEngine start"
+    - stopped
+    - started
   when: ('ibm-information-server-engine' in group_names)
 
 - name: configure domain tier to use UG (ISES) tier
