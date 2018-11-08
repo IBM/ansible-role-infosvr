@@ -21,6 +21,6 @@ ibm_infosvr_patches_list: []
 #    versionInfo: "fixpack_FP2_IS117_11701"
 
 ibm_infosvr_jdk_update:
-  filename: "ibm-java-sdk-8.0-5.10-linux-x86_64.tgz"
+  filename: "ibm-java-sdk-8.0-5.22-linux-x86_64.tgz"
   extractedpath: "ibm-java-x86_64-80"
-  versionInfo: "pxa6480sr5fp10-20180214_01(SR5 FP10)"
+  versionInfo: "pxa6480sr5fp22-20180919_01(SR5 FP22)"
