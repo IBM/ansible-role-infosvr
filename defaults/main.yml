@@ -38,10 +38,10 @@ ibm_infosvr_ug_storage: /dev/vdb
 ibm_infosvr_media_dir: ../media
 
 ibm_infosvr_media_bin:
-  server_tarball: "IS_V11.7_LINUX_X86_64_MULTILING.tar.gz"  # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  ug_tarball: "fixpack_FP2_IS117_UGDocker_11700-11701.tar.gz"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  client_zip: "IS_V11.7_WINDOWS_CLIENT_MULTILI.zip"         # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  entitlements: "IIS_ENTERPRISE_EDITION_V11.7_BUND.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  server_tarball: "IS_V11702_Linux_x86_multi.tar.gz"        # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  ug_tarball: "is-enterprise-search-11.7.0.2.tar.gz"        # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  client_zip: "IS_V11.7.0.2_WINDOWS_CLIENT.zip"             # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  entitlements: "IS_V11702_EE_bundle_spec_file.zip.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
 ibm_infosvr_updater:
   version: "IBM InfoSphere Information Server Update Installer Version 11.7.0.117"
@@ -64,6 +64,7 @@ ibm_infosvr_features:
   wlp: False                # Use WebSphere Liberty profile instead of full WAS
   ises: True                # Install and configure Information Server Enterprise Search
   ml_term_assignment: True  # Machine Learning-based automatic term assignment ('ises' above must also be True)
+  omag: True                # Open Metadata and Governance server (ODPi project Egeria)
 
 ibm_infosvr_force:          # Set to true to force installs (ignore errors or warnings)
   repo: False
@@ -112,6 +113,7 @@ ibm_infosvr_ports:
   k8s_admin: 30453
   k8s_api: 6443
   k8s_kubelet: 10250
+  ug_omag: 32512
 
 # Default config for k8s and weave-net -- modify only if they conflict with a pre-existing network
 ibm_infosvr_k8s_network:

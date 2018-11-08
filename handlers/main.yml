@@ -17,7 +17,7 @@
 
 - name: determine version
   set_fact:
-    __ibm_infosvr_version: "{{ ibm_infosvr_media_bin.server_tarball[4:8] }}"
+    __ibm_infosvr_version: "{{ ibm_infosvr_media_bin.client_zip[4:8] }}"
   listen:
     - "set IBM InfoSphere Information Server variables"
     - "restart IBM InfoSphere Information Server"
