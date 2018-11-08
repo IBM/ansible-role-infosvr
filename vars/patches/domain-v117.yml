@@ -20,7 +20,7 @@ ibm_infosvr_patches_list: []
 #    pkgFile: "fixpack_FP2_IS117_linux64_11700-11701.ispkg"
 #    versionInfo: "fixpack_FP2_IS117_11701"
 
-#ibm_infosvr_websphere_jdk_update:
-#  filename: "ibm-java-sdk-8.0-5.11-linux-x64-installmgr.zip"
-#  extractedpath: "com.ibm.java.jdk.v8_8.0.5011.20180327_1251"
-#  versionInfo: "pxa6480sr5fp11-20180326_01(SR5 FP11)"
+ibm_infosvr_websphere_jdk_update:
+  filename: "ibm-java-sdk-8.0-5.11-linux-x64-installmgr.zip"
+  extractedpath: "com.ibm.java.jdk.v8_8.0.5011.20180327_1251"
+  versionInfo: "pxa6480sr5fp11-20180326_01(SR5 FP11)"

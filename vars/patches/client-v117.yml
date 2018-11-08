@@ -20,12 +20,12 @@ ibm_infosvr_patches_list: []
 #    pkgFile: "fixpack_FP2_IS117_win_11700-11701.ispkg"
 #    versionInfo: "fixpack_FP2_IS117_11701"
 
-#ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
-#  filename: "ibm-java-sdk-80-win-i386.zip"
-#  extractedpath: "sdk"
-#  versionInfo: "pwi3280sr5fp10-20180214_01(SR5 FP10)"
-#
-#ibm_infosvr_jdk64_update:  # https://www.ibm.com/support/fixcentral/
-#  filename: "ibm-java-sdk-80-win-x86_64.zip"
-#  extractedpath: "sdk"
-#  versionInfo: "pwa6480sr5fp10-20180214_01(SR5 FP10)"
+ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
+  filename: "ibm-java-sdk-80-win-i386.zip"
+  extractedpath: "sdk"
+  versionInfo: "pwi3280sr5fp10-20180214_01(SR5 FP10)"
+
+ibm_infosvr_jdk64_update:  # https://www.ibm.com/support/fixcentral/
+  filename: "ibm-java-sdk-80-win-x86_64.zip"
+  extractedpath: "sdk"
+  versionInfo: "pwa6480sr5fp10-20180214_01(SR5 FP10)"
