@@ -3,7 +3,6 @@
         "com.ibm.iis.odf.capabilities.TermAssignment": {
             "assignmentThreshold": 0.8,
             "candidateThreshold": 0.4,
-            "categories": "",
             "hardLimit": 100,
             "services": "com.ibm.iis.odf.services.termassignment.finley.FinleyPredictorService,com.ibm.iis.odf.services.termclassification.matching.bg.MatcherDiscoveryService,com.ibm.iis.odf.iisext.services.cbta.ClassBasedTermAssignmentService",
             "softLimit": 0
@@ -15,9 +14,12 @@
             "TermsWithNoBusinessMeaning": "C,I,D,T,X,BOOL"
         },
         "com.ibm.iis.odf.services.termassignment.finley.FinleyPredictorService": {
-            "endpoint": "{{ ibm_infosvr_hosts.ug }}:{{ ibm_infosvr_ports.ug_console }}",
-            "maxWaitForConnection": 5,
-            "maxWaitForData": 3
+            "logLevel": "DEBUG",
+            "logSize": 5242880,
+            "language": "english",
+            "retrainThreshold": 1,
+            "maxWaitForConnection": 120,
+            "maxWaitForData": 110
         },
         "com.ibm.iis.odf.services.termclassification.matching.bg.MatcherDiscoveryService": {
             "hyphenations": "<default>",
