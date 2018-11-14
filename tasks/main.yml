@@ -85,6 +85,7 @@
   register: __ibm_infosvr_repo_schema_list
   when: >
           ('ibm-information-server-repo' in group_names)
+          and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
 
 - name: ensure UG schemas exist
@@ -99,6 +100,7 @@
   become: yes
   when: >
           ('ibm-information-server-repo' in group_names)
+          and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
           and __ibm_infosvr_repo_schema_list.stdout.find(item) == -1
   with_items:
@@ -114,6 +116,7 @@
     flat: yes
   when: >
           ('ibm-information-server-domain' in group_names)
+          and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
 
 - name: copy token certificate from domain tier
@@ -123,16 +126,19 @@
     flat: yes
   when: >
           ('ibm-information-server-domain' in group_names)
+          and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
 
 - import_tasks: ug.yml
   become: yes
   when: >
           ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
 
 - import_tasks: configure-ug.yml
   become: yes
   when: >
           __ibm_infosvr_features.ises
+          and __ibm_infosvr_version == "11.7"
           and (('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names))
