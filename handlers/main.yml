@@ -216,28 +216,6 @@
     - "status IBM InfoSphere Information Server engine"
     - "status IBM InfoSphere Information Server ug"
 
-- name: get OMAG pod name
-  shell: >
-          kubectl get pods --no-headers=true
-          | awk '{ print $1 }'
-          | grep 'omag'
-  ignore_errors: True
-  changed_when: False
-  become: yes
-  register: __ibm_infosvr_ug_omag_pod
-  when: ('ibm-information-server-ug' in group_names)
-  listen:
-    - "set IBM InfoSphere Information Server variables"
-    - "restart IBM InfoSphere Information Server"
-    - "stop IBM InfoSphere Information Server"
-    - "start IBM InfoSphere Information Server"
-    - "re-generate config for open source utilities"
-    - "status IBM InfoSphere Information Server"
-    - "status IBM InfoSphere Information Server repo"
-    - "status IBM InfoSphere Information Server domain"
-    - "status IBM InfoSphere Information Server engine"
-    - "status IBM InfoSphere Information Server ug"
-
 - name: set UG installation status fact
   set_fact:
     __ibm_infosvr_ug_pods_list: "{{ lookup('file', 'cache/ug_podlist.log', errors='ignore') }}"
@@ -646,6 +624,22 @@
   delay: 10
   listen:
     - "restart IBM InfoSphere Information Server"
+    - "start IBM InfoSphere Information Server"
+
+- name: get OMAG pod name
+  shell: >
+          kubectl get pods --no-headers=true
+          | awk '{ print $1 }'
+          | grep 'omag'
+  ignore_errors: True
+  changed_when: False
+  become: yes
+  register: __ibm_infosvr_ug_omag_pod
+  when: ('ibm-information-server-ug' in group_names)
+  listen:
+    - "set IBM InfoSphere Information Server variables"
+    - "restart IBM InfoSphere Information Server"
+    - "stop IBM InfoSphere Information Server"
     - "start IBM InfoSphere Information Server"
 
 - name: ensure OMAG configuration is restored
