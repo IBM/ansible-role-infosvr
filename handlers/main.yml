@@ -181,6 +181,7 @@
     src: /tmp/ug_podlist.log
     dest: cache/ug_podlist.log
     flat: yes
+  become: yes
   when: ('ibm-information-server-ug' in group_names)
   listen:
     - "set IBM InfoSphere Information Server variables"
