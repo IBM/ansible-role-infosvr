@@ -15,10 +15,10 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_patches_list: []
-#  - srcFile: "fixpack_FP2_IS117_linux64_11700-11701.tar.gz"
-#    pkgFile: "fixpack_FP2_IS117_linux64_11700-11701.ispkg"
-#    versionInfo: "fixpack_FP2_IS117_11701"
+ibm_infosvr_patches_list:
+  - srcFile: "patch_Dec2018_DFD_all_11702.zip"
+    pkgFile: "patch_Dec2018_DFD_all_11702.ispkg"
+    versionInfo: "patch_Dec2018_DFD_all_11702"
 
 ibm_infosvr_websphere_jdk_update:
   filename: "ibm-java-sdk-8.0-5.22-linux-x64-installmgr.zip"
