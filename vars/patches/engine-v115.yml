@@ -23,4 +23,4 @@ ibm_infosvr_patches_list:
 ibm_infosvr_jdk_update:  # https://www.ibm.com/support/fixcentral/
   filename: "ibm-java-sdk-7.1-4.30-linux-x86_64.tgz"
   extractedpath: "ibm-java-x86_64-71"
-  versionInfo: "pxa6470_27sr4fp25-20180221_01(SR4 FP25)"
+  versionInfo: "pxa6470_27sr4fp25-20180430_01(SR4 FP25)"
