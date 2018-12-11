@@ -21,6 +21,6 @@ ibm_infosvr_patches_list:
     versionInfo: "servicepack_SP5_IS11502_11502"
 
 ibm_infosvr_jdk_update:  # https://www.ibm.com/support/fixcentral/
-  filename: "ibm-java-sdk-7.1-4.25-linux-x86_64.tgz"
+  filename: "ibm-java-sdk-7.1-4.30-linux-x86_64.tgz"
   extractedpath: "ibm-java-x86_64-71"
   versionInfo: "pxa6470_27sr4fp25-20180221_01(SR4 FP25)"
