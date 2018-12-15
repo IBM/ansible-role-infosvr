@@ -18,6 +18,7 @@
 - name: check status of Information Server services
   command: /usr/sbin/ss -tln -H
   register: __ibm_infosvr_status
+  changed_when: False
   when: ('ibm-information-server-clients' not in group_names)
 
 - name: check status of repository tier
