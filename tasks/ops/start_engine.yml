@@ -1,0 +1,77 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: start IBM InfoSphere Information Server ODFEngine (v11.7)
+  service: state=started name=ODFEngine
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
+
+- name: start IBM InfoSphere Information Server NodeAgents
+  shell: >
+          source `cat /.dshome`/dsenv &&
+          ./NodeAgents.sh start
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBNode/bin"
+  become_user: root
+  become: yes
+  changed_when: False
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: start IBM InfoSphere Information Server DataStage services
+  shell: >
+          source `cat /.dshome`/dsenv &&
+          ./bin/uv -admin -start
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_install_location.linux }}/Server/DSEngine"
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  changed_when: False
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: start IBM InfoSphere Information Server DSAppWatcher
+  command: >
+          ./DSAppWatcher.sh -start
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/Server/DSODB/bin"
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  changed_when: False
+  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_features.opsdb
+
+- name: start IBM InfoSphere Information Server Data Flow Designer
+  command: >
+          ./startCognitiveDesignerServer.sh
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBNode/CognitiveDesignerEngine"
+  become_user: root
+  become: yes
+  changed_when: False
+  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
+
+- name: confirm engine tier is fully started
+  wait_for:
+    port: "{{ ibm_infosvr_ports.dsrpc }}"
+    host: "{{ inventory_hostname }}"
+    state: started
+    delay: 10
+    timeout: 300
+  when: ('ibm-information-server-engine' in group_names)

@@ -14,24 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###
-galaxy_info:
 
-  author: Christopher Grote
-  description: Automates the deployment and configuration of IBM Information Server
-  company: IBM
-  license: Apache 2.0
+- name: drain IBM InfoSphere Information Server k8s node
+  command: >
+          kubectl drain {{ hostvars[inventory_hostname].ansible_fqdn }} --delete-local-data
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-ug' in group_names)
 
-  min_ansible_version: 2.7
-  #github_branch:
-
-  platforms:
-  - name: EL
-    versions:
-    - 7
-
-  galaxy_tags:
-    - ibm
-    - infosphere
-    - informationserver
-
-dependencies: []
+- name: remove all running IBM InfoSphere Information Server pods
+  shell: >
+          kubectl get pods | cut -d' ' -f 1 | grep -v 'NAME' | xargs kubectl delete pod
+  args:
+    executable: /bin/bash
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-ug' in group_names)

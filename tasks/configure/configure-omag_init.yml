@@ -1,0 +1,146 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: apply OMAG config templates
+  template:
+    src: "{{ item }}"
+    dest: cache/{{ item | basename | replace('.j2', '') }}
+  with_items:
+    - omag_IGC.json.j2
+    - omag_IGC_eventmapper.json.j2
+    - omag_OMRS_kafka.json.j2
+  delegate_to: localhost
+
+- name: set server URL root
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/server-url-root?\
+          url={{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}"
+    method: POST
+    validate_certs: no
+    status_code: 200
+    headers:
+      Content-Type: "application/json"
+
+- name: set organization name
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/organization-name?name=ibm"
+    method: POST
+    validate_certs: no
+    status_code: 200
+    headers:
+      Content-Type: "application/json"
+
+- name: set event bus
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/event-bus"
+    method: POST
+    body: "{{ lookup('file', 'cache/omag_OMRS_kafka.json') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 200
+
+- name: set connector provider properties
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/local-repository/mode/repository-proxy/connection"
+    method: POST
+    body: "{{ lookup('file', 'cache/omag_IGC.json') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 200
+
+- name: set event mapper provider properties
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/local-repository/event-mapper-connection"
+    method: POST
+    body: "{{ lookup('file', 'cache/omag_IGC_eventmapper.json') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 200
+
+- name: add server to cohort
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/cohorts/omag_cohort"
+    method: POST
+    validate_certs: no
+    status_code: 200
+    headers:
+      Content-Type: "application/json"
+
+- name: initialize server
+  uri:
+    url: "http://{{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}:{{ ibm_infosvr_ports.ug_omag }}\
+          /open-metadata/admin-services/users/admin/servers/\
+          {{ hostvars[ibm_infosvr_hosts.ug].ansible_fqdn }}/instance"
+    method: POST
+    validate_certs: no
+    status_code: 200
+    headers:
+      Content-Type: "application/json"
+
+- name: get configuration filenames
+  shell: >
+          kubectl exec {{ __ibm_infosvr_ug_omag_pod.stdout | trim }} -- ls /
+          | grep config
+  args:
+    executable: /bin/bash
+  changed_when: False
+  register: __ibm_infosvr_omag_config_files
+
+- name: copy configuration files from pod
+  command: >
+          kubectl cp {{ __ibm_infosvr_ug_omag_pod.stdout | trim }}:/{{ item }} ./{{ item }}
+  args:
+    chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
+  with_items: "{{ __ibm_infosvr_omag_config_files.stdout_lines }}"
+
+- name: get registrystore filenames
+  shell: >
+          kubectl exec {{ __ibm_infosvr_ug_omag_pod.stdout | trim }} -- ls /
+          | grep registrystore
+  args:
+    executable: /bin/bash
+  changed_when: False
+  register: __ibm_infosvr_omag_registrystore_files
+
+- name: copy registrystore files from pod
+  command: >
+          kubectl cp {{ __ibm_infosvr_ug_omag_pod.stdout | trim }}:/{{ item }} ./{{ item }}
+  args:
+    chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
+  with_items: "{{ __ibm_infosvr_omag_registrystore_files.stdout_lines }}"
+
+- name: remove OMAG config templates
+  file:
+    path: "cache/{{ item | basename | replace('.j2', '') }}"
+    state: absent
+  with_items:
+    - omag_IGC.json.j2
+    - omag_IGC_eventmapper.json.j2
+    - omag_OMRS_kafka.json.j2
+  delegate_to: localhost

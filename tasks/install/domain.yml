@@ -1,0 +1,164 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- import_tasks: refresh_install_details.yml
+
+##########
+# SETUP
+- name: domain - installing domain-specific packages
+  yum:
+    state: latest
+    name:
+      - compat-libstdc++-33
+      - libXtst
+      - elfutils
+
+- name: domain - apply response file template (Liberty)
+  template:
+    src: services_wlp-v{{ __ibm_infosvr_version|replace(".", "") }}.j2
+    dest: "{{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp"
+    owner: root
+    group: root
+    mode: "0644"
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and __ibm_infosvr_features.wlp
+
+- name: domain - apply response file template (ND)
+  template:
+    src: services_wasnd-v{{ __ibm_infosvr_version|replace(".", "") }}.j2
+    dest: "{{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp"
+    owner: root
+    group: root
+    mode: "0644"
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1) and (not __ibm_infosvr_features.wlp)
+
+- name: domain - parse domain-specific variables
+  include_vars: file=domain.yml
+
+- import_tasks: kernel-and-firewall.yml
+
+##########
+# BASE INSTALLATION
+- name: domain - installing domain tier silently
+  shell: >
+          umask 022 &&
+          {{ ibm_infosvr_tmp.linux }}/is-suite/setup
+          -rsp {{ ibm_infosvr_tmp.linux }}/is-suite/services.rsp
+          {% if ibm_infosvr_force.domain is defined and ibm_infosvr_force.domain %}-force{% endif %}
+  args:
+    executable: /bin/bash
+  when: (ibm_infosvr_version_xml.find('domain="true"') == -1)
+  register: __ibm_infosvr_domain_install
+
+- import_tasks: db2client.yml
+
+- name: domain - install Installation Manager update utility
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/_uninstall/payloads/Shared/WAS/payload/WAS/agentInstaller/installc
+          -acceptLicense
+  args:
+    creates: "{{ ibm_infosvr_install_location.im }}"
+  when: (not __ibm_infosvr_features.wlp) and (ibm_infosvr_version_xml.find('domain="true"') == -1)
+
+##########
+# POST-INSTALL CONFIGURATION
+- name: domain - allocate additional memory to IGC
+  replace:
+    dest: "{{ ibm_infosvr_install_location.was }}\
+          /profiles/InfoSphere/config/cells/\
+          {{ inventory_hostname_short }}\
+          Node01Cell/nodes/{{ inventory_hostname_short }}\
+          Node01/servers/server1/server.xml"
+    regexp: '(.+?maximumHeapSize)="\d+" (.+)'
+    replace: '\1="6144" \2'
+    backup: yes
+  when: (ansible_memtotal_mb > 12288) and (not __ibm_infosvr_features.wlp) and (__ibm_infosvr_version == "11.5")
+  register: __ibm_infosvr_websphere_jvm_heap
+
+- name: domain - increase max objects in memory
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/iisAdmin.sh
+          -set
+          -key com.ibm.iis.gov.vr.setting.maxObjectsInMemory
+          -value 4000000
+  when: __ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5")
+
+# This if statement in the open source scripts doesn't really work
+# -- if you're already the user the command needs to execute as it should just execute, without su
+#    (trying to use su in a more secure environment where root has nologin defined won't work, for example)
+- name: domain - modify open source services scripts
+  replace:
+    dest: "{{ item }}"
+    regexp: '(\s+)if \[ -n (\S+) \]; then'
+    replace: '\1if [ -n \2 -a \2 != `whoami` ]; then'
+    backup: yes
+  with_items:
+    - "/etc/init.d/InfoSrvZookeeper"
+    - "/etc/init.d/InfoSrvSolrCloud"
+    - "/etc/init.d/InfoSrvKafka"
+  register: __ibm_infosvr_sos_scripts
+
+# Next two tasks for RHEL 7 only (extrapolated from other services)
+- name: domain - configure domain tier systemd restartability
+  template:
+    src: "{{ item.src }}"
+    dest: /etc/systemd/system/{{ item.svc }}
+    owner: root
+    group: root
+    mode: "0644"
+  with_items:
+    - { src: InfoSrvZookeeper.service.j2, svc: InfoSrvZookeeper.service }
+    - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
+    - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
+  register: __ibm_infosvr_sos_services
+  when: >
+          (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
+          and (ansible_distribution_major_version == "7")
+
+- name: domain - register Zookeeper service in systemd
+  systemd: name=InfoSrvZookeeper.service enabled=yes daemon_reload=yes
+  when: >
+          (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
+          and (ansible_distribution_major_version == "7")
+
+- name: domain - register Solr service in systemd
+  systemd: name=InfoSrvSolrCloud.service enabled=yes daemon_reload=yes
+  when: >
+          (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
+          and (ansible_distribution_major_version == "7")
+
+- name: domain - register Kafka service in systemd
+  systemd: name=InfoSrvKafka.service enabled=yes daemon_reload=yes
+  when: >
+          (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
+          and (ansible_distribution_major_version == "7")
+
+- block:
+    - name: stop domain services
+      include_tasks: ops/stop_domain.yml
+    - name: stop shared open source services
+      include_tasks: ops/stop_sos.yml
+    - name: regenerate shared open source config
+      include_tasks: ops/regen_sos.yml
+    - name: start shared open source services
+      include_tasks: ops/start_sos.yml
+    - name: start domain services
+      include_tasks: ops/start_domain.yml
+  when: >
+          (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
+          or __ibm_infosvr_domain_install is changed
+          or __ibm_infosvr_sos_scripts is changed
+          or __ibm_infosvr_sos_services is changed

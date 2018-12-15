@@ -15,38 +15,21 @@
 # limitations under the License.
 ###
 
-- import_tasks: setup_vars.yml
-  tags: ['always']
-
-- import_tasks: install.yml
-
-- import_tasks: ops/restart.yml
-  when: >
-          __ibm_infosvr_domain_install is changed
-          or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed
-
-- import_tasks: update.yml
-  tags:
-    - update
-
-- import_tasks: configure.yml
+- name: start IBM InfoSphere Information Server application server
+  command: >
+          ./MetadataServer.sh run
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
   become_user: root
   become: yes
+  changed_when: False
   when: ('ibm-information-server-domain' in group_names)
-  tags:
-    - update
 
-- import_tasks: ops/stop.yml
-  tags:
-    - stop
-    - restart
-
-- import_tasks: ops/start.yml
-  tags:
-    - start
-    - restart
-
-- import_tasks: ops/status_all.yml
-  tags:
-    - status
+- name: confirm application server is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.console }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  when: ('ibm-information-server-domain' in group_names)

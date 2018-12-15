@@ -14,24 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###
-galaxy_info:
 
-  author: Christopher Grote
-  description: Automates the deployment and configuration of IBM Information Server
-  company: IBM
-  license: Apache 2.0
-
-  min_ansible_version: 2.7
-  #github_branch:
-
-  platforms:
-  - name: EL
-    versions:
-    - 7
-
-  galaxy_tags:
-    - ibm
-    - infosphere
-    - informationserver
-
-dependencies: []
+- import_tasks: start_sos.yml
+- import_tasks: start_ug.yml
+- import_tasks: start_domain.yml
+- import_tasks: start_engine.yml

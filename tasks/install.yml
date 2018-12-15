@@ -1,13 +1,13 @@
 ---
 ###
 # Copyright 2018 IBM Corp. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,22 +34,22 @@
   become: yes
   when: not ('ibm-information-server-clients' in group_names)
 
-- import_tasks: common.yml
+- import_tasks: install/common.yml
   become_user: root
   become: yes
   when: not ('ibm-information-server-clients' in group_names) and not ('ibm-information-server-ug' in group_names)
 
-- import_tasks: repo.yml
+- import_tasks: install/repo.yml
   become_user: root
   become: yes
   when: ('ibm-information-server-repo' in group_names) or ('ibm-information-server-external-db' in group_names)
 
-- import_tasks: domain.yml
+- import_tasks: install/domain.yml
   become_user: root
   become: yes
   when: ('ibm-information-server-domain' in group_names)
 
-- import_tasks: engine.yml
+- import_tasks: install/engine.yml
   become_user: root
   become: yes
   when: ('ibm-information-server-engine' in group_names)
@@ -62,7 +62,7 @@
   become: yes
   when: not ('ibm-information-server-clients' in group_names)
 
-- import_tasks: client.yml
+- import_tasks: install/client.yml
   when: ('ibm-information-server-clients' in group_names)
 
 - name: clean up client installation files
@@ -70,3 +70,68 @@
   with_items:
     - { file: "{{ ibm_infosvr_tmp.win }}/", state: 'absent' }
   when: ('ibm-information-server-clients' in group_names)
+
+# Optional Unified Governance (UG) / Enterprise Search (ISES) tier
+- name: get list of schemas
+  shell: >
+          source ~/.bashrc &&
+          db2 connect to xmeta &&
+          db2 "select schemaname from syscat.schemata"
+  args:
+    executable: /bin/bash
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  changed_when: False
+  register: __ibm_infosvr_repo_schema_list
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and __ibm_infosvr_version == "11.7"
+          and __ibm_infosvr_features.ises
+
+- name: ensure UG schemas exist
+  shell: >
+          source ~/.bashrc &&
+          db2 connect to xmeta &&
+          db2 create schema {{ item }} &&
+          db2 grant CREATEIN, ALTERIN, DROPIN ON SCHEMA {{ item }} TO USER {{ ibm_infosvr_user_xmeta }}
+  args:
+    executable: /bin/bash
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  when: >
+          ('ibm-information-server-repo' in group_names)
+          and __ibm_infosvr_version == "11.7"
+          and __ibm_infosvr_features.ises
+          and __ibm_infosvr_repo_schema_list.stdout.find(item) == -1
+  with_items:
+    - AUDIT_TRAIL
+    - APP_CONFIG
+    - SOCIAL
+    - USER_PREFS
+
+- name: copy UG archive from domain tier
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/kubeselfextract.bsx"
+    dest: cache/kubeselfextract.bsx
+    flat: yes
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and __ibm_infosvr_version == "11.7"
+          and __ibm_infosvr_features.ises
+
+- name: copy token certificate from domain tier
+  fetch:
+    src: "{{ ibm_infosvr_install_location.linux }}/ASBServer/apps/lib/iis/tknproperties/tokenservicepublic.cer"
+    dest: cache/tokenservicepublic.cer
+    flat: yes
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and __ibm_infosvr_version == "11.7"
+          and __ibm_infosvr_features.ises
+
+- import_tasks: install/ug.yml
+  become: yes
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_version == "11.7"
+          and __ibm_infosvr_features.ises

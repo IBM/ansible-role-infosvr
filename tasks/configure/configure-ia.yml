@@ -1,0 +1,188 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- import_role: name=IBM.infosvr-metadata-asset-manager
+  vars:
+    import_areas:
+      - name: IADB
+        type: DB2Connector
+        description: "Automated ingestion of database tables used by Information Analyzer"
+        metadata_interchange_server: "{{ hostvars[inventory_hostname].ansible_fqdn|lower }}"
+        dcn:
+          name: IADB
+          description: "DCN for the schema containing Information Analyzer analysis database"
+          database: IADB
+          username: "{{ ibm_infosvr_user_ia }}"
+          password: "{{ ibm_infosvr_upwd_ia }}"
+        hostname: "{{ hostvars[ibm_infosvr_hosts.engine].ansible_fqdn | upper }}"
+        database_name: IADB
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure-ia - get default credential mapping
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBNode/bin/DirectoryCommand.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -datastage_server {{ hostvars[inventory_hostname].ansible_fqdn }}
+          -get_default_ds_credentials
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  changed_when: False
+  register: __ibm_infosvr_ia_default_credentials
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure-ia - set default credential mapping
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBNode/bin/DirectoryCommand.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -datastage_server {{ hostvars[inventory_hostname].ansible_fqdn }}
+          -set_default_ds_credentials '{{ ibm_infosvr_user_dsadmin }}~{{ ibm_infosvr_upwd_dsadmin }}'
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  when: >
+        ('ibm-information-server-engine' in group_names) and
+        __ibm_infosvr_ia_default_credentials.stdout.find('set to user "' + ibm_infosvr_user_dsadmin + '" and ') == -1
+
+- name: configure-ia - get isadmin user roles
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBNode/bin/DirectoryCommand.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -datastage_server {{ hostvars[inventory_hostname].ansible_fqdn }}
+          -list USERS
+          -details
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  changed_when: False
+  register: __ibm_infosvr_ia_user_roles
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure-ia - assign additional necessary roles to isadmin user (for UGDefaultWorkspace)
+  command: "{{ ibm_infosvr_install_location.linux }}/ASBNode/bin/DirectoryCommand.sh \
+            -user {{ ibm_infosvr_user_isadmin }} \
+            -password {{ ibm_infosvr_upwd_isadmin }} \
+            -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }} \
+            -assign_user_roles '{{ ibm_infosvr_user_isadmin }}\
+            $SorcererAdmin~SorcererUser~SorcererDataAdmin~RulesUser~RulesAuthor~RulesAdministrator~RulesManager'"
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  when: >
+        ('ibm-information-server-engine' in group_names) and
+        __ibm_infosvr_ia_user_roles.stdout.find("isadmin$CMAdmin~DCAuthor~DCUser~DataStageAdmin~DataStageUser~\
+                                                  EMAdmin~EMBusinessSteward~EMDataSteward~EMStewardManager~\
+                                                  FastTrackAdministrator~GlossaryAdmin~ISDAdministrator~\
+                                                  MDWAdministrator~RulesAdministrator~RulesAuthor~RulesManager~\
+                                                  RulesUser~SorcererAdmin~SorcererDataAdmin~SorcererUser~\
+                                                  SuiteAdmin~SuiteUser") == -1
+
+- name: configure-ia - copy DQ configuration (v11.7)
+  copy: src=dqConfig.json dest=/tmp/dqConfig.json
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  when: ('ibm-information-server-engine' in group_names) and (__ibm_infosvr_version == "11.7")
+
+- name: configure-ia - get DQ configuration (v11.7)
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBNode/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -getDataQualityConfig
+          {{ item }}
+  with_items:
+    - ""
+    - "-projectName UGDefaultWorkspace"
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  changed_when: False
+  register: __ibm_infosvr_ia_dq_config
+  when: ('ibm-information-server-engine' in group_names) and (__ibm_infosvr_version == "11.7")
+
+# TODO: determine a way to make idempotent
+- name: configure-ia - update DQ configuration to enable actionable rules (v11.7)
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBNode/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -setDataQualityConfig
+          -content /tmp/dqConfig.json
+          {{ item.item }}
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  when: >
+        ('ibm-information-server-engine' in group_names)
+        and (__ibm_infosvr_version == "11.7")
+  with_items: "{{ __ibm_infosvr_ia_dq_config.results }}"
+
+- name: configure-ia - post DQ configuration change (v11.7)
+  uri:
+    url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}{{ item }}"
+    method: POST
+    user: "{{ ibm_infosvr_user_isadmin }}"
+    password: "{{ ibm_infosvr_upwd_isadmin }}"
+    body: '{"useAutomaticConfiguration":true}'
+    validate_certs: no
+    status_code: 200
+    headers:
+      Content-Type: "application/json"
+  with_items:
+    - "/ibm/iis/ia/api/configuration/project/UGDefaultWorkspace/dataQuality"
+    - "/ibm/iis/ia/api/configuration/dataQuality"
+  become_user: "{{ ibm_infosvr_user_dsadmin }}"
+  become: yes
+  when: ('ibm-information-server-engine' in group_names) and (__ibm_infosvr_version == "11.7")
+
+- name: configure-ia - copy IA engine node configuration
+  template: src=ia.job.properties.j2 dest={{ ibm_infosvr_install_location.linux }}/ASBNode/conf/ia.job.properties
+  become_user: root
+  become: yes
+  when: ('ibm-information-server-engine' in group_names)
+
+- name: configure-ia - get global analysis database settings
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -getIADBParams
+  changed_when: False
+  register: __ibm_infosvr_ia_iadb_params
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: configure-ia - configure global analysis database settings
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -setIADBParams
+          -iaDBHost {{ hostvars[ibm_infosvr_hosts.engine].ansible_fqdn | upper }}
+          -iaDBDataConnection IADB
+          -iaDataSource jdbc/IADB
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and
+    (((__ibm_infosvr_ia_iadb_params.stdout|from_json).host != (hostvars[ibm_infosvr_hosts.engine].ansible_fqdn|upper))
+    or ((__ibm_infosvr_ia_iadb_params.stdout|from_json).dataConnection != "IADB")
+    or ((__ibm_infosvr_ia_iadb_params.stdout|from_json).datasource != "jdbc/IADB"))

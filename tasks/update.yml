@@ -1,13 +1,13 @@
 ---
 ###
 # Copyright 2018 IBM Corp. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@
   when: not ('ibm-information-server-clients' in group_names)
 
 - name: update - close any active user sessions
-  shell: >
+  command: >
           ./SessionAdmin.sh
           -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
           -user {{ ibm_infosvr_user_isadmin }}
@@ -39,7 +39,7 @@
   changed_when: False
 
 - name: update - put server into maintenance mode
-  shell: >
+  command: >
           ./SessionAdmin.sh
           -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
           -user {{ ibm_infosvr_user_isadmin }}
@@ -55,7 +55,7 @@
 - name: update - parse domain-specific patches
   include_vars: file=patches/domain-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
 
-- import_tasks: patch_linux.yml
+- import_tasks: update/patch_linux.yml
   become_user: root
   become: yes
   when: ('ibm-information-server-domain' in group_names)
@@ -63,13 +63,13 @@
 - name: update - parse engine-specific patches
   include_vars: file=patches/engine-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
 
-- import_tasks: patch_linux.yml
+- import_tasks: update/patch_linux.yml
   become_user: root
   become: yes
   when: ('ibm-information-server-engine' in group_names)
 
 - name: update - remove server from maintenance mode
-  shell: >
+  command: >
           ./SessionAdmin.sh
           -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
           -user {{ ibm_infosvr_user_isadmin }}
@@ -85,5 +85,11 @@
 - name: update - parse client-specific patches
   include_vars: file=patches/client-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
 
-- import_tasks: patch_win.yml
+- import_tasks: update/patch_win.yml
+  when: ('ibm-information-server-clients' in group_names)
+
+- import_tasks: update/update-jdk.yml
+  when: ('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names)
+
+- import_tasks: update/update-jdk-win.yml
   when: ('ibm-information-server-clients' in group_names)

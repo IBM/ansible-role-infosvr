@@ -1,0 +1,59 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: patch_jdk_infosvr - retain ownership of existing JDK
+  stat: path={{ ibm_infosvr_install_location.linux }}/jdk
+  register: __ibm_infosvr_existing_jdk
+
+- name: patch_jdk_infosvr - ensure tmp install location exists
+  file: path={{ ibm_infosvr_tmp.linux }} state=directory
+
+- name: patch_jdk_infosvr - backup existing JDK
+  command: >
+            mv {{ ibm_infosvr_install_location.linux }}/jdk
+            {{ ibm_infosvr_tmp.linux }}/is_jdk_backup.{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
+
+- name: patch_jdk_infosvr - transfer JDK updates
+  copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ item.filename }}"
+    dest: "{{ ibm_infosvr_tmp.linux }}/{{ item.filename }}"
+    force: no
+  with_items:
+    - "{{ ibm_infosvr_jdk_update }}"
+
+- name: patch_jdk_infosvr - extract Information Server JDK updates
+  unarchive:
+    src: "{{ ibm_infosvr_tmp.linux }}/{{ item.filename }}"
+    dest: "{{ ibm_infosvr_tmp.linux }}"
+    creates: "{{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }}"
+    copy: no
+  with_items:
+    - "{{ ibm_infosvr_jdk_update }}"
+
+- name: patch_jdk_infosvr - move updated JDK into position
+  command: mv {{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }} {{ ibm_infosvr_install_location.linux }}/jdk
+  with_items:
+    - "{{ ibm_infosvr_jdk_update }}"
+
+- name: patch_jdk_infosvr - restore ownership of JDK
+  file:
+    path: "{{ ibm_infosvr_install_location.linux }}/jdk"
+    owner: "{{ __ibm_infosvr_existing_jdk.stat.pw_name }}"
+    group: "{{ __ibm_infosvr_existing_jdk.stat.gr_name }}"
+
+- name: patch_jdk_infosvr - cleanup installation
+  file: path={{ ibm_infosvr_tmp.linux }} state=absent

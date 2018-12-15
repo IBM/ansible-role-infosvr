@@ -14,24 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###
-galaxy_info:
 
-  author: Christopher Grote
-  description: Automates the deployment and configuration of IBM Information Server
-  company: IBM
-  license: Apache 2.0
+- name: ensure OMAG directory exists
+  file:
+    path: "{{ ibm_infosvr_install_location.ises }}/OMAG"
+    state: directory
+    mode: 0700
 
-  min_ansible_version: 2.7
-  #github_branch:
+- name: ensure OMAG pod is running
+  assert:
+    that:
+      - __ibm_infosvr_ug_omag_pod.stdout.find('omag') != -1
+    msg: "OMAG pod is not running -- unable to configure."
 
-  platforms:
-  - name: EL
-    versions:
-    - 7
+- name: initialize OMAG server (no existing config)
+  include_tasks: configure-omag_init.yml
+  when: __ibm_infosvr_omag_config.matched <= 0
 
-  galaxy_tags:
-    - ibm
-    - infosphere
-    - informationserver
-
-dependencies: []
+- name: restore OMAG configuration (from existing config)
+  include_tasks: configure-omag_restore.yml
+  when: __ibm_infosvr_omag_config.matched > 0
