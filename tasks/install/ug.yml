@@ -41,13 +41,6 @@
   ignore_errors: True
   changed_when: False
 
-- name: ug - clean yum repository
-  command: "yum clean all"
-  args:
-    warn: False
-    executable: /bin/bash
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
-
 - name: ug - install common and ug-specific packages
   yum:
     state: latest
