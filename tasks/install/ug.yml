@@ -152,8 +152,3 @@
             and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
           or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
   register: __ibm_infosvr_ug_install
-
-- block:
-    - name: restart Information Server
-      include_tasks: ops/restart.yml
-  when: __ibm_infosvr_ug_install is changed

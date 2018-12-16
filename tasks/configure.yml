@@ -98,7 +98,6 @@
   when: >
           __ibm_infosvr_features.ises
           and __ibm_infosvr_version == "11.7"
-          and (('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names))
 
 - import_tasks: configure/configure-omag.yml
   when: >

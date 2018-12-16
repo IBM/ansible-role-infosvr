@@ -20,12 +20,6 @@
 
 - import_tasks: install.yml
 
-- import_tasks: ops/restart.yml
-  when: >
-          __ibm_infosvr_domain_install is changed
-          or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed
-
 - import_tasks: update.yml
   tags:
     - update

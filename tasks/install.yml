@@ -135,3 +135,8 @@
           ('ibm-information-server-ug' in group_names)
           and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
+
+- block:
+    - name: restart Information Server
+      include_tasks: ops/restart.yml
+  when: __ibm_infosvr_ug_install is changed
