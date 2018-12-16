@@ -89,7 +89,10 @@
 
 - name: ug - disable swap (not allowed by k8s)
   command: "swapoff -a"
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - copy files fetched from domain tier
   copy:
@@ -100,17 +103,26 @@
   with_items:
     - { name: "kubeselfextract.bsx", mode: "0755" }
     - { name: "tokenservicepublic.cer", mode: "0644" }
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - apply response file template
   template:
     src: uginfo.rsp.j2
     dest: /tmp/uginfo.rsp
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - create installation location
   file: path={{ ibm_infosvr_install_location.ises }} state=directory owner=root group=root mode=0755
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
 
 - name: ug - copy install media
   copy:
@@ -135,7 +147,10 @@
 # BASE INSTALLATION
 - name: ug - install UG (ISES) tier silently
   command: /tmp/kubeselfextract.bsx
-  when: __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
   register: __ibm_infosvr_ug_install
 
 - block:
