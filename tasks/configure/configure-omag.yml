@@ -20,6 +20,7 @@
     path: "{{ ibm_infosvr_install_location.ises }}/OMAG"
     state: directory
     mode: 0700
+  become: yes
 
 - name: ensure OMAG pod is running
   assert:

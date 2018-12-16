@@ -109,6 +109,7 @@
           | grep config
   args:
     executable: /bin/bash
+  become: yes
   changed_when: False
   register: __ibm_infosvr_omag_config_files
 
@@ -117,6 +118,7 @@
           kubectl cp {{ __ibm_infosvr_ug_omag_pod.stdout | trim }}:/{{ item }} ./{{ item }}
   args:
     chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
+  become: yes
   with_items: "{{ __ibm_infosvr_omag_config_files.stdout_lines }}"
 
 - name: get registrystore filenames
@@ -126,6 +128,7 @@
   args:
     executable: /bin/bash
   changed_when: False
+  become: yes
   register: __ibm_infosvr_omag_registrystore_files
 
 - name: copy registrystore files from pod
@@ -133,6 +136,7 @@
           kubectl cp {{ __ibm_infosvr_ug_omag_pod.stdout | trim }}:/{{ item }} ./{{ item }}
   args:
     chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
+  become: yes
   with_items: "{{ __ibm_infosvr_omag_registrystore_files.stdout_lines }}"
 
 - name: remove OMAG config templates
