@@ -101,4 +101,7 @@
           and (('ibm-information-server-domain' in group_names) or ('ibm-information-server-engine' in group_names))
 
 - import_tasks: configure/configure-omag.yml
-  when: __ibm_infosvr_features.omag
+  when: >
+          __ibm_infosvr_features.omag
+          and __ibm_infosvr_version == "11.7"
+          and ('ibm-information-server-ug' in group_names)
