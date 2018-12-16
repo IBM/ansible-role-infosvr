@@ -87,13 +87,8 @@
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
   when: >
-        ('ibm-information-server-engine' in group_names) and
-        __ibm_infosvr_ia_user_roles.stdout.find("isadmin$CMAdmin~DCAuthor~DCUser~DataStageAdmin~DataStageUser~\
-                                                  EMAdmin~EMBusinessSteward~EMDataSteward~EMStewardManager~\
-                                                  FastTrackAdministrator~GlossaryAdmin~ISDAdministrator~\
-                                                  MDWAdministrator~RulesAdministrator~RulesAuthor~RulesManager~\
-                                                  RulesUser~SorcererAdmin~SorcererDataAdmin~SorcererUser~\
-                                                  SuiteAdmin~SuiteUser") == -1
+    ('ibm-information-server-engine' in group_names) and
+    __ibm_infosvr_ia_user_roles.stdout.find("RulesAuthor~RulesManager~RulesUser~SorcererAdmin~SorcererDataAdmin") == -1
 
 - name: configure-ia - copy DQ configuration (v11.7)
   copy: src=dqConfig.json dest=/tmp/dqConfig.json
