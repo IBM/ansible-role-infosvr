@@ -99,6 +99,8 @@
           __ibm_infosvr_features.ises
           and __ibm_infosvr_version == "11.7"
 
+- import_tasks: setup_vars.yml
+
 - import_tasks: configure/configure-omag.yml
   when: >
           __ibm_infosvr_features.omag
