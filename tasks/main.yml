@@ -31,9 +31,6 @@
     - update
 
 - import_tasks: configure.yml
-  become_user: root
-  become: yes
-  when: ('ibm-information-server-domain' in group_names)
   tags:
     - update
 

@@ -31,6 +31,8 @@
     chdir: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/install/bin"
     creates: "{{ ibm_infosvr_install_location.linux }}\
               /shared-open-source/solr/data/1/da-datasets_shard1_replica1/data"
+  become_user: root
+  become: yes
   when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.5")
 
 - name: configure - update Solr indices
@@ -45,6 +47,7 @@
     validate_certs: no
     timeout: 120
   ignore_errors: yes
+  when: ('ibm-information-server-domain' in group_names)
 
 - name: configure - apply WLM config template
   template:
@@ -68,6 +71,7 @@
     timeout: 10
     headers:
       Content-Type: "application/json; charset=utf-8"
+  when: ('ibm-information-server-domain' in group_names)
 
 - import_tasks: configure/configure-ia.yml
   become_user: root
