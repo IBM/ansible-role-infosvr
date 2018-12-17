@@ -21,11 +21,15 @@
 # SETUP
 - name: domain - installing domain-specific packages
   yum:
-    state: latest
+    state: present
     name:
       - compat-libstdc++-33
       - libXtst
       - elfutils
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_domain_yum
+  until: __ibm_infosvr_domain_yum is succeeded
 
 - name: domain - apply response file template (Liberty)
   template:
@@ -146,17 +150,35 @@
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
 
-- block:
-    - name: stop domain services
-      include_tasks: ops/stop_domain.yml
-    - name: stop shared open source services
-      include_tasks: ops/stop_sos.yml
-    - name: regenerate shared open source config
-      include_tasks: ops/regen_sos.yml
-    - name: start shared open source services
-      include_tasks: ops/start_sos.yml
-    - name: start domain services
-      include_tasks: ops/start_domain.yml
+- import_tasks: ops/stop_domain.yml
+  when: >
+          (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
+          or __ibm_infosvr_domain_install is changed
+          or __ibm_infosvr_sos_scripts is changed
+          or __ibm_infosvr_sos_services is changed
+
+- import_tasks: ops/stop_sos.yml
+  when: >
+          (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
+          or __ibm_infosvr_domain_install is changed
+          or __ibm_infosvr_sos_scripts is changed
+          or __ibm_infosvr_sos_services is changed
+
+- import_tasks: ops/regen_sos.yml
+  when: >
+          (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
+          or __ibm_infosvr_domain_install is changed
+          or __ibm_infosvr_sos_scripts is changed
+          or __ibm_infosvr_sos_services is changed
+
+- import_tasks: ops/start_sos.yml
+  when: >
+          (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
+          or __ibm_infosvr_domain_install is changed
+          or __ibm_infosvr_sos_scripts is changed
+          or __ibm_infosvr_sos_services is changed
+
+- import_tasks: ops/start_domain.yml
   when: >
           (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
           or __ibm_infosvr_domain_install is changed

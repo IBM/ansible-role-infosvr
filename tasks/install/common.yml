@@ -15,12 +15,9 @@
 # limitations under the License.
 ###
 
-- name: common - update all existing packages
-  yum: state=latest name=*
-
 - name: common - install baseline packages
   yum:
-    state: latest
+    state: present
     exclude: docker*,kubelet*,kubectl*,kubeadm*
     name:
       - libselinux-python
@@ -42,6 +39,10 @@
       - iptables-services
       - python-lxml
   when: (not 'ibm-information-server-external-db' in group_names)
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_common_yum
+  until: __ibm_infosvr_common_yum is succeeded
 
 - name: common - disable selinux
   selinux: state=disabled

@@ -120,6 +120,9 @@
     chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
   become: yes
   with_items: "{{ __ibm_infosvr_omag_config_files.stdout_lines }}"
+  when: >
+          __ibm_infosvr_omag_config_files is defined
+          and __ibm_infosvr_omag_config_files.stdout_lines is defined
 
 - name: get registrystore filenames
   shell: >
@@ -138,6 +141,9 @@
     chdir: "{{ ibm_infosvr_install_location.ises }}/OMAG"
   become: yes
   with_items: "{{ __ibm_infosvr_omag_registrystore_files.stdout_lines }}"
+  when: >
+          __ibm_infosvr_omag_registrystore_files is defined
+          and __ibm_infosvr_omag_registrystore_files.stdout_lines is defined
 
 - name: remove OMAG config templates
   file:

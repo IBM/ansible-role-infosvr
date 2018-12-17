@@ -26,6 +26,7 @@
   command: >
             mv {{ ibm_infosvr_install_location.linux }}/jdk
             {{ ibm_infosvr_tmp.linux }}/is_jdk_backup.{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
+  when: __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
 
 - name: patch_jdk_infosvr - transfer JDK updates
   copy:
@@ -48,6 +49,7 @@
   command: mv {{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }} {{ ibm_infosvr_install_location.linux }}/jdk
   with_items:
     - "{{ ibm_infosvr_jdk_update }}"
+  when: __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
 
 - name: patch_jdk_infosvr - restore ownership of JDK
   file:
