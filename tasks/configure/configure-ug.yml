@@ -163,6 +163,8 @@
   when: ('ibm-information-server-domain' in group_names)
   register: __ibm_infosvr_sos_properties
 
+# Note that this will only restart domain tier services, as it's only the domain tier where the
+# var __ibm_infosvr_sos_properties will be defined (as changed)
 - import_tasks: ops/restart.yml
   when: __ibm_infosvr_sos_properties is changed
 
