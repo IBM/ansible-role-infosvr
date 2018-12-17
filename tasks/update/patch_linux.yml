@@ -121,3 +121,4 @@
       include_tasks: ops/start.yml
   when: >
           __ibm_infosvr_patch_install is changed
+          and ('ibm-information-server-domain' in group_names)
