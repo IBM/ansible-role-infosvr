@@ -1,13 +1,13 @@
 ---
 ###
 # Copyright 2018 IBM Corp. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,6 @@
 - name: configure - configure solr for Information Analyzer (linux) (v11.5)
   shell: >
           export JAVA_HOME={{ ibm_infosvr_install_location.linux }}/jdk/jre &&
-          cd {{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/install/bin &&
           ./solr create_collection
           -c da-datasets
           -shards 1
@@ -29,12 +28,17 @@
           -port 58983
           -d {{ ibm_infosvr_install_location.linux }}/ASBServer/solr_configs/da_datasets_configs
   args:
-    creates: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/data/1/da-datasets_shard1_replica1/data"
+    chdir: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/install/bin"
+    creates: "{{ ibm_infosvr_install_location.linux }}\
+              /shared-open-source/solr/data/1/da-datasets_shard1_replica1/data"
+  become_user: root
+  become: yes
   when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.5")
 
 - name: configure - update Solr indices
   uri:
-    url: https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}/ibm/iis/dq/da/rest/v1/reindex?batchSize=25&solrBatchSize=100&upgrade=true&force=true
+    url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
+          /ibm/iis/dq/da/rest/v1/reindex?batchSize=25&solrBatchSize=100&upgrade=true&force=true"
     method: GET
     user: "{{ ibm_infosvr_user_isadmin }}"
     password: "{{ ibm_infosvr_upwd_isadmin }}"
@@ -43,17 +47,19 @@
     validate_certs: no
     timeout: 120
   ignore_errors: yes
+  when: ('ibm-information-server-domain' in group_names)
 
 - name: configure - apply WLM config template
-  local_action:
-    module: template
+  template:
     src: wlmconfig.json.j2
     dest: cache/wlmconfig.json
   become: no
+  delegate_to: localhost
 
 - name: configure - set WLM properties according to environment scale
   uri:
-    url: https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}/ibm/iis/ds/api/engines/{{ hostvars[ibm_infosvr_hosts.engine].ansible_fqdn | upper }}/wlmconfig
+    url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
+          /ibm/iis/ds/api/engines/{{ hostvars[ibm_infosvr_hosts.engine].ansible_fqdn | upper }}/wlmconfig"
     method: POST
     user: "{{ ibm_infosvr_user_isadmin }}"
     password: "{{ ibm_infosvr_upwd_isadmin }}"
@@ -65,3 +71,38 @@
     timeout: 10
     headers:
       Content-Type: "application/json; charset=utf-8"
+  when: ('ibm-information-server-domain' in group_names)
+
+- import_tasks: configure/configure-ia.yml
+  become_user: root
+  become: yes
+  when: __ibm_infosvr_features.ia
+
+# TODO: currently only enables masking for default 'dstage1' project
+# -- should take a variable giving a list of projects
+- import_tasks: configure/configure-odpp.yml
+  when: __ibm_infosvr_features.masking
+
+- import_tasks: configure/configure-em.yml
+  become_user: root
+  become: yes
+  when: __ibm_infosvr_features.event_mgmt
+
+- import_tasks: configure/configure-igd.yml
+  become_user: root
+  become: yes
+  when: __ibm_infosvr_features.igd
+
+- import_tasks: configure/configure-ug.yml
+  become: yes
+  when: >
+          __ibm_infosvr_features.ises
+          and __ibm_infosvr_version == "11.7"
+
+- import_tasks: setup_vars.yml
+
+- import_tasks: configure/configure-omag.yml
+  when: >
+          __ibm_infosvr_features.omag
+          and __ibm_infosvr_version == "11.7"
+          and ('ibm-information-server-ug' in group_names)

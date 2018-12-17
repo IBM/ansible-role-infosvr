@@ -15,29 +15,13 @@
 # limitations under the License.
 ###
 
-- import_tasks: setup_vars.yml
-  tags: ['always']
-
-- import_tasks: install.yml
-
-- import_tasks: update.yml
-  tags:
-    - update
-
-- import_tasks: configure.yml
-  tags:
-    - update
-
-- import_tasks: ops/stop.yml
-  tags:
-    - stop
-    - restart
-
-- import_tasks: ops/start.yml
-  tags:
-    - start
-    - restart
-
-- import_tasks: ops/status_all.yml
-  tags:
-    - status
+- name: stop IBM InfoSphere Information Server application server
+  command: >
+          ./MetadataServer.sh stop
+  args:
+    chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-domain' in group_names)

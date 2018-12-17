@@ -1,0 +1,73 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: kernel-and-firewall - obtain current kernel parameters
+  command: "sysctl -n {{ item.key }}"
+  with_items: "{{ __ibm_infosvr_kernel_params }}"
+  register: __ibm_infosvr_existing_kernel_params
+  changed_when: False
+
+# This is messy, but necessary
+# -- to ensure that if multiple tiers go into a single environment we retain the maximal kernel parameter
+- name: kernel-and-firewall - configure kernel parameters
+  sysctl:
+    name: "{{ item.item.key }}"
+    value: "{% if item.item.set == 'max' and item.stdout|int > item.item.value|int %}\
+            {{ item.stdout }}\
+            {% else %}\
+            {{ item.item.value }}\
+            {% endif %}"
+    reload: yes
+  with_items: "{{ __ibm_infosvr_existing_kernel_params.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+
+- name: kernel-and-firewall - open ports in firewall (iptables)
+  iptables:
+    chain: "{{ item.chain }}"
+    jump: ACCEPT
+    match: tcp
+    protocol: tcp
+    destination_port: "{{ item.port }}"
+    ctstate: NEW
+  with_items: "{{ __ibm_infosvr_firewall_ports }}"
+  when: not ibm_infosvr_use_firewalld
+  register: __ibm_infosvr_iptables
+
+- name: kernel-and-firewall - save firewall config (iptables)
+  command: service iptables save
+  args:
+    warn: False
+  when: __ibm_infosvr_iptables is changed
+
+- name: kernel-and-firewall - enable interface in firewall (firewalld)
+  firewalld:
+    state: enabled
+    permanent: true
+    zone: "{{ ibm_infosvr_firewall_chain }}"
+    interface: "{{ hostvars[inventory_hostname].ansible_default_ipv4.interface }}"
+  when: ibm_infosvr_use_firewalld
+
+- name: kernel-and-firewall - open ports in firewall (firewalld)
+  firewalld: zone={{ item.chain }} port={{ item.port }}/tcp permanent=true state=enabled
+  with_items: "{{ __ibm_infosvr_firewall_ports }}"
+  when: ibm_infosvr_use_firewalld
+  register: __ibm_infosvr_firewalld
+
+- name: kernel-and-firewall - reload firewall to ensure ports are open (firewalld)
+  command: "firewall-cmd --complete-reload"
+  when: __ibm_infosvr_firewalld is changed

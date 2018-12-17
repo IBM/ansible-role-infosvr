@@ -1,0 +1,100 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: start IBM InfoSphere Information Server Zookeeper
+  systemd: state=started name=InfoSrvZookeeper
+  become_user: root
+  become: yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_os_start_zookeeper_result
+  until: >
+          __ibm_infosvr_os_start_zookeeper_result.status is defined
+          and __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
+  changed_when: False
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
+
+- name: confirm Zookeeper is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.zookeeper }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
+
+- name: start IBM InfoSphere Information Server Solr
+  systemd: state=started name=InfoSrvSolrCloud
+  become_user: root
+  become: yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_os_start_solr_result
+  until: >
+          __ibm_infosvr_os_start_solr_result.status is defined
+          and __ibm_infosvr_os_start_solr_result.status.Result == "success"
+  changed_when: False
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('solr') == -1)
+
+- name: confirm Solr is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.solr }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('solr') == -1)
+
+- name: start IBM InfoSphere Information Server Kafka
+  systemd: state=started name=InfoSrvKafka
+  become_user: root
+  become: yes
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_os_start_kafka_result
+  until: >
+          __ibm_infosvr_os_start_kafka_result.status is defined
+          and __ibm_infosvr_os_start_kafka_result.status.Result == "success"
+  changed_when: False
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
+
+- name: confirm Kafka is running
+  wait_for:
+    port: "{{ ibm_infosvr_ports_ext.kafka }}"
+    host: "{{ ibm_infosvr_hosts.domain }}"
+    state: started
+    delay: 10
+    timeout: 300
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('kafka') == -1)

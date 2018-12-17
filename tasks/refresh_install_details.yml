@@ -1,13 +1,13 @@
 ---
 ###
 # Copyright 2018 IBM Corp. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,28 @@
 ###
 
 - name: refresh - check existing installation details
-  raw: >
-        cat {% if 'ibm-information-server-clients' in group_names %}{{ ibm_infosvr_install_location.win }}\{% else %}{{ ibm_infosvr_install_location.linux }}/{% endif %}Version.xml
+  raw: "cat \
+        {% if 'ibm-information-server-clients' in group_names %}\
+        {{ ibm_infosvr_install_location.win }}\\\
+        {% else %}
+        {{ ibm_infosvr_install_location.linux }}/\
+        {% endif %}\
+        Version.xml"
   register: ibm_infosvr_version_xml_output
   changed_when: False
   ignore_errors: True
 
+- name: refresh - setup namespace variable
+  set_fact:
+    __ibm_infosvr_namespace: "{http://www.ibm.com/LocalInstallRegistry}InstallType"
+
 - name: refresh - set installation details
   set_fact:
-    ibm_infosvr_version_xml: "{% if ibm_infosvr_version_xml_output.rc == 0 %}{{ ibm_infosvr_version_xml_output.stdout }}{% else %}NOT INSTALLED{% endif %}"
+    ibm_infosvr_version_xml: "{% if ibm_infosvr_version_xml_output.rc == 0 %}\
+                              {{ ibm_infosvr_version_xml_output.stdout }}\
+                              {% else %}\
+                              NOT INSTALLED\
+                              {% endif %}"
     ibm_infosvr_installed_version: ""
 
 - name: refresh - parse version from Version.xml
@@ -40,6 +53,13 @@
 
 - name: refresh - register version number for reference
   set_fact:
-    ibm_infosvr_installed_version_full: '{{ ibm_infosvr_installed_version_xml.matches[0]["{http://www.ibm.com/LocalInstallRegistry}InstallType"].currentVersion }}'
-    ibm_infosvr_installed_version: '{{ ibm_infosvr_installed_version_xml.matches[0]["{http://www.ibm.com/LocalInstallRegistry}InstallType"].currentVersion[:4] }}'
+    __ibm_infosvr_version_full: >-
+      {{ ibm_infosvr_installed_version_xml.matches[0][__ibm_infosvr_namespace].currentVersion }}
+    __ibm_infosvr_version: >-
+      {{ ibm_infosvr_installed_version_xml.matches[0][__ibm_infosvr_namespace].currentVersion[:4] }}
   when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm-information-server-clients' in group_names)
+
+- name: refresh - determine version from install media
+  set_fact:
+    __ibm_infosvr_version: "{{ ibm_infosvr_media_bin.client_zip[4:8] }}"
+  when: ibm_infosvr_version_xml_output.rc != 0 or ('ibm-information-server-clients' in group_names)

@@ -1,0 +1,94 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+##########
+# PRE-REQUISITES
+#
+# Ansible on Windows is relatively new, and relies on the PowerShell.  Therefore, it may be necessary to setup
+# several prerequisites before this automation can be used for the client tier.  Typically the following are
+# needed beyond a basic Windows setup:
+#   1. Windows PowerShell 3.0 or higher must be installed
+#      (latest as of writing v5.0: https://www.microsoft.com/en-us/download/details.aspx?id=50395)
+#   2. Remote access must be configured (see script under /files/ConfigureAnsible.ps1 of this role)
+#      - If using script above, copy to Windows machine and execute it within PowerShell
+#      - Doing this may require changing ExecutionPolicy using:  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+#   3. The Ansible control machine must have 'pywinrm' module installed (pip install "pywinrm>=0.1.1")
+#
+# For more details on Ansible working with Windows (and for other advanced security config), see:
+#   http://docs.ansible.com/ansible/intro_windows.html
+#
+
+- import_tasks: refresh_install_details.yml
+
+##########
+# EXTRACT INSTALL MEDIA (only if installation has not already been completed)
+- name: client - create installation location
+  win_file: path={{ ibm_infosvr_tmp.win }} state=directory
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+
+- name: client - transfer installation media
+  win_copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_media_bin.client_zip }}"
+    dest: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_media_bin.client_zip }}"
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+
+- name: client - extract installation media
+  win_unzip:
+    src: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_media_bin.client_zip }}"
+    dest: "{{ ibm_infosvr_tmp.win }}"
+    creates: "{{ ibm_infosvr_tmp.win }}\\is-client"
+    rm: False
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+
+##########
+# SETUP
+- name: client - apply response file template
+  win_template:
+    src: client-v{{ __ibm_infosvr_version|replace(".", "") }}.j2
+    dest: "{{ ibm_infosvr_tmp.win }}\\is-client\\client.rsp"
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+
+- name: client - ensure NTFS 8.3 naming is enabled
+  win_shell: >
+              fsutil behavior set disable8dot3 0
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+
+##########
+# FIREWALL CONFIG
+- name: client - open firewall for Metadata Interchange Server
+  win_shell: >
+              New-NetFirewallRule
+              -DisplayName MIS
+              -Action Allow
+              -Direction Inbound
+              -Enabled True
+              -LocalPort 19443
+              -Protocol {{ item }}
+  with_items:
+    - TCP
+    - UDP
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
+
+##########
+# BASE INSTALLATION
+- name: client - install client tier silently
+  # Force the install to ensure it bypasses a check that at least 4GB memory is available
+  win_shell: >
+              {{ ibm_infosvr_tmp.win }}\is-client\setup.exe
+              -rsp {{ ibm_infosvr_tmp.win }}\is-client\client.rsp
+              {% if ibm_infosvr_force.client is defined and ibm_infosvr_force.client %}-force{% endif %}
+  when: (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)

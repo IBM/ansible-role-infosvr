@@ -15,29 +15,7 @@
 # limitations under the License.
 ###
 
-- import_tasks: setup_vars.yml
-  tags: ['always']
-
-- import_tasks: install.yml
-
-- import_tasks: update.yml
-  tags:
-    - update
-
-- import_tasks: configure.yml
-  tags:
-    - update
-
-- import_tasks: ops/stop.yml
-  tags:
-    - stop
-    - restart
-
-- import_tasks: ops/start.yml
-  tags:
-    - start
-    - restart
-
-- import_tasks: ops/status_all.yml
-  tags:
-    - status
+- import_tasks: start_sos.yml
+- import_tasks: start_ug.yml
+- import_tasks: start_domain.yml
+- import_tasks: start_engine.yml

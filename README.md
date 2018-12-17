@@ -70,47 +70,6 @@ The following example playbook will do a complete installation and configuration
     - IBM.infosvr
 ```
 
-In addition, a set of handlers is defined by default to simplify the operations of Information Server, particularly when an environment spans a number of different machines. You can save the following example playbook as something like `ops.yml` and then execute it to handle retrieving the status of the environment (`ansible-playbook ops.yml --tags=status`), shutting down the environment (`ansible-playbook ops.yml --tags=stop`), starting the environment (`ansible-playbook ops.yml --tags=start`) and restarting the environment (`ansible-playbook ops.yml --tags=restart`). Each option will take the specified action in the order required across your different tiers.
-
-```yml
----
-
-- name: operate IBM InfoSphere Information Server
-  hosts: all
-  any_errors_fatal: true
-  roles:
-    - IBM.infosvr
-  tasks:
-    - name: check status of Information Server
-      raw: echo 0
-      notify:
-        - "status IBM InfoSphere Information Server"
-      tags:
-        - status
-
-    - meta: flush_handlers
-
-    - name: stopping Information Server
-      raw: echo 0
-      notify:
-        - "stop IBM InfoSphere Information Server"
-      tags:
-        - stop
-        - restart
-
-    - meta: flush_handlers
-
-    - name: starting Information Server
-      raw: echo 0
-      notify:
-        - "start IBM InfoSphere Information Server"
-      tags:
-        - start
-        - restart
-
-    - meta: flush_handlers
-```
-
 ## Expected Inventory
 
 The following groups are expected in the inventory, as they are used to distinguish where various components are installed. Of course, if you want to install multiple components on a single server this can be done by simply providing the same hostname under each group. In the example below, for instance, the repository and domain tiers are both placed on 'serverA' while the engine tier will be installed separately on 'serverB' and the Unified Governance tier is also given its own system 'serverC'.
@@ -151,7 +110,9 @@ bpm.somewhere.com
 
 As with any Ansible inventory, sufficient details should be provided to ensure connectivity to the servers is possible (see http://docs.ansible.com/ansible/latest/intro_inventory.html#list-of-behavioral-inventory-parameters).
 
-## Installing patches
+## Tags
+
+### Installing patches
 
 The role is intended to also be able to keep an installed environment up-to-date with patches and system packages. To apply patches, simply enter the relevant details into the files under `vars/patches/<tier>-<version>.yml`. For example, fixes for v11.7 engine tier should go into `vars/patches/engine-v117.yml` while fixes for v11.7 domain tier go into `vars/patches/domain-v117.yml`. Generally these are kept up-to-date within GitHub based on the availability of major patches in Fix Central; but should you wish to apply an interim fix or other that is not already in the list, simply follow the instructions below.
 
@@ -185,6 +146,15 @@ ansible-playbook [-i hosts] [site.yml] --tags=update
 ```
 
 This will ensure all system-level packages for the OS are up-to-date (ie. `yum update -y`) as well as applying any patches listed in the `vars/patches/...` files for your particular release that have not already been applied.
+
+### Enviromnet operations
+
+A number of tags have been provided to ease the operations of the environment, particularly when it spans multiple hosts:
+
+- `status`: will check that the various components that have been configured are running (by checking that a service is listening on their designated ports).
+- `stop`: will gracefully shutdown each component, in the appropriate order, across the various hosts; without shutting down the underlying hosts themselves.
+- `start`: will startup each component, in the appropriate order, across the various hosts.
+- `restart`: provides a simple way to run a `stop` followed immediately by a `start`.
 
 ## Re-usable tasks
 

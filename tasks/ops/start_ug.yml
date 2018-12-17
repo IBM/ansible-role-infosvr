@@ -1,0 +1,69 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: uncordon IBM InfoSphere Information Server k8s node
+  command: >
+          kubectl uncordon {{ hostvars[inventory_hostname].ansible_fqdn }}
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_features.ises
+          and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
+
+- name: ensure all pods are running
+  shell: >
+          kubectl get pods --no-headers=true | awk '{ print $2 }'
+  args:
+    executable: /bin/bash
+  become: yes
+  changed_when: False
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_features.ises
+          and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
+  register: __ibm_infosvr_ug_k8s_pods_status
+  until: >
+          (__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1','2/2']
+          or ((__ibm_infosvr_ug_k8s_pods_status.stdout_lines|unique|sort) == ['1/1'])
+  retries: 48
+  delay: 10
+
+- name: get OMAG pod name
+  shell: >
+          kubectl get pods --no-headers=true
+          | awk '{ print $1 }'
+          | grep 'omag'
+  ignore_errors: True
+  changed_when: False
+  become: yes
+  register: __ibm_infosvr_ug_omag_pod
+  when: ('ibm-information-server-ug' in group_names)
+
+- name: ensure OMAG configuration is restored
+  command: >
+          kubectl cp {{ item.path }} {{ __ibm_infosvr_ug_omag_pod.stdout | trim }}:/{{ item.path | basename }}
+  become: yes
+  with_items: "{{ __ibm_infosvr_omag_config.files }}"
+  when: >
+          ('ibm-information-server-ug' in group_names)
+          and __ibm_infosvr_features.ises
+          and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
+          and __ibm_infosvr_features.omag
+          and __ibm_infosvr_ug_omag_pod.stdout.find('omag') != -1
+          and __ibm_infosvr_omag_config.matched > 0

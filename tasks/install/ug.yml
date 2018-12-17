@@ -1,0 +1,154 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- import_tasks: refresh_install_details.yml
+
+- name: ug - confirm repository tier is running and accessible
+  wait_for:
+    port: "{{ ibm_infosvr_ports.db2 }}"
+    host: "{{ groups['ibm-information-server-repo'][0] }}"
+    state: started
+    delay: 10
+    timeout: 300
+
+- name: ug - confirm domain tier is running and accessible
+  wait_for:
+    port: "{{ item }}"
+    host: "{{ groups['ibm-information-server-domain'][0] }}"
+    state: started
+    delay: 10
+    timeout: 300
+  with_items:
+    - "{{ ibm_infosvr_ports.console }}"
+
+- name: ug - check installed search media
+  command: "docker images"
+  register: __ibm_infosvr_ug_installed_docker_images
+  ignore_errors: True
+  changed_when: False
+
+- name: ug - install common and ug-specific packages
+  yum:
+    state: latest
+    exclude: docker*,kubelet*,kubectl*,kubeadm*
+    name:
+      - libselinux-python
+      - zip
+      - unzip
+      - glibc.i686
+      - libstdc++.i686
+      - libXp
+      - libXau
+      - libXext
+      - libX11
+      - libxcb
+      - libgcc.i686
+      - libXmu
+      - pam.i686
+      - net-tools
+      - bind-utils
+      - nss-softokn-freebl
+      - bc
+      - iptables-services
+      - compat-libstdc++-33
+      - libXtst
+      - elfutils
+      - wget
+      - lvm2
+      - ebtables
+      - ethtool
+
+- name: ug - disable selinux
+  selinux: state=disabled
+  register: __ibm_infosvr_ug_selinux_result
+
+- name: ug - restart for selinux
+  reboot:
+    msg: "Restarting to ensure SELinux is disabled"
+  when: >
+          __ibm_infosvr_ug_selinux_result is changed
+
+- name: ug - parse UG-specific variables
+  include_vars: file=ug.yml
+
+- import_tasks: kernel-and-firewall.yml
+
+- name: ug - disable swap (not allowed by k8s)
+  command: "swapoff -a"
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+
+- name: ug - copy files fetched from domain tier
+  copy:
+    src: cache/{{ item.name }}
+    dest: /tmp/{{ item.name }}
+    mode: "{{ item.mode }}"
+    force: no
+  with_items:
+    - { name: "kubeselfextract.bsx", mode: "0755" }
+    - { name: "tokenservicepublic.cer", mode: "0644" }
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+
+- name: ug - apply response file template
+  template:
+    src: uginfo.rsp.j2
+    dest: /tmp/uginfo.rsp
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+
+- name: ug - create installation location
+  file: path={{ ibm_infosvr_install_location.ises }} state=directory owner=root group=root mode=0755
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+
+- name: ug - copy install media
+  copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
+    dest: "{{ ibm_infosvr_tmp.ises }}/{{ ibm_infosvr_media_bin.ug_tarball }}"
+    force: no
+
+# Installer relies on root-level passwordless SSH being configured within the host itself
+- name: ug - check existence of SSH key
+  stat: path="~/.ssh/id_rsa"
+  register: __ibm_infosvr_ug_ssh_key
+
+- name: ug - generate SSH key
+  command: ssh-keygen -t rsa -f ~/.ssh/id_rsa -P ''
+  when: not __ibm_infosvr_ug_ssh_key.stat.exists
+
+- name: ug - add generated key to authorized keys
+  shell: cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+  when: not __ibm_infosvr_ug_ssh_key.stat.exists
+
+##########
+# BASE INSTALLATION
+- name: ug - install UG (ISES) tier silently
+  command: /tmp/kubeselfextract.bsx
+  when: >
+          (__ibm_infosvr_ug_installed_docker_images is defined
+            and __ibm_infosvr_ug_installed_docker_images.stdout is not defined)
+          or __ibm_infosvr_ug_installed_docker_images.stdout.find('elasticsearch') == -1
+  register: __ibm_infosvr_ug_install

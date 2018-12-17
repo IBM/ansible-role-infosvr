@@ -1,0 +1,99 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: existing-db - ensure storage location exists on remote database
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ibm_infosvr_user_db2_instance }}"
+    group: "{{ ibm_infosvr_group_db2_instance }}"
+    mode: "0755"
+  with_items:
+    - "{{ ibm_infosvr_repository_location }}/xmeta"
+    - "{{ ibm_infosvr_repository_location }}/iadb"
+    - "{{ ibm_infosvr_repository_location }}/xmeta/{{ ibm_infosvr_user_db2_instance }}"
+    - "{{ ibm_infosvr_repository_location }}/iadb/{{ ibm_infosvr_user_db2_instance }}"
+
+- name: existing-db - deploy setup scripts to remote database
+  copy:
+    src: cache/{{ item.file }}
+    dest: "{{ item.dest }}/{{ item.file }}"
+    owner: "{{ ibm_infosvr_user_db2_instance }}"
+    group: "{{ ibm_infosvr_group_db2_instance }}"
+    mode: "{{ item.mode }}"
+  with_items: "{{ __ibm_infosvr_external_db_scripts }}"
+
+- name: existing-db - create XMETA database
+  shell: >
+          source ~/.bashrc &&
+          db2 -l "create_xmeta_db.log" -stf create_xmeta_db.sql
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
+    creates: "{{ ibm_infosvr_repository_location }}/xmeta/create_xmeta_db.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  register: __ibm_infosvr_exdb_xmeta
+  failed_when: __ibm_infosvr_exdb_xmeta.rc not in [0,2]
+
+- name: existing-db - grant staging privileges on XMETA database
+  shell: >
+          source ~/.bashrc &&
+          db2 -l "configure_staging_area.log" -stf db2_grant_Permissions.sql
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
+    creates: "{{ ibm_infosvr_repository_location }}/xmeta/configure_staging_area.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  register: __ibm_infosvr_exdb_privs
+  failed_when: __ibm_infosvr_exdb_privs.rc not in [0,2]
+
+- name: existing-db - create DFD settings table
+  shell: >
+          source ~/.bashrc &&
+          db2 -l createUserPref.log -stf ./createUserPref.sql
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/xmeta"
+    creates: "{{ ibm_infosvr_repository_location }}/xmeta/createUserPref.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  register: __ibm_infosvr_exdb_dfd
+  failed_when: __ibm_infosvr_exdb_dfd.rc not in [0,2]
+  when: __ibm_infosvr_version == "11.7"
+
+- name: existing-db - create IADB database
+  shell: >
+          source ~/.bashrc &&
+          db2set DB2_INLIST_TO_NLJN=YES &&
+          db2set DB2_USE_ALTERNATE_PAGE_CLEANING=ON &&
+          db2set DB2_REDUCED_OPTIMIZATION=YES &&
+          db2 terminate > /dev/null &&
+          db2 -l "create_ia_db.log" -stf create_ia_db.sql &&
+          db2 -l "create_ia_db.log" -td@ -vf create_ia_db_sp.sql &&
+          db2 CONNECT RESET &&
+          db2 TERMINATE
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_repository_location }}/iadb"
+    creates: "{{ ibm_infosvr_repository_location }}/iadb/create_ia_db.log"
+  become_user: "{{ ibm_infosvr_user_db2_instance }}"
+  become: yes
+  register: __ibm_infosvr_exdb_iadb
+  failed_when: __ibm_infosvr_exdb_iadb.rc not in [0,2]
+  when: __ibm_infosvr_features.ia
