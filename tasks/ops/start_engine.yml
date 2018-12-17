@@ -55,6 +55,10 @@
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
   changed_when: False
+  register: __ibm_infosvr_dsappwatcher
+  failed_when: >
+                __ibm_infosvr_dsappwatcher.rc != 0
+                and (__ibm_infosvr_dsappwatcher.stdout != "AppWatcher:ALREADY_RUNNING")
   when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_features.opsdb
 
 - name: start IBM InfoSphere Information Server Data Flow Designer
