@@ -68,7 +68,12 @@ The following example playbook will do a complete installation and configuration
   any_errors_fatal: true
   roles:
     - IBM.infosvr
+  pre_tasks:
+    - name: update all OS-level packages
+      yum: state=latest name='*'
 ```
+
+The pre-tasks ensure that all OS-level packges are up-to-date before beginning the installation.
 
 ## Expected Inventory
 
@@ -145,7 +150,7 @@ To run through an update, use the `update` tag as follows:
 ansible-playbook [-i hosts] [site.yml] --tags=update
 ```
 
-This will ensure all system-level packages for the OS are up-to-date (ie. `yum update -y`) as well as applying any patches listed in the `vars/patches/...` files for your particular release that have not already been applied.
+This will apply any patches listed in the `vars/patches...` files for your particular release that have not already been applied. It will *not* however update any system-level packages for the operating system: if this is desired, ensure your broader playbook takes care of such an update.
 
 ### Enviromnet operations
 
