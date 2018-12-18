@@ -71,6 +71,7 @@ The following example playbook will do a complete installation and configuration
   pre_tasks:
     - name: update all OS-level packages
       yum: state=latest name='*'
+      when: ('ibm-information-server-clients' not in group_names)
 ```
 
 The pre-tasks ensure that all OS-level packges are up-to-date before beginning the installation.
