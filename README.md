@@ -70,7 +70,11 @@ The following example playbook will do a complete installation and configuration
     - IBM.infosvr
   pre_tasks:
     - name: update all OS-level packages
-      yum: state=latest name='*'
+      yum:
+        state: latest
+        name: '*'
+        exclude: docker*,kubelet*,kubectl*,kubeadm*
+      become: yes
       when: ('ibm-information-server-clients' not in group_names)
 ```
 
