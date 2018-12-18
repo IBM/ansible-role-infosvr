@@ -21,7 +21,7 @@
 # SETUP
 - name: engine - install engine-specific packages
   yum:
-    state: latest
+    state: present
     name:
       - libgcc.i686
       - ed
@@ -29,6 +29,10 @@
       - gcc
       - gcc-c++
       - perl
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_engine_yum
+  until: __ibm_infosvr_engine_yum is succeeded
 
 - name: engine - create required groups
   group: name={{ item }}
@@ -168,11 +172,13 @@
   when: __ibm_infosvr_features.opsdb
   register: __ibm_infosvr_dsodb
 
-- block:
-    - name: stop engine services
-      include_tasks: ops/stop_engine.yml
-    - name: start engine services
-      include_tasks: ops/start_engine.yml
+- import_tasks: ops/stop_engine.yml
+  when: >
+          __ibm_infosvr_engine_install is changed
+          or __ibm_infosvr_dsenv is changed
+          or __ibm_infosvr_dsodb is changed
+
+- import_tasks: ops/start_engine.yml
   when: >
           __ibm_infosvr_engine_install is changed
           or __ibm_infosvr_dsenv is changed

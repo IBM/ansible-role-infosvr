@@ -43,7 +43,7 @@
 
 - name: ug - install common and ug-specific packages
   yum:
-    state: latest
+    state: present
     exclude: docker*,kubelet*,kubectl*,kubeadm*
     name:
       - libselinux-python
@@ -71,6 +71,10 @@
       - lvm2
       - ebtables
       - ethtool
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_ug_yum
+  until: __ibm_infosvr_ug_yum is succeeded
 
 - name: ug - disable selinux
   selinux: state=disabled

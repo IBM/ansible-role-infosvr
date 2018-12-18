@@ -29,6 +29,9 @@
           kubectl cp {{ item.path }} {{ __ibm_infosvr_ug_omag_pod.stdout | trim }}:/{{ item.path | basename }}
   become: yes
   with_items: "{{ __ibm_infosvr_omag_config.files }}"
+  when: >
+          __ibm_infosvr_omag_config is defined
+          and __ibm_infosvr_omag_config.files is defined
 
 - name: initialize server
   uri:

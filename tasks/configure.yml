@@ -99,6 +99,43 @@
           __ibm_infosvr_features.ises
           and __ibm_infosvr_version == "11.7"
 
+- name: batch sync the ISES graph
+  shell: >
+          source ~/.bashrc &&
+          source dsenv &&
+          {{ ibm_infosvr_install_location.linux }}/Clients/istools/cli/istool.sh
+          graph batchload
+          -u {{ ibm_infosvr_user_isadmin }}
+          -p {{ ibm_infosvr_upwd_isadmin }}
+          -dom {{ ibm_infosvr_hosts.domain | lower }}:{{ ibm_infosvr_ports.console }}
+          -command START
+          -all
+  args:
+    executable: /bin/bash
+    chdir: "{{ ibm_infosvr_install_location.linux }}/Server/DSEngine"
+  when: >
+          ('ibm-information-server-engine' in group_names)
+          and __ibm_infosvr_features.ises
+          and __ibm_infosvr_version == "11.7"
+  tags:
+    - "sync_and_index"
+
+- name: re-build the ISES indexes
+  uri:
+    url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
+          /ibm/iis/common-utils/rest/v1/app/reindex?batchSize=25&solrBatchSize=100&upgrade=true&force=true"
+    method: GET
+    user: "{{ ibm_infosvr_user_isadmin }}"
+    password: "{{ ibm_infosvr_upwd_isadmin }}"
+    force_basic_auth: yes
+    status_code: 200
+    validate_certs: no
+    timeout: 120
+  ignore_errors: yes
+  when: ('ibm-information-server-domain' in group_names)
+  tags:
+    - "sync_and_index"
+
 - import_tasks: setup_vars.yml
 
 - import_tasks: configure/configure-omag.yml

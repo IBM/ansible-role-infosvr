@@ -36,6 +36,7 @@
           -acceptLicense
   with_items:
     - "{{ ibm_infosvr_websphere_jdk7_update }}"
+  when: ibm_infosvr_websphere_jdk7_update is defined
 
 - name: patch_jdk7_was - ensure updated security of JDK
   lineinfile:

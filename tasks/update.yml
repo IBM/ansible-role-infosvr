@@ -15,15 +15,6 @@
 # limitations under the License.
 ###
 
-- name: update - update all existing packages
-  yum:
-    state: latest
-    name: '*'
-    exclude: docker*,kubelet*,kubectl*,kubeadm*
-  become_user: root
-  become: yes
-  when: not ('ibm-information-server-clients' in group_names)
-
 - name: update - close any active user sessions
   command: >
           ./SessionAdmin.sh
