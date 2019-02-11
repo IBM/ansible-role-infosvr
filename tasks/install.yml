@@ -15,7 +15,7 @@
 # limitations under the License.
 ###
 
-- name: open up limits
+- name: open up limits (common)
   pam_limits:
     domain: '*'
     limit_type: '-'
@@ -25,14 +25,44 @@
   with_items:
     - { key: "nproc", value: "100000" }
     - { key: "nofile", value: "1024000" }
-    - { key: "sigpending", value: "6341600" }
     - { key: "memlock", value: "6400" }
-    - { key: "msgqueue", value: "81920000" }
     - { key: "stack", value: "819200" }
     - { key: "fsize", value: "62914530" }
   become_user: root
   become: yes
   when: not ('ibm-information-server-clients' in group_names)
+
+- name: open up limits (non-container)
+  pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: "{{ item.key }}"
+    value: "{{ item.value }}"
+    use_max: yes
+  with_items:
+    - { key: "sigpending", value: "6341600" }
+    - { key: "msgqueue", value: "81920000" }
+  become_user: root
+  become: yes
+  when: >
+    not ('ibm-information-server-clients' in group_names)
+    and not ibm_infosvr_container
+
+- name: open up limits (container)
+  pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: "{{ item.key }}"
+    value: "{{ item.value }}"
+    use_max: yes
+  with_items:
+    - { key: "sigpending", value: "63416" }
+    - { key: "msgqueue", value: "819200" }
+  become_user: root
+  become: yes
+  when: >
+    not ('ibm-information-server-clients' in group_names)
+    and ibm_infosvr_container
 
 - import_tasks: install/common.yml
   become_user: root

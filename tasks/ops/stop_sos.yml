@@ -15,26 +15,62 @@
 # limitations under the License.
 ###
 
-- name: stop IBM InfoSphere Information Server Kafka
+- name: stop IBM InfoSphere Information Server Kafka (systemd)
   systemd: state=stopped name=InfoSrvKafka
   become_user: root
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (not ibm_infosvr_container)
 
-- name: stop IBM InfoSphere Information Server Solr
+- name: stop IBM InfoSphere Information Server Kafka (service)
+  service: state=stopped name=InfoSrvKafka
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and ibm_infosvr_container
+
+- name: stop IBM InfoSphere Information Server Solr (systemd)
   systemd: state=stopped name=InfoSrvSolrCloud
   become_user: root
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (not ibm_infosvr_container)
 
-- name: stop IBM InfoSphere Information Server Zookeeper
+- name: stop IBM InfoSphere Information Server Solr (service)
+  service: state=stopped name=InfoSrvSolrCloud
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and ibm_infosvr_container
+
+- name: stop IBM InfoSphere Information Server Zookeeper (systemd)
   systemd: state=stopped name=InfoSrvZookeeper
   become_user: root
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (not ibm_infosvr_container)
+
+- name: stop IBM InfoSphere Information Server Zookeeper (service)
+  service: state=stopped name=InfoSrvZookeeper
+  become_user: root
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and ibm_infosvr_container

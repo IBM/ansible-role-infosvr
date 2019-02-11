@@ -17,6 +17,11 @@
 
 - import_tasks: refresh_install_details.yml
 
+- name: container check
+  stat:
+    path: /.dockerenv
+  register: __ibm_infosvr_container
+
 - name: setup variables for subsequent role use
   set_fact:
     ibm_infosvr_hosts:
@@ -70,6 +75,7 @@
       zookeeper: "{{ ibm_infosvr_ports.zookeeper }}"
       solr: "{{ ibm_infosvr_ports.solr }}"
       kafka: "{{ ibm_infosvr_ports.kafka }}"
+    ibm_infosvr_container: "{{ __ibm_infosvr_container.stat.exists }}"
 
 - name: setup external db variable
   set_fact:
@@ -87,9 +93,7 @@
   set_fact:
     __ibm_infosvr_k8s_externals:
       domain: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_fqdn }}"
-      domain_ip: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_default_ipv4.address }}"
       repo: "{{ hostvars[__ibm_infosvr_db_host].ansible_fqdn }}"
-      repo_ip: "{{ hostvars[__ibm_infosvr_db_host].ansible_default_ipv4.address }}"
 
 - name: default any missing features to disabled
   set_fact:

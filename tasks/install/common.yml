@@ -47,7 +47,15 @@
 - name: common - disable selinux
   selinux: state=disabled
   register: __ibm_infosvr_selinux_result
+  ignore_errors: yes
   when: (not 'ibm-information-server-external-db' in group_names)
+
+- name: common - check selinux
+  assert:
+    that: "(__ibm_infosvr_selinux_result.rc is defined \
+            and __ibm_infosvr_selinux_result.rc == 0)
+            or (__ibm_infosvr_selinux_result.msg is defined \
+            and __ibm_infosvr_selinux_result.msg == 'Unable to find file /etc/selinux/config')"
 
 # As suggested by this technote to reduce memory usage -- http://www-01.ibm.com/support/docview.wss?uid=swg21701446
 # Will do this any time the server has less than 32GB of memory

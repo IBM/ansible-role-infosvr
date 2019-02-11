@@ -1,0 +1,121 @@
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+suite.installLocation={{ ibm_infosvr_install_location.linux }}
+
+#Tier selection
+suite.tier[app.server.tier].selected=true
+
+
+#Product selection
+product[qualitystage].selected={{ __ibm_infosvr_features.qs | lower }}
+product[InformationAnalyzer].selected={{ __ibm_infosvr_features.ia | lower }}
+product[ISALite].selected=true
+product[MetadataServer].selected=true
+product[CommonEvent].selected=true
+product[DataStageCommon].selected=true
+product[IMAM].selected=true
+product[datastage].selected=true
+product[InformationGovernanceDashboard].selected={{ __ibm_infosvr_features.igd | lower }}
+product[CommonMetadata].selected=true
+product[ISF].selected=true
+product[ThirdParty].selected=true
+product[DataClick].selected={{ __ibm_infosvr_features.dataclick | lower }}
+product[WISD].selected={{ __ibm_infosvr_features.wisd | lower }}
+product[FastTrack].selected={{ __ibm_infosvr_features.fasttrack | lower }}
+product[InformationGovernanceCatalog].selected={{ __ibm_infosvr_features.igc | lower }}
+product[DataQualityExceptionConsole].selected={{ __ibm_infosvr_features.dqec | lower }}
+
+
+#Variable setting
+DataStage.BalOp=false
+DataStage.PX=true
+DataStage.SAS=false
+DataStage.Server=false
+LIC_AGREEMENT=ACCEPT
+app.server.type=lwas
+db.driver=com.ibm.db2.jcc.DB2Driver
+db.url=jdbc:db2://{{ __ibm_infosvr_db_host }}:{{ ibm_infosvr_ports.db2 }}/xmeta
+ds.client.language.acronym=ENU
+ia.db.collection=
+ia.db.config.type=db2_10_5_nls
+ia.db.driver=com.ibm.db2.jcc.DB2Driver
+ia.db.hostname={{ __ibm_infosvr_db_host }}
+ia.db.location=
+ia.db.name=iadb
+ia.db.password={{ ibm_infosvr_upwd_ia }}
+ia.db.port={{ ibm_infosvr_ports.db2 }}
+ia.db.type=db2_10
+ia.db.url=jdbc:db2://{{ __ibm_infosvr_db_host }}:{{ ibm_infosvr_ports.db2 }}/iadb
+ia.db.username={{ ibm_infosvr_user_ia }}
+ia.oracle.db.type=
+iis.console.http.port={{ ibm_infosvr_ports.default }}
+iis.ssl.keystore.dname=CN={{ ibm_infosvr_hosts.domain }},OU=Software Group,O=IBM,C=US
+iis.ssl.keystore.keypass={{ ibm_infosvr_ssl_key_pwd_wlp }}
+iis.ssl.keystore.storepass={{ ibm_infosvr_ssl_key_pwd_wlp }}
+iis.ssl.keystore.validity=2920
+install.path=1
+is.admin.password={{ ibm_infosvr_upwd_isadmin }}
+is.admin.user={{ ibm_infosvr_user_isadmin }}
+is.console.port={{ ibm_infosvr_ports.console }}
+nls.language=English-UTF8
+nls.language.code=ENU
+number.of.nodes=0
+odb.db.driver=com.ibm.db2.jcc.DB2Driver
+odb.db.url=jdbc:db2://{{ __ibm_infosvr_db_host }}:{{ ibm_infosvr_ports.db2 }}/xmeta
+odb.oracle.db.type=
+selected.db.type=DB2_10
+srd.db.config.type=db2_10_5_nls
+srd.db.hostname={{ __ibm_infosvr_db_host }}
+srd.db.name=xmeta
+srd.db.port={{ ibm_infosvr_ports.db2 }}
+srd.db.schemaName={{ ibm_infosvr_user_srd }}
+srd.db.tablespace=QSSRDSPACE
+srd.db.type=db2_10
+srd.db.user.name={{ ibm_infosvr_user_srd }}
+srd.db.user.password={{ ibm_infosvr_upwd_srd }}
+srd.driver.type=DB2_10
+target.country.code=US
+target.language.code=en
+use.bundled.was=true
+xmeta.db.collection=
+xmeta.db.config.type=db2_10_5_nls
+xmeta.db.hostname={{ __ibm_infosvr_db_host }}
+xmeta.db.location=
+xmeta.db.name=xmeta
+xmeta.db.password={{ ibm_infosvr_upwd_xmeta }}
+xmeta.db.port={{ ibm_infosvr_ports.db2 }}
+xmeta.db.type=db2_10
+xmeta.db.username={{ ibm_infosvr_user_xmeta }}
+xmeta.driver.type=DB2_10
+xmeta.odb.db.collection=
+xmeta.odb.db.config.type=db2_10_5_nls
+xmeta.odb.db.hostname={{ __ibm_infosvr_db_host }}
+xmeta.odb.db.location=
+xmeta.odb.db.name=xmeta
+xmeta.odb.db.port={{ ibm_infosvr_ports.db2 }}
+xmeta.odb.db.registration=true
+xmeta.odb.db.schemaName={{ ibm_infosvr_user_odb }}
+xmeta.odb.db.tablespace=DSODBSPACE
+xmeta.odb.db.type=db2_10
+xmeta.odb.db.user.name={{ ibm_infosvr_user_odb }}
+xmeta.odb.db.user.password={{ ibm_infosvr_upwd_odb }}
+xmeta.odb.driver.type=DB2_10
+xmeta.oracle.db.type=
+xmeta.staging.db.password={{ ibm_infosvr_upwd_staging }}
+xmeta.staging.db.username={{ ibm_infosvr_user_staging }}
+
+

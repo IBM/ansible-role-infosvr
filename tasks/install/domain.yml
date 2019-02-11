@@ -137,18 +137,21 @@
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
+          and (not ibm_infosvr_container)
 
 - name: domain - register Solr service in systemd
   systemd: name=InfoSrvSolrCloud.service enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
+          and (not ibm_infosvr_container)
 
 - name: domain - register Kafka service in systemd
   systemd: name=InfoSrvKafka.service enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
+          and (not ibm_infosvr_container)
 
 - import_tasks: ops/stop_domain.yml
   when: >

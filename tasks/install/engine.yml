@@ -86,7 +86,7 @@
   when: >
         (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
-        and (__ibm_infosvr_version == "11.5")
+        and (__ibm_infosvr_version == "11.5" or ibm_infosvr_container)
 
 - name: engine - register DataStage in systemd (v11.5 + RHEL7)
   systemd: name=ds.rc.service enabled=yes state=started daemon_reload=yes
@@ -94,6 +94,7 @@
         (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
         and (__ibm_infosvr_version == "11.5")
+        and (not ibm_infosvr_container)
 
 ##########
 # CONFIGURATION

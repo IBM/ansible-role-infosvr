@@ -19,6 +19,7 @@
   command: "sysctl -n {{ item.key }}"
   with_items: "{{ __ibm_infosvr_kernel_params }}"
   register: __ibm_infosvr_existing_kernel_params
+  when: not ibm_infosvr_container
   changed_when: False
 
 # This is messy, but necessary
@@ -33,6 +34,7 @@
             {% endif %}"
     reload: yes
   with_items: "{{ __ibm_infosvr_existing_kernel_params.results }}"
+  when: not ibm_infosvr_container
   loop_control:
     label: "{{ item.item.key }}"
 
@@ -45,7 +47,7 @@
     destination_port: "{{ item.port }}"
     ctstate: NEW
   with_items: "{{ __ibm_infosvr_firewall_ports }}"
-  when: not ibm_infosvr_use_firewalld
+  when: not ibm_infosvr_use_firewalld and not ibm_infosvr_container
   register: __ibm_infosvr_iptables
 
 - name: kernel-and-firewall - save firewall config (iptables)
@@ -60,12 +62,12 @@
     permanent: true
     zone: "{{ ibm_infosvr_firewall_chain }}"
     interface: "{{ hostvars[inventory_hostname].ansible_default_ipv4.interface }}"
-  when: ibm_infosvr_use_firewalld
+  when: ibm_infosvr_use_firewalld and not ibm_infosvr_container
 
 - name: kernel-and-firewall - open ports in firewall (firewalld)
   firewalld: zone={{ item.chain }} port={{ item.port }}/tcp permanent=true state=enabled
   with_items: "{{ __ibm_infosvr_firewall_ports }}"
-  when: ibm_infosvr_use_firewalld
+  when: ibm_infosvr_use_firewalld and not ibm_infosvr_container
   register: __ibm_infosvr_firewalld
 
 - name: kernel-and-firewall - reload firewall to ensure ports are open (firewalld)
