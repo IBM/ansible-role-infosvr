@@ -15,8 +15,12 @@
 # limitations under the License.
 ###
 
-- import_tasks: ops/start_db.yml
-- import_tasks: ops/start_sos.yml
-- import_tasks: ops/start_ug.yml
-- import_tasks: ops/start_domain.yml
-- import_tasks: ops/start_engine.yml
+- name: stop IBM DB2
+  shell: source ~/.bashrc && db2stop
+  args:
+  	executable: /bin/bash
+  become_user: "{{ ibm_infosvr_users.db2inst1 }}"
+  become: yes
+  ignore_errors: yes
+  changed_when: False
+  when: ('ibm-information-server-repo' in group_names)
