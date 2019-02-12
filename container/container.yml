@@ -28,7 +28,7 @@
       become_user: "{{ ibm_infosvr_users.db2inst1 }}"
       become: yes
     - name: cleanup any unused files
-      command: rm -rf "{{ item }}"
+      command: rm -rf {{ item }}
       args:
         warn: False
       with_items:
