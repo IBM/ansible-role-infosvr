@@ -157,7 +157,7 @@ ansible-playbook [-i hosts] [site.yml] --tags=update
 
 This will apply any patches listed in the `vars/patches...` files for your particular release that have not already been applied. It will *not* however update any system-level packages for the operating system: if this is desired, ensure your broader playbook takes care of such an update.
 
-### Enviromnet operations
+### Environmet operations
 
 A number of tags have been provided to ease the operations of the environment, particularly when it spans multiple hosts:
 
