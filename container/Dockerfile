@@ -17,7 +17,7 @@
 FROM centos:7
 
 # Add base packages needed by Information Server, SSH and Python (needed for remote configuration by ansible)
-RUN yum install -y initscripts chkconfig which openssh-server python python-lxml python-jmespath sudo file libselinux-python unzip glibc.i686 libstdc++.i686 libXp libXau libXext libX11 libxcb libgcc.i686 libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
+RUN yum install -y initscripts chkconfig which lsof openssh-server python python-lxml python-jmespath sudo file libselinux-python unzip glibc.i686 libstdc++.i686 libXp libXau libXext libX11 libxcb libgcc.i686 libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
 
 # Copy a Linux look-a-like version
 COPY proc_version /root/proc_version

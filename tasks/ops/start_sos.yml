@@ -33,7 +33,7 @@
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
 
 - name: start IBM InfoSphere Information Server Zookeeper (service)
-  service: state=started name=InfoSrvZookeeper
+  service: state=started name=InfoSrvZookeeper pattern='org.apache.zookeeper.server.quorum.QuorumPeerMain'
   become_user: root
   become: yes
   retries: 3
@@ -79,7 +79,7 @@
           or __ibm_infosvr_ug_pods_list.find('solr') == -1)
 
 - name: start IBM InfoSphere Information Server Solr (service)
-  service: state=started name=InfoSrvSolrCloud
+  service: state=started name=InfoSrvSolrCloud pattern='/shared-open-source/solr/install -jar start.jar'
   become_user: root
   become: yes
   retries: 3
@@ -125,7 +125,7 @@
           or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
 
 - name: start IBM InfoSphere Information Server Kafka (service)
-  service: state=started name=InfoSrvKafka
+  service: state=started name=InfoSrvKafka pattern='kafka.Kafka'
   become_user: root
   become: yes
   retries: 3

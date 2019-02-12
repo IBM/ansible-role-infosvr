@@ -81,7 +81,27 @@ Linux version 3.10.0-957.1.3.el7.x86_64 (mockbuild@kbuilder.bsys.centos.org) (gc
 
 (This is also only possible when using `--privileged` above.)
 
-If using a reasonably recent release (v11.5.0.2+), you can probably skip this step.
+You could alternatively setup your playbook as follows to do this for you automatically as part of your deployment:
+
+```yaml
+---
+
+- name: install and configure IBM InfoSphere Information Server
+  hosts: all
+  any_errors_fatal: true
+  roles:
+    - IBM.infosvr
+  pre_tasks:
+    - name: check /proc/version
+      command: cat /proc/version
+      register: __ibm_infosvr_proc_version
+
+    - name: bind /proc/version
+      command: mount --bind /root/proc_version /proc/version
+      when: __ibm_infosvr_proc_version.stdout.find('Red Hat') == -1
+```
+
+If using a reasonably recent release (v11.5.0.2+), you can probably skip this step altogether.
 
 ## Run the Ansible deployment
 
