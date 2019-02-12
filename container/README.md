@@ -64,45 +64,6 @@ CONTAINER ID        IMAGE               COMMAND               CREATED           
 585ccce4a0ff        infosvr_base        "/usr/sbin/sshd -D"   3 seconds ago       Up 2 seconds                0.0.0.0:9446->9446/tcp, 0.0.0.0:59092->59092/tcp, 0.0.0.0:22222->22/tcp   infosvr_build
 ```
 
-## Hack the appearance of the Linux version
-
-For some older releases of software like Solr, the Linux version checking relies on `/proc/version`. To "fake"
-the installer(s) into thinking this is a normal Linux system, bind-mount the provided `proc_version` before
-proceeding:
-
-```bash
-$ docker exec -it infosvr_build /bin/bash
-[root@infosvr /]# cat /proc/version
-Linux version 4.9.125-linuxkit (root@659b6d51c354) (gcc version 6.4.0 (Alpine 6.4.0) ) #1 SMP Fri Sep 7 08:20:28 UTC 2018
-[root@infosvr /]# mount --bind /root/proc_version /proc/version
-[root@infosvr /]# cat /proc/version
-Linux version 3.10.0-957.1.3.el7.x86_64 (mockbuild@kbuilder.bsys.centos.org) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-36) (GCC) ) #1 SMP Thu Nov 29 14:49:43 UTC 2018
-```
-
-(This is also only possible when using `--privileged` above.)
-
-You could alternatively setup your playbook as follows to do this for you automatically as part of your deployment:
-
-```yaml
----
-
-- name: install and configure IBM InfoSphere Information Server
-  hosts: all
-  any_errors_fatal: true
-  roles:
-    - IBM.infosvr
-  pre_tasks:
-    - name: check /proc/version
-      command: cat /proc/version
-      register: __ibm_infosvr_proc_version
-
-    - name: bind /proc/version
-      command: mount --bind /root/proc_version /proc/version
-      when: __ibm_infosvr_proc_version.stdout.find('Red Hat') == -1
-```
-
-If using a reasonably recent release (v11.5.0.2+), you can probably skip this step altogether.
-
 ## Run the Ansible deployment
 
 Now that you have a running container, you simply need to configure your Ansible inventory to point at that
@@ -140,6 +101,18 @@ as the host in the inventory file. Other important settings are:
 
 Once your inventory is setup, run through the playbook execution just as if you were running it against a normal host.
 
+### Optimised deployment
+
+Alternatively, use the `container.yml` playbook provided in this directory to run through an optimised deployment:
+
+- For some older releases of software like Solr, the Linux version checking relies on `/proc/version`. To "fake"
+    the installer(s) into thinking the container is a normal Linux system, this playbook bind-mounts the provided
+    `proc_version` before proceeding. (This is only possible when using `--privileged` above when running the
+    container.) While this shouldn't be necessary on any reasonably recent version, it also shouldn't hurt such
+    deployments.
+- This playbook will also go through and attempt to remove any leftover artifacts for a "clean" and minimal
+    image for the next step.
+
 ## "Snapshot" the container
 
 Like building any other host, that previous step will take some time...
@@ -171,9 +144,3 @@ $ docker image save -o infosvr_v11502.tar infosvr:v11.5.0.2
 ```
 
 You can then further `gzip` the archive to get down to a more space-efficient ??? archive.
-
-### Cleaning up images before "snapshotting"
-
-To further optimise space, you may want to look for any left-over artifacts after the build that can be removed, eg. from `/tmp`
-or fixpacks and their backups from `/opt/IBM/InformationServer/Updates`. Remove any of these before doing the `docker commit ...`
-step above to ensure that they are not included in the image you create from the container.

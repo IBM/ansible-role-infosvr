@@ -28,12 +28,12 @@
   tags:
     - update
 
-- import_tasks: ops/stop.yml
+- import_tasks: stop.yml
   tags:
     - stop
     - restart
 
-- import_tasks: ops/start.yml
+- import_tasks: start.yml
   tags:
     - start
     - restart

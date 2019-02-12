@@ -166,5 +166,5 @@
           and __ibm_infosvr_version == "11.7"
           and __ibm_infosvr_features.ises
 
-- import_tasks: ops/restart.yml
+- import_tasks: restart.yml
   when: __ibm_infosvr_ug_install is changed

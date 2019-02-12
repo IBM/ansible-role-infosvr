@@ -164,5 +164,5 @@
   register: __ibm_infosvr_sos_properties
 
 # Tricky condition below to ensure we run a full restart, not just domain tier, if SOS props changed
-- import_tasks: ops/restart.yml
+- import_tasks: restart.yml
   when: hostvars[groups['ibm-information-server-domain'][0]].__ibm_infosvr_sos_properties is changed
