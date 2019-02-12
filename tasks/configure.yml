@@ -18,6 +18,18 @@
 ##########
 # POST-INSTALL CONFIG
 
+- name: configure - check existence of solr collection
+  uri:
+    url: "http://{{ ibm_infosvr_hosts.domain }}:58983/solr/admin/collections?action=list"
+    method: GET
+    status_code: 200
+    validate_certs: no
+    timeout: 120
+    return_content: yes
+  ignore_errors: yes
+  register: __ibm_infosvr_solr_collections
+  when: ('ibm-information-server-domain' in group_names)
+
 - name: configure - configure solr for Information Analyzer (linux) (v11.5)
   shell: >
           export JAVA_HOME={{ ibm_infosvr_install_location.linux }}/jdk/jre &&
@@ -29,11 +41,12 @@
           -d {{ ibm_infosvr_install_location.linux }}/ASBServer/solr_configs/da_datasets_configs
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/install/bin"
-    creates: "{{ ibm_infosvr_install_location.linux }}\
-              /shared-open-source/solr/data/1/da-datasets_shard1_replica1/data"
   become_user: root
   become: yes
-  when: ('ibm-information-server-domain' in group_names) and (__ibm_infosvr_version == "11.5")
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (__ibm_infosvr_version == "11.5")
+    and (__ibm_infosvr_solr_collections.content.find('da-datasets') == -1)
 
 - name: configure - update Solr indices
   uri:
