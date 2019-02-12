@@ -21,15 +21,10 @@
       import_role:
         name: IBM.infosvr
         tasks_from: stop.yml
-    - name: shutdown DB2
-      shell: source ~/.bashrc && db2stop
+    - name: cleanup any unused files
+      shell: rm -rf {{ item }}
       args:
         executable: /bin/bash
-      become_user: "{{ ibm_infosvr_users.db2inst1 }}"
-      become: yes
-    - name: cleanup any unused files
-      command: rm -rf {{ item }}
-      args:
         warn: False
       with_items:
         - "{{ ibm_infosvr_install_location.linux }}/isdump-redhat-*"
