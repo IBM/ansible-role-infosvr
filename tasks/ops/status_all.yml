@@ -32,8 +32,14 @@
   assert:
     that:
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.console | string) + ' ') > 0"
-      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.admin | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.default | string) + ' ') > 0"
+    msg: "Domain tier is not fully operational."
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: check status of WAS ND
+  assert:
+    that:
+      - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.admin | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.secure_admin | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.bootstrap | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.ipc_connector | string) + ' ') > 0"
@@ -41,8 +47,10 @@
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.orb_listener | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.server_auth_listener | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.soap_connector | string) + ' ') > 0"
-    msg: "Domain tier is not fully operational."
-  when: ('ibm-information-server-domain' in group_names)
+    msg: "Domain tier WAS ND is not fully operational."
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (not __ibm_infosvr_features.wlp)
 
 - name: check status of open source services (domain)
   assert:
