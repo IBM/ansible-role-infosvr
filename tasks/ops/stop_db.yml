@@ -18,7 +18,7 @@
 - name: stop IBM DB2
   shell: source ~/.bashrc && db2stop
   args:
-  	executable: /bin/bash
+    executable: /bin/bash
   become_user: "{{ ibm_infosvr_users.db2inst1 }}"
   become: yes
   ignore_errors: yes
