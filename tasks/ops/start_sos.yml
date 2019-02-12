@@ -40,8 +40,8 @@
   delay: 5
   register: __ibm_infosvr_os_start_zookeeper_result
   until: >
-          __ibm_infosvr_os_start_zookeeper_result.rc is defined
-          and __ibm_infosvr_os_start_zookeeper_result.rc == 0
+          __ibm_infosvr_os_start_zookeeper_result.failed is defined
+          and not __ibm_infosvr_os_start_zookeeper_result.failed
   changed_when: False
   when: >
           ('ibm-information-server-domain' in group_names)
@@ -86,8 +86,8 @@
   delay: 5
   register: __ibm_infosvr_os_start_solr_result
   until: >
-          __ibm_infosvr_os_start_solr_result.rc is defined
-          and __ibm_infosvr_os_start_solr_result.rc == 0
+          __ibm_infosvr_os_start_solr_result.failed is defined
+          and not __ibm_infosvr_os_start_solr_result.failed
   changed_when: False
   when: >
           ('ibm-information-server-domain' in group_names)
@@ -132,8 +132,8 @@
   delay: 5
   register: __ibm_infosvr_os_start_kafka_result
   until: >
-          __ibm_infosvr_os_start_kafka_result.rc is defined
-          and __ibm_infosvr_os_start_kafka_result.rc == 0
+          __ibm_infosvr_os_start_kafka_result.failed is defined
+          and not __ibm_infosvr_os_start_kafka_result.failed
   changed_when: False
   when: >
           ('ibm-information-server-domain' in group_names)

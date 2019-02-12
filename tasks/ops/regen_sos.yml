@@ -15,6 +15,15 @@
 # limitations under the License.
 ###
 
+- name: check version supports re-generation
+  stat:
+    path: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/zookeeper/update-config.sh"
+  register: __ibm_infosvr_sos_update_scripts
+  when: >
+          ('ibm-information-server-domain' in group_names)
+          and (not __ibm_infosvr_features.ises
+          or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
+
 - name: re-generate open source utilities configuration
   command: "{{ item }}"
   with_items:
@@ -27,3 +36,4 @@
           ('ibm-information-server-domain' in group_names)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
+          and __ibm_infosvr_sos_update_scripts.stat.exists
