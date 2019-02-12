@@ -32,26 +32,31 @@
             {{ (__ibm_infosvr_version == '11.5') | ternary('','/8.0') }}/bin/java -version"
   register: __ibm_infosvr_websphere_existing_jdk_version
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (not __ibm_infosvr_features.wlp)
 
 - name: update-jdk - check existing WebSphere JDK7 version (v11.5)
   command: >
           {{ ibm_infosvr_install_location.was }}/java_1.7_64/bin/java -version
   register: __ibm_infosvr_websphere_existing_jdk7_version
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names) and __ibm_infosvr_version == "11.5"
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and (__ibm_infosvr_version == "11.5")
+    and (not __ibm_infosvr_features.wlp)
 
 - import_tasks: ops/stop.yml
   when: >
-      (ibm_infosvr_jdk_update is defined and
-        __ibm_infosvr_existing_jdk_version.stderr is defined and
-        __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1)
-      or (ibm_infosvr_websphere_jdk_update is defined and
-        __ibm_infosvr_websphere_existing_jdk_version.stderr is defined and
-        __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1)
-      or (ibm_infosvr_websphere_jdk7_update is defined and
-        __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and
-        __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update.versionInfo) == -1)
+    (ibm_infosvr_jdk_update is defined and
+      __ibm_infosvr_existing_jdk_version.stderr is defined and
+      __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1)
+    or (ibm_infosvr_websphere_jdk_update is defined and
+      __ibm_infosvr_websphere_existing_jdk_version.stderr is defined and
+      __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1)
+    or (ibm_infosvr_websphere_jdk7_update is defined and
+      __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and
+      __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update.versionInfo) == -1)
 
 - name: update-jdk - check JDK is downloaded
   stat:
@@ -65,9 +70,9 @@
   become_user: root
   become: yes
   when: >
-        __ibm_infosvr_jdk_update_file is defined
-        and __ibm_infosvr_jdk_update_file.stat.exists
-        and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
+    __ibm_infosvr_jdk_update_file is defined
+    and __ibm_infosvr_jdk_update_file.stat.exists
+    and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
 
 - name: update-jdk - check WAS JDK is downloaded
   stat:
@@ -75,17 +80,20 @@
   delegate_to: localhost
   become: no
   register: __ibm_infosvr_jdk_was_file
-  when: ibm_infosvr_websphere_jdk_update is defined
+  when: >
+    ibm_infosvr_websphere_jdk_update is defined
+    and (not __ibm_infosvr_features.wlp)
 
 - import_tasks: patch_jdk_was.yml
   become_user: root
   become: yes
   when: >
-        ('ibm-information-server-domain' in group_names) and
-        not (__ibm_infosvr_features.wlp) and
-        __ibm_infosvr_jdk_was_file is defined and
-        __ibm_infosvr_jdk_was_file.stat.exists and
-        __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1
+    ('ibm-information-server-domain' in group_names)
+    and not (__ibm_infosvr_features.wlp)
+    and __ibm_infosvr_jdk_was_file is defined
+    and __ibm_infosvr_jdk_was_file.stat.exists
+    and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1
+    and (not __ibm_infosvr_features.wlp)
 
 - name: update-jdk - check WAS JDK7 is downloaded
   stat:
@@ -93,27 +101,30 @@
   delegate_to: localhost
   become: no
   register: __ibm_infosvr_jdk7_was_file
-  when: ibm_infosvr_websphere_jdk7_update is defined
+  when: >
+    ibm_infosvr_websphere_jdk7_update is defined
+    and (not __ibm_infosvr_features.wlp)
 
 - import_tasks: patch_jdk7_was.yml
   become_user: root
   become: yes
   when: >
-        ('ibm-information-server-domain' in group_names) and
-        not (__ibm_infosvr_features.wlp) and
-        ibm_infosvr_websphere_jdk7_update is defined and
-        __ibm_infosvr_jdk7_was_file is defined and
-        __ibm_infosvr_jdk7_was_file.stat.exists and
-        __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update.versionInfo) == -1
+    ('ibm-information-server-domain' in group_names)
+    and not (__ibm_infosvr_features.wlp)
+    and ibm_infosvr_websphere_jdk7_update is defined
+    and __ibm_infosvr_jdk7_was_file is defined
+    and __ibm_infosvr_jdk7_was_file.stat.exists
+    and __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update.versionInfo) == -1
+    and (not __ibm_infosvr_features.wlp)
 
 - import_tasks: ops/start.yml
   when: >
-      (ibm_infosvr_jdk_update is defined and
-        __ibm_infosvr_existing_jdk_version.stderr is defined and
-        __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1)
-      or (ibm_infosvr_websphere_jdk_update is defined and
-        __ibm_infosvr_websphere_existing_jdk_version.stderr is defined and
-        __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1)
-      or (ibm_infosvr_websphere_jdk7_update is defined and
-        __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and
-        __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update.versionInfo) == -1)
+    (ibm_infosvr_jdk_update is defined and
+      __ibm_infosvr_existing_jdk_version.stderr is defined and
+      __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1)
+    or (ibm_infosvr_websphere_jdk_update is defined and
+      __ibm_infosvr_websphere_existing_jdk_version.stderr is defined and
+      __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1)
+    or (ibm_infosvr_websphere_jdk7_update is defined and
+      __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and
+      __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_websphere_jdk7_update.versionInfo) == -1)
