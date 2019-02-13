@@ -16,11 +16,13 @@
 ###
 
 - name: start IBM InfoSphere Information Server application server
-  command: >
-          {% if __ibm_infosvr_features.wlp %}nohup {% endif %}
+  shell: >
+          {% if __ibm_infosvr_features.wlp %}setsid {% endif %}
           ./MetadataServer.sh run
+          {% if __ibm_infosvr_features.wlp %}</dev/zero &>/dev/null{% endif %}
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
+    executable: /bin/bash
   become_user: root
   become: yes
   changed_when: False
