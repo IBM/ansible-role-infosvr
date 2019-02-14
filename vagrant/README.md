@@ -6,8 +6,10 @@ Information Server into it using this Ansible role.
 This does not imply this configuration is in any way supported, but could provide a sandbox for some
 quick experimentation.
 
-(**Important**: as with any use of commercial software, check with your IBM Representative for details on
-any license entitlement questions or concerns.)
+**Important**: as with any use of licensed commercial software
+
+- be very careful not to publish / upload any such vagrant box into a public repository!
+- check with your IBM Representative for details on any license entitlement questions or concerns
 
 ## Prerequisites
 
