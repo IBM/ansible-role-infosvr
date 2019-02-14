@@ -16,7 +16,7 @@ keep a large VM around), this could be useful.
 You will need to have pre-installed:
 
 - [Docker](http://docker.com)
-- (And of course this [Ansible role](../README.md))
+- (And of course this [Ansible role](https://github.com/IBM/ansible-role-infosvr))
 
 ## TL;DR
 
