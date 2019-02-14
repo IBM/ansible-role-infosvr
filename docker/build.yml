@@ -17,6 +17,7 @@
 
 - name: install and configure IBM InfoSphere Information Server
   hosts: all
+  gather_facts: no
   any_errors_fatal: true
   roles:
     - IBM.infosvr
@@ -60,12 +61,16 @@
     - name: check /proc/version
       command: cat /proc/version
       register: __ibm_infosvr_proc_version
-      when: __ibm_infosvr_build_container.docker_container is defined
+      when: >
+        __ibm_infosvr_build_container.ansible_facts is defined and
+        __ibm_infosvr_build_container.ansible_facts.docker_container is defined
     - name: bind /proc/version
       command: mount --bind /root/proc_version /proc/version
       args:
         warn: False
       when: __ibm_infosvr_proc_version.stdout.find('Red Hat') == -1
+    - name: now gather facts
+      setup: gather_subset=all
 
   post_tasks:
     - name: shutdown Information Server
