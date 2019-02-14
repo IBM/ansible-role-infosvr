@@ -33,7 +33,7 @@
       docker_image:
         name: infosvr_base
         state: present
-        path: .
+        path: ./container
       delegate_to: localhost
     - name: startup new build container
       docker_container:
