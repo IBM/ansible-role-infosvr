@@ -1,0 +1,62 @@
+---
+
+- name: restore IBM InfoSphere Information Server into running container
+  hosts: all
+  any_errors_fatal: true
+  tasks:
+
+    - name: Ensure 'image_filename' variable has been provided
+      assert:
+        that:
+          - image_filename is defined
+        msg: "No 'image_filename' parameter provided to specify image to restore: \
+              use '-e image_filename=...' as an argument to ansible-playbook"
+      delegate_to: localhost
+
+    - name: restore image to Docker
+      shell: >
+        {% if (image_filename | splitext | last) == "gz" or (image_filename | splitext | last) == "tgz" %}
+        gunzip -c {{ image_filename }} | docker load
+        {% else %}
+        docker load -i {{ image_filename }}
+        {% endif %}
+      args:
+        executable: /bin/bash
+      delegate_to: localhost
+      register: __image_load
+
+    - name: parse tag from result
+      shell: echo "{{ __image_load.stdout }}" | cut -d':' -f 3
+      args:
+        executable: /bin/bash
+      delegate_to: localhost
+      register: image_tag
+
+    - name: startup new container
+      docker_container:
+        name: infosvr
+        image: infosvr:{{ image_tag.stdout | trim }}
+        hostname: infosvr.container.ibm.com
+        privileged: yes
+        sysctls:
+          kernel.msgmnb: "65536"
+          kernel.msgmax: "65536"
+          kernel.shmall: "4294967296"
+          kernel.msgmni: "1024"
+          kernel.sem: "250 256000 32 1024"
+          kernel.shmmni: "4096"
+          kernel.shmmax: "8589934592"
+        state: started
+        recreate: yes
+        published_ports:
+          - "22222:22"
+          - "9446:9446"
+          - "59092:59092"
+      delegate_to: localhost
+
+    - import_role: name=IBM.infosvr tasks_from=setup_vars.yml
+
+    - name: startup Information Server
+      import_role:
+        name: IBM.infosvr
+        tasks_from: start.yml

@@ -1,0 +1,84 @@
+---
+
+- name: install and configure IBM InfoSphere Information Server
+  hosts: all
+  any_errors_fatal: true
+  roles:
+    - IBM.infosvr
+
+  pre_tasks:
+    - name: Ensure 'image_tag' variable has been provided
+      assert:
+        that:
+          - image_tag is defined
+        msg: "No 'image_tag' parameter provided to specify image tag to commit: \
+              use '-e image_tag=vXX.X.X.X' as an argument to ansible-playbook"
+      delegate_to: localhost
+    - name: create Docker base image
+      docker_image:
+        name: infosvr_base
+        state: present
+        path: .
+      delegate_to: localhost
+    - name: startup new build container
+      docker_container:
+        name: infosvr_build
+        image: infosvr_base
+        hostname: infosvr.container.ibm.com
+        privileged: yes
+        sysctls:
+          kernel.msgmnb: "65536"
+          kernel.msgmax: "65536"
+          kernel.shmall: "4294967296"
+          kernel.msgmni: "1024"
+          kernel.sem: "250 256000 32 1024"
+          kernel.shmmni: "4096"
+          kernel.shmmax: "8589934592"
+        state: started
+        recreate: yes
+        published_ports:
+          - "22222:22"
+          - "9446:9446"
+          - "59092:59092"
+      delegate_to: localhost
+      register: __ibm_infosvr_build_container
+    - name: check /proc/version
+      command: cat /proc/version
+      register: __ibm_infosvr_proc_version
+      when: __ibm_infosvr_build_container.docker_container is defined
+    - name: bind /proc/version
+      command: mount --bind /root/proc_version /proc/version
+      args:
+        warn: False
+      when: __ibm_infosvr_proc_version.stdout.find('Red Hat') == -1
+
+  post_tasks:
+    - name: shutdown Information Server
+      import_role:
+        name: IBM.infosvr
+        tasks_from: stop.yml
+    - name: cleanup any unused files
+      shell: rm -rf {{ item }}
+      args:
+        executable: /bin/bash
+        warn: False
+      with_items:
+        - "{{ ibm_infosvr_install_location.linux }}/isdump-redhat-*"
+        - "{{ ibm_infosvr_install_location.linux }}/Updates/Downloads"
+        - "{{ ibm_infosvr_install_location.linux }}/Updates/Backup.*"
+        - "{{ ibm_infosvr_install_location.linux }}/Updates/_jvm.*"
+        - "{{ ibm_infosvr_install_location.linux }}/Updates/server.*"
+        - "/tmp/*"
+      when: __ibm_infosvr_build_container.docker_container is defined
+    - name: snapshot container into new image
+      shell: docker commit infosvr_build infosvr:{{ image_tag }}
+      args:
+        executable: /bin/bash
+      delegate_to: localhost
+      when: __ibm_infosvr_build_container.docker_container is defined
+    - name: save the image into a new archive
+      docker_image:
+        name: infosvr
+        tag: "{{ image_tag }}"
+        archive_path: infosvr_{{image_tag | replace('.', '') }}
+      delegate_to: localhost
