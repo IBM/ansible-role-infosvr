@@ -15,7 +15,7 @@ You will need to have pre-installed:
 
 - [Virtualbox](http://virtualbox.org)
 - [Vagrant](http://vagrantup.com)
-- (And of course this [Ansible role](../README.md))
+- (And of course this [Ansible role](../))
 
 ## Create a Virtualbox VM
 
