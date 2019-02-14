@@ -15,7 +15,7 @@ You will need to have pre-installed:
 
 - [Virtualbox](http://virtualbox.org)
 - [Vagrant](http://vagrantup.com)
-- (And of course this [Ansible role](../))
+- (And of course this [Ansible role](https://github.com/IBM/ansible-role-infosvr))
 
 ## Create a Virtualbox VM
 
