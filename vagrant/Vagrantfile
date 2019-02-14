@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# This Vagrantfile assumes an all-in-one setup
+Vagrant.configure(2) do |config|
+
+  config.vm.define "infosvr" do |infosvr|
+    infosvr.vm.box = "centos/7"
+    infosvr.vm.network "private_network", ip: "192.168.27.12"
+    infosvr.vm.hostname = "infosvr.vagrant.ibm.com"
+    infosvr.vm.synced_folder ".", "/vagrant", disabled: true
+    infosvr.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = 8192
+      vb.cpus = 2
+    end
+  end
+
+end
