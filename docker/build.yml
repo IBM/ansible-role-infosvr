@@ -95,7 +95,9 @@
       args:
         executable: /bin/bash
       delegate_to: localhost
-      when: __ibm_infosvr_build_container.docker_container is defined
+      when: >
+        __ibm_infosvr_build_container.ansible_facts is defined and
+        __ibm_infosvr_build_container.ansible_facts.docker_container is defined
     - name: save the image into a new archive
       docker_image:
         name: infosvr
