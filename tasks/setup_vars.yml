@@ -23,6 +23,11 @@
   when: ('ibm-information-server-clients' not in group_names)
   register: __ibm_infosvr_container
 
+- name: set container status
+  set_fact:
+    ibm_infosvr_container: "{{ __ibm_infosvr_container.stat.exists }}"
+  when: ('ibm-information-server-clients' not in group_names)
+
 - name: setup variables for subsequent role use
   set_fact:
     ibm_infosvr_hosts:
