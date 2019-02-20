@@ -20,6 +20,7 @@
 - name: container check
   stat:
     path: /.dockerenv
+  when: ('ibm-information-server-clients' not in group_names)
   register: __ibm_infosvr_container
 
 - name: setup variables for subsequent role use
