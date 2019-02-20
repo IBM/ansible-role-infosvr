@@ -81,7 +81,6 @@
       zookeeper: "{{ ibm_infosvr_ports.zookeeper }}"
       solr: "{{ ibm_infosvr_ports.solr }}"
       kafka: "{{ ibm_infosvr_ports.kafka }}"
-    ibm_infosvr_container: "{{ __ibm_infosvr_container.stat.exists }}"
 
 - name: setup external db variable
   set_fact:
