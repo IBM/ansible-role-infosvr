@@ -290,10 +290,52 @@ ports, etc).
 
 ### Running a new container from an image
 
-In theory you can run an image in a new container without still needing `--privileged` mode
-(see: https://developer.ibm.com/articles/dm-1602-db2-docker-trs/). However, in practice -- at least on non-Linux host systems
-where the only way to override `sysctl` options is through the run command -- this seemed to result in various problems with starting
-up DB2. Therefore, by far the simplest method to reliably startup a new container is simply to continue to run it in privileged mode:
+It should be possible to run an image in a new container without still needing `--privileged` mode
+(see: https://developer.ibm.com/articles/dm-1602-db2-docker-trs/). However, to succeed you will first need to check and possibly modify your container host's
+`sysctl` kernel options as follows:
+
+- `kernel.msgmnb` should be >= `65536`
+- `kernel.msgmax` should be >= `65536`
+- `kernel.shmall` should be >= `4294967296`
+- `kernel.msgmni` should be >= `1024`
+- `kernel.sem` should be >= `'250 256000 32 1024'` (ie. each number should be greater than what's listed, and all numbers need to be provided at once in the setting)
+- `kernel.shmmni` should be >= `4096`
+- `kernel.shmmax` should be >= `8589934592`
+
+Within the Linux host, you can first check the existing value of a parameter using the following command (as root):
+
+```bash
+$ sysctl -w kernel.msgmnb
+kernel.msgmnb = 65536
+```
+
+(Of course replace the parameter with the setting from the list above to check each one.) You only need to modify the settings where the existing value
+is less than the suggested value in the list above -- any that are already greater should be left alone.
+
+To modify the parameter, use the command:
+
+```bash
+$ sysctl -w kernel.msgmnb=65536
+```
+
+Note that on non-Linux systems you'll first need to get into the virtualized Linux host to run these commands -- and furthermore that it seems Docker has recently
+changed its setup so that there is no longer any clear way to make these changes survive between restarts of Docker itself. (In other words: you'll need to make 
+these changes each time you start, restart, upgrade, etc your Docker installation.)
+
+With Docker Desktop for MacOS this is a matter of:
+
+```bash
+$ find ~/Library/Containers/com.docker.docker/Data/ -name 'tty'
+/Users/name/Library/Containers/com.docker.docker/Data/vms/0/tty
+$ screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty
+```
+
+You may then simply see a blank screen: just press enter to get the command prompt within the virtualized Linux host. Once you've completed your
+changes, you can exit `screen` by using Ctrl-A Ctrl-\\
+
+(For other host operating systems, please consult stackoverflow or the Docker documentation.)
+
+Once that is configured, you should then be able to run your image as a new container as follows:
 
 ```bash
 $ docker run \
@@ -302,14 +344,8 @@ $ docker run \
     --publish 22222:22 \
     --publish 59092:59092 \
     --publish 9446:9446 \
-    --sysctl kernel.msgmnb=65536 \
-    --sysctl kernel.msgmax=65536 \
-    --sysctl kernel.shmall=4294967296 \
-    --sysctl kernel.msgmni=1024 \
-    --sysctl kernel.sem='250 256000 32 1024' \
-    --sysctl kernel.shmmni=4096 \
-    --sysctl kernel.shmmax=8589934592 \
-    --privileged \
+    --ipc=host \
+    --cap-add=IPC_OWNER \
     --detach \
     infosvr:v11.5.0.1
 ```
