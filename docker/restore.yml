@@ -18,6 +18,7 @@
 - name: restore IBM InfoSphere Information Server into running container
   hosts: all
   any_errors_fatal: true
+  gather_facts: no
   tasks:
 
     - name: Ensure 'image_filename' variable has been provided
@@ -52,22 +53,21 @@
         name: infosvr
         image: infosvr:{{ image_tag.stdout | trim }}
         hostname: infosvr.container.ibm.com
-        privileged: yes
-        sysctls:
-          kernel.msgmnb: "65536"
-          kernel.msgmax: "65536"
-          kernel.shmall: "4294967296"
-          kernel.msgmni: "1024"
-          kernel.sem: "250 256000 32 1024"
-          kernel.shmmni: "4096"
-          kernel.shmmax: "8589934592"
+        privileged: no
+        ipc_mode: host
+        capabilities:
+          - IPC_OWNER
         state: started
         recreate: yes
         published_ports:
           - "22222:22"
           - "9446:9446"
+          - "52181:52181"
           - "59092:59092"
       delegate_to: localhost
+
+    - name: now gather facts
+      setup: gather_subset=all
 
     - import_role: name=IBM.infosvr tasks_from=setup_vars.yml
 
