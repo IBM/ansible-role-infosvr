@@ -16,19 +16,23 @@
 
 FROM centos:7
 
-# Add base packages needed by Information Server, SSH and Python (needed for remote configuration by ansible)
-RUN yum install -y initscripts chkconfig which lsof openssh-server openssl python python-lxml python-jmespath sudo file libselinux-python unzip glibc.i686 libstdc++.i686 libXp libXau libXext libX11 libxcb libgcc.i686 libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
+# Add base packages needed by Information Server and Ansible
+RUN yum install -y initscripts chkconfig which lsof openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libstdc++.i686 libXp libXau libXext libX11 libxcb libgcc.i686 libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
+RUN easy_install pip && pip install ansible
 
 # Copy a Linux look-a-like version
 COPY proc_version /root/proc_version
 
-# Configure SSH
-RUN mkdir /root/.ssh && chmod 755 /root/.ssh && sshd-keygen -A
-COPY id_rsa.pub /root/.ssh/authorized_keys
-RUN chmod 600 /root/.ssh/authorized_keys
+# Configure defaults for connections, etc
+COPY ansible.cfg /etc/ansible/
+COPY local_connection /etc/ansible/inventories/
+COPY infosvr /etc/ansible/inventories/
+COPY container.yml /root/playbooks/build/
+COPY vars.yml /root/playbooks/build/group_vars/all.yml
 
-# Expose SSH, web console / API port, and Kafka port
-EXPOSE 22 9446 59092
+RUN ansible-galaxy install IBM.infosvr && ansible-galaxy install IBM.infosvr-metadata-asset-manager && ansible-galaxy install IBM.infosvr-import-export && ansible-galaxy install IBM.infosvr-openigc
 
-# Launch SSH
-ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+# Expose web console / API, Zookeeper and Kafka ports
+EXPOSE 9446 52181 59092
+
+ENTRYPOINT ["/bin/bash", "-c", "ansible-playbook /root/playbooks/build/container.yml --tags=start; tail -fF /opt/IBM/InformationServer/wlp/servers/iis/logs/messages.log"]

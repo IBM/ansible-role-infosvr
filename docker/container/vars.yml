@@ -1,0 +1,28 @@
+---
+
+ibm_infosvr_media_dir: /mnt/media
+
+ibm_infosvr_features:
+  opsdb: False              # DataStage Operations Console (and related database)
+  ia: True                  # Information Analyzer
+  igc: True                 # Information Governance Catalog
+  dataclick: False          # DataClick
+  masking: False            # Optim Data Masking features (for DataStage)
+  event_mgmt: False         # Event Management (for integration to BPM and DQEC)
+  qs: False                 # QualityStage
+  wisd: False               # Information Services Director
+  fasttrack: False          # FastTrack
+  dqec: False               # Data Quality Exception Console (DQEC)
+  igd: False                # Information Governance Dashboard (for integration with Cognos)
+  wlp: True                 # Use WebSphere Liberty profile instead of full WAS
+  ises: False               # Install and configure Information Server Enterprise Search
+  ml_term_assignment: False # Machine Learning-based automatic term assignment ('ises' above must also be True)
+
+ibm_infosvr_force:          # Set to true to force installs (ignore errors or warnings)
+  repo: True
+  domain: False
+  engine: False
+  client: False
+  patch: True
+
+ibm_infosvr_impexp_verify_selfsigned_ssl: True

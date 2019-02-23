@@ -11,6 +11,9 @@ keep a large VM around), this could be useful.
 - be very careful not to push any such container into a public repository!
 - check with your IBM Representative for details on any license entitlement questions or concerns
 
+**NOTICE**: THESE INSTRUCTIONS ARE OUT OF DATE, IN THE PROCESS OF BEING UPDATED TO DESCRIBE BUILDING A
+CONTAINER WITHOUT REQUIRING `--privileged` OR SSH.
+
 ## Prerequisites
 
 You will need to have pre-installed:
