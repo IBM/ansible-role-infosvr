@@ -17,7 +17,7 @@
 FROM centos:7
 
 # Add base packages needed by Information Server and Ansible
-RUN yum install -y initscripts chkconfig which lsof openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libstdc++.i686 libXp libXau libXext libX11 libxcb libgcc.i686 libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
+RUN yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libstdc++.i686 libXp libXau libXext libX11 libxcb libgcc.i686 libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
 RUN easy_install pip && pip install ansible
 
 # Copy a Linux look-a-like version
