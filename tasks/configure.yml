@@ -62,6 +62,13 @@
   ignore_errors: yes
   when: ('ibm-information-server-domain' in group_names)
 
+- name: configure - ensure local cache directory exists
+  file:
+    path: cache/
+    state: directory
+  become: no
+  delegate_to: localhost
+
 - name: configure - apply WLM config template
   template:
     src: wlmconfig.json.j2
