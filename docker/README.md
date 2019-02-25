@@ -221,11 +221,35 @@ your k8s spec includes the IPC mode, capabilities, and hostname as required by t
 You can use the same logging command as earlier to view the status of the container as it starts up:
 
 ```bash
-$ docker logs -f <container-name>
+$ docker logs -f <container_name>
 ```
 
 You should see Ansible output while the various components of Information Server itself are started up, eventually
 followed by the output of the WebSphere Liberty profile logs.
+
+### Step 6: Shutting down / removing the container
+
+While you can simply do a `docker stop` and removal, because the container has been running in the `host` IPC
+mode it may leave behind a number of shared objects if not shutdown cleanly. To shut down the container cleanly,
+run the following:
+
+```bash
+$ docker exec <container_name> sh -c 'ansible-playbook /root/playbooks/ops.yml --tags=stop'
+...
+PLAY RECAP *********************************************************************
+localhost                  : ok=21   changed=0    unreachable=0    failed=0
+
+Monday 25 February 2019  22:08:18 +0000 (0:00:01.357)       0:00:45.490 *******
+===============================================================================
+...
+$ docker stop <container_name>
+<container_name>
+$ docker rm <container_name>
+<container_name>
+```
+
+If you forget, you can always follow the instructions in troubleshooting below regarding mixed up shared memory
+to manually clean up any objects left behind.
 
 ## Troubleshooting
 
