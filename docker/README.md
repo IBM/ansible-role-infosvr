@@ -75,6 +75,7 @@ $ docker run \
     --cap-add=IPC_OWNER \
     --hostname infosvr \
     --volume ~/Developer/media:/mnt/media:ro \
+    -p 9446:9446 \
     -d \
     --name infosvr_build \
     infosvr_base
@@ -209,6 +210,7 @@ $ docker run \
     --ipc=host \
     --cap-add=IPC_OWNER \
     --hostname infosvr \
+    -p 9446:9446 \
     -d \
     localhost:5000/infosvr:v11.7.0.2
 ```
