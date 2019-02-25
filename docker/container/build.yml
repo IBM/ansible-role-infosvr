@@ -9,9 +9,9 @@
   pre_tasks:
     - name: ensure group_vars location exists
       file:
-        path: /root/playbooks/build/group_vars
+        path: /root/playbooks/group_vars
         state: directory
     - name: copy vars into group_vars
       copy:
         src: /mnt/media/vars.yml
-        dest: /root/playbooks/build/group_vars/all.yml
+        dest: /root/playbooks/group_vars/all.yml

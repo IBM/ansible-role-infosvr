@@ -1,0 +1,7 @@
+---
+
+- name: IBM InfoSphere Information Server
+  hosts: all
+  any_errors_fatal: true
+  roles:
+    - IBM.infosvr

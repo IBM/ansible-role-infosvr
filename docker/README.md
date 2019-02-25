@@ -146,7 +146,7 @@ shutdown the various services running in the container to ensure everything is i
 this by running the following command (from outside the container):
 
 ```bash
-$ docker exec infosvr_build sh -c 'ansible-playbook /root/playbooks/build/container.yml --tags=stop'
+$ docker exec infosvr_build sh -c 'ansible-playbook /root/playbooks/ops.yml --tags=stop'
 ...
 PLAY RECAP *********************************************************************
 localhost                  : ok=22   changed=0    unreachable=0    failed=0
@@ -180,7 +180,7 @@ like the following:
 
 ```bash
 $ docker commit \
-    --change='ENTRYPOINT ["/bin/bash", "-c", "ansible-playbook /root/playbooks/build/container.yml --tags=start && tail -F /opt/IBM/InformationServer/wlp/servers/iis/logs/messages.log"]' \
+    --change='ENTRYPOINT ["/bin/bash", "-c", "ansible-playbook /root/playbooks/ops.yml --tags=start && tail -F /opt/IBM/InformationServer/wlp/servers/iis/logs/messages.log"]' \
     infosvr_build \
     localhost:5000/infosvr:v11.7.0.2
 ```
@@ -296,7 +296,7 @@ more likely to be successful if you correct the underlying problem and start-ove
 From here you can also try re-running the deployment from within the container by using the following command:
 
 ```bash
-[root@infosvr /]# ansible-playbook /root/playbooks/build/container.yml
+[root@infosvr /]# ansible-playbook /root/playbooks/build.yml
 ```
 
 To exit `screen` without cancelling the deployment, press `Ctrl-A d`, and then you can simply
