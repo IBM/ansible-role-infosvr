@@ -34,4 +34,4 @@ RUN ansible-galaxy install IBM.infosvr && ansible-galaxy install IBM.infosvr-met
 # Expose web console / API, Zookeeper and Kafka ports
 EXPOSE 9446 52181 59092
 
-ENTRYPOINT ["/bin/bash", "-c", "screen -dmLS install sh -c 'ansible-playbook /root/playbooks/build/container.yml --extra-vars @/mnt/media/vars.yml'; tail -fF /screenlog.0"]
+ENTRYPOINT ["/bin/bash", "-c", "screen -dmLS install sh -c 'ansible-playbook /root/playbooks/build/container.yml --extra-vars @/mnt/media/vars.yml'; sleep 3 && tail -F /screenlog.0"]
