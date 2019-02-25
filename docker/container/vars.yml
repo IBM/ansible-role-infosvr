@@ -1,7 +1,5 @@
 ---
 
-ibm_infosvr_media_dir: /mnt/media
-
 ibm_infosvr_features:
   opsdb: False              # DataStage Operations Console (and related database)
   ia: True                  # Information Analyzer

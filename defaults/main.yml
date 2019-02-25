@@ -35,7 +35,7 @@ ibm_infosvr_tmp:
 ibm_infosvr_ug_storage: /dev/vdb
 
 # MEDIA / FILES
-ibm_infosvr_media_dir: ../media
+ibm_infosvr_media_dir: /mnt/media
 
 ibm_infosvr_media_bin:
   server_tarball: "IS_V11702_Linux_x86_multi.tar.gz"        # https://www.ibm.com/software/passportadvantage/pao_customer.html
