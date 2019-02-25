@@ -28,11 +28,11 @@ COPY ansible.cfg /etc/ansible/
 COPY local_connection /etc/ansible/inventories/
 COPY infosvr /etc/ansible/inventories/
 COPY container.yml /root/playbooks/build/
-COPY vars.yml /root/playbooks/build/group_vars/all.yml
+COPY vars.yml /root/vars/build.yml
 
 RUN ansible-galaxy install IBM.infosvr && ansible-galaxy install IBM.infosvr-metadata-asset-manager && ansible-galaxy install IBM.infosvr-import-export && ansible-galaxy install IBM.infosvr-openigc
 
 # Expose web console / API, Zookeeper and Kafka ports
 EXPOSE 9446 52181 59092
 
-ENTRYPOINT ["/bin/bash", "-c", "screen -dmLS install sh -c 'ansible-playbook /root/playbooks/build/container.yml'; tail -fF /screenlog.0"]
+ENTRYPOINT ["/bin/bash", "-c", "screen -dmLS install sh -c 'ansible-playbook /root/playbooks/build/container.yml --extra-vars @/root/vars/build.yml'; tail -fF /screenlog.0"]
