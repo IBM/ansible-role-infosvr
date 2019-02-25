@@ -180,7 +180,7 @@ like the following:
 
 ```bash
 $ docker commit \
-    --change='ENTRYPOINT ["/bin/bash", "-c", "ansible-playbook /root/playbooks/ops.yml --tags=start && tail -F /opt/IBM/InformationServer/wlp/servers/iis/logs/messages.log"]' \
+    --change='ENTRYPOINT ["/bin/bash", "-c", "ansible-playbook /root/playbooks/ops.yml --tags=start && tail -F /opt/IBM/InformationServer/wlp/usr/servers/iis/logs/messages.log"]' \
     infosvr_build \
     localhost:5000/infosvr:v11.7.0.2
 ```
