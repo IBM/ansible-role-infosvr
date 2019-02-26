@@ -1,11 +1,11 @@
 [ibm-information-server-repo]
-localhost
+infosvr
 
 [ibm-information-server-domain]
-localhost
+infosvr
 
 [ibm-information-server-engine]
-localhost
+infosvr
 
 [ibm-information-server-clients]
 

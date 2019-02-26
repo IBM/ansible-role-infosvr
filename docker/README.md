@@ -83,7 +83,9 @@ $ docker run \
 
 In this example we use the hostname `infosvr` and our local directory containing the software is `~/Developer/media`,
 which we are mounting into the running container in read-only mode. (The `ipc` and `cap-add` arguments ensure we have
-the appropriate parameters for installing and running DB2.)
+the appropriate parameters for installing and running DB2.) **Important note**: if you opt to use a hostname *other
+than* `infosvr`, please also change the `local_connection` and `infosvr` files in the `container` directory *before*
+running the very first build step in this process.
 
 Upon running this container, it will begin automatically installing and deploying IBM InfoSphere Information Server
 into the container. You can view the progress of the installation using the following command from outside the docker
