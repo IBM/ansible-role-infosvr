@@ -55,7 +55,10 @@
     that: "(__ibm_infosvr_selinux_result.rc is defined \
             and __ibm_infosvr_selinux_result.rc == 0)
             or (__ibm_infosvr_selinux_result.msg is defined \
-            and __ibm_infosvr_selinux_result.msg == 'Unable to find file /etc/selinux/config')"
+            and __ibm_infosvr_selinux_result.msg == 'Unable to find file /etc/selinux/config') \
+            or (__ibm_infosvr_selinux_result is changed) \
+            or (__ibm_infosvr_selinux_result.state is defined \
+            and __ibm_infosvr_selinux_result.state == 'disabled')"
 
 # As suggested by this technote to reduce memory usage -- http://www-01.ibm.com/support/docview.wss?uid=swg21701446
 # Will do this any time the server has less than 32GB of memory
