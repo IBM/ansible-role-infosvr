@@ -30,6 +30,7 @@
 
 - name: configure-em - enable event management
   shell: >
+          set -o pipefail &&
           source `cat /.dshome`/dsenv &&
           `echo $'\n'` | ./event_management_setup.sh
           {{ ibm_infosvr_user_isadmin }}

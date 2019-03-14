@@ -29,21 +29,28 @@
 
 - name: get SSL certificate chain length
   shell: >
+          set -o pipefail &&
           wc -l /tmp/__ibm_infosvr_cert_chain
           | cut -d' ' -f 1
+  args:
+    executable: /bin/bash
   register: __ibm_infosvr_cert_chain_length
   when: ('ibm-information-server-domain' in group_names)
 
 - name: get location of last certificate in chain
   shell: >
+          set -o pipefail &&
           grep -n 'BEGIN CERTIFICATE' /tmp/__ibm_infosvr_cert_chain
           | tail -1
           | cut -d':' -f 1
+  args:
+    executable: /bin/bash
   register: __ibm_infosvr_cert_chain_root
   when: ('ibm-information-server-domain' in group_names)
 
 - name: record root SSL certificate
-  shell: "tail -$(({{ __ibm_infosvr_cert_chain_length.stdout }}-{{ __ibm_infosvr_cert_chain_root.stdout }}+1)) \
+  shell: "set -o pipefail && \
+          tail -$(({{ __ibm_infosvr_cert_chain_length.stdout }}-{{ __ibm_infosvr_cert_chain_root.stdout }}+1)) \
           /tmp/__ibm_infosvr_cert_chain \
           | openssl x509 -outform PEM \
           > /tmp/__ibm_infosvr_cert_root.crt"

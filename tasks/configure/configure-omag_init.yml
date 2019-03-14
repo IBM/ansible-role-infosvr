@@ -105,6 +105,7 @@
 
 - name: get configuration filenames
   shell: >
+          set -o pipefail &&
           kubectl exec {{ __ibm_infosvr_ug_omag_pod.stdout | trim }} -- ls /
           | grep config
   args:
@@ -126,6 +127,7 @@
 
 - name: get registrystore filenames
   shell: >
+          set -o pipefail &&
           kubectl exec {{ __ibm_infosvr_ug_omag_pod.stdout | trim }} -- ls /
           | grep registrystore
   args:

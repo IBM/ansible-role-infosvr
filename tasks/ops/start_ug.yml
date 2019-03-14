@@ -28,6 +28,7 @@
 
 - name: ensure all pods are running
   shell: >
+          set -o pipefail &&
           kubectl get pods --no-headers=true | awk '{ print $2 }'
   args:
     executable: /bin/bash
@@ -46,9 +47,12 @@
 
 - name: get OMAG pod name
   shell: >
+          set -o pipefail &&
           kubectl get pods --no-headers=true
           | awk '{ print $1 }'
           | grep 'omag'
+  args:
+    executable: /bin/bash
   ignore_errors: True
   changed_when: False
   become: yes
