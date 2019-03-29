@@ -61,5 +61,9 @@
 
 - name: refresh - determine version from install media
   set_fact:
-    __ibm_infosvr_version: "{{ ibm_infosvr_media_bin.client_zip[4:8] }}"
+    __ibm_infosvr_version: "{% if ibm_infosvr_media_bin.client_zip[:3] == 'IIS' %}\
+                            {{ ibm_infosvr_media_bin.client_zip[5:9] }}\
+                            {% else %}\
+                            {{ ibm_infosvr_media_bin.client_zip[4:8] }}\
+                            {% endif %}"
   when: ibm_infosvr_version_xml_output.rc != 0 or ('ibm-information-server-clients' in group_names)

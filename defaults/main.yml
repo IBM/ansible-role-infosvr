@@ -38,15 +38,15 @@ ibm_infosvr_ug_storage: /dev/vdb
 ibm_infosvr_media_dir: /mnt/media
 
 ibm_infosvr_media_bin:
-  server_tarball: "IS_V11702_Linux_x86_multi.tar.gz"        # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  ug_tarball: "is-enterprise-search-11.7.0.2.tar.gz"        # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  client_zip: "IS_V11.7.0.2_WINDOWS_CLIENT.zip"             # https://www.ibm.com/software/passportadvantage/pao_customer.html
-  entitlements: "IS_V11702_EE_bundle_spec_file.zip.zip"     # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  server_tarball: "IS_V1171_Linux_x86_multi.tar.gz"         # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  ug_tarball: "is-enterprise-search-11.7.1.tar.gz"          # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  client_zip: "IIS_V11.7.1_WINDOWS_CLIENT.zip"              # https://www.ibm.com/software/passportadvantage/pao_customer.html
+  entitlements: "IS_V1171_EE_bundle_spec_file.zip"          # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
 ibm_infosvr_updater:
-  version: "IBM InfoSphere Information Server Update Installer Version 11.7.0.121"
-  win: "is-update-windows-11.7.0.121.zip"
-  linux: "is-update-linux64-11.7.0.121.tar"
+  version: "IBM InfoSphere Information Server Update Installer Version 11.7.1.020"
+  win: "is-update-windows-11.7.1.020.zip"
+  linux: "is-update-linux64-11.7.1.020.tar"
 
 # FEATURES TO INSTALL
 ibm_infosvr_features:
