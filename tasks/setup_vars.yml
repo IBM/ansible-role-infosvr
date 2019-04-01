@@ -178,6 +178,16 @@
             {% else %}\
             False\
             {% endif %}"
+      wkc: "{% if ibm_infosvr_features.wkc is defined %}\
+            {{ ibm_infosvr_features.wkc }}\
+            {% else %}\
+            False\
+            {% endif %}"
+      wkc_pro: "{% if ibm_infosvr_features.wkc_pro is defined %}\
+                {{ ibm_infosvr_features.wkc_pro }}\
+                {% else %}\
+                False\
+                {% endif %}"
 
 - name: check if UG (ISES) is installed
   shell: >
