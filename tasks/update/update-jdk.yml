@@ -70,7 +70,8 @@
   become_user: root
   become: yes
   when: >
-    __ibm_infosvr_jdk_update_file is defined
+    ibm_infosvr_jdk_update is defined
+    and __ibm_infosvr_jdk_update_file is defined
     and __ibm_infosvr_jdk_update_file.stat.exists
     and __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
 
@@ -90,6 +91,7 @@
   when: >
     ('ibm-information-server-domain' in group_names)
     and not (__ibm_infosvr_features.wlp)
+    and ibm_infosvr_websphere_jdk_update is defined
     and __ibm_infosvr_jdk_was_file is defined
     and __ibm_infosvr_jdk_was_file.stat.exists
     and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_websphere_jdk_update.versionInfo) == -1
