@@ -181,3 +181,31 @@
     (((__ibm_infosvr_ia_iadb_params.stdout|from_json).host != (hostvars[ibm_infosvr_hosts.engine].ansible_fqdn|upper))
     or ((__ibm_infosvr_ia_iadb_params.stdout|from_json).dataConnection != "IADB")
     or ((__ibm_infosvr_ia_iadb_params.stdout|from_json).datasource != "jdbc/IADB"))
+
+- name: configure-ia - get global analysis engine settings
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -getDSParams
+  changed_when: False
+  register: __ibm_infosvr_ia_ds_params
+  when: ('ibm-information-server-domain' in group_names)
+
+- name: configure-ia - configure global analysis engine settings
+  command: >
+          {{ ibm_infosvr_install_location.linux }}/ASBServer/bin/IAAdmin.sh
+          -user {{ ibm_infosvr_user_isadmin }}
+          -password {{ ibm_infosvr_upwd_isadmin }}
+          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+          -setDSParams
+          -dsHost {{ hostvars[ibm_infosvr_hosts.engine].ansible_fqdn | lower }}
+          -dsUser {{ ibm_infosvr_user_dsadmin }}
+          -dsPassword {{ ibm_infosvr_upwd_dsadmin }}
+          -useCredentialMapping TRUE
+  when: >
+    ('ibm-information-server-domain' in group_names)
+    and
+    (((__ibm_infosvr_ia_ds_params.stdout|from_json).host != (hostvars[ibm_infosvr_hosts.engine].ansible_fqdn|lower))
+    or ((__ibm_infosvr_ia_ds_params.stdout|from_json).user != ibm_infosvr_user_dsadmin))

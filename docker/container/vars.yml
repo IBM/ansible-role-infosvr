@@ -15,6 +15,9 @@ ibm_infosvr_features:
   wlp: True                 # Use WebSphere Liberty profile instead of full WAS
   ises: False               # Install and configure Information Server Enterprise Search
   ml_term_assignment: False # Machine Learning-based automatic term assignment ('ises' above must also be True)
+  omag: False               # Open Metadata and Governance server (ODPi project Egeria)
+  wkc: False                # Watson Knowledge Catalog (Lite)
+  wkc_pro: False            # Watson Knowledge Catalog (Professional)
 
 ibm_infosvr_force:          # Set to true to force installs (ignore errors or warnings)
   repo: True
