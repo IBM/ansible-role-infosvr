@@ -15,10 +15,13 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_patches_list: []
+ibm_infosvr_patches_list:
 #  - srcFile: servicepack_11.7.0.2_SP1_win_11702.zip
 #    pkgFile: servicepack.is_11_7_0_2.windows.SP1.RC1.ispkg
 #    versionInfo: servicepack_SP1_IS11702_11702
+  - srcFile: servicepack_11.7.1.0_SP1_win_11710.zip
+    pkgFile: servicepack_11.7.1.0_SP1_win_11710.ispkg
+    versionInfo: servicepack_SP1_IS1171
 
 #ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
 #  filename: "ibm-java-sdk-80-win-i386.zip"

@@ -16,9 +16,12 @@
 ###
 
 ibm_infosvr_patches_list:
-  - srcFile: "servicepack_11.5.0.0_ServicePack_5_linux64_11502.tar.gz"
-    pkgFile: "servicepack_11.5.0.0_ServicePack_5_linux64_11502.ispkg"
-    versionInfo: "servicepack_SP5_IS11502_11502"
+#  - srcFile: "servicepack_11.5.0.0_ServicePack_5_linux64_11502.tar.gz"
+#    pkgFile: "servicepack_11.5.0.0_ServicePack_5_linux64_11502.ispkg"
+#    versionInfo: "servicepack_SP5_IS11502_11502"
+  - srcFile: servicepack_11.5.0.0_ServicePack_6_linux64_11502.tar.gz
+    pkgFile: servicepack_11.5.0.0_ServicePack_6_linux64_11502.ispkg
+    versionInfo: servicepack_SP6_IS11502_11502
 
 ibm_infosvr_jdk_update:  # https://www.ibm.com/support/fixcentral/
   filename: "ibm-java-sdk-7.1-4.30-linux-x86_64.tgz"

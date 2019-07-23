@@ -15,13 +15,16 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_patches_list: []
+ibm_infosvr_patches_list:
 #  - srcFile: patch_Dec2018_DFD_all_11702.zip
 #    pkgFile: patch_Dec2018_DFD_all_11702.ispkg
 #    versionInfo: patch_Dec2018_DFD_all_11702
 #  - srcFile: servicepack_11.7.0.2_SP1_linux64_11702.tar.gz
 #    pkgFile: servicepack.is_11_7_0_2.linux64.SP1.RC1.ispkg
 #    versionInfo: servicepack_SP1_IS11702_11702
+  - srcFile: servicepack_11.7.1.0_SP1_linux64_11710.tar.gz
+    pkgFile: servicepack_11.7.1.0_SP1_linux64_11710.ispkg
+    versionInfo: servicepack_SP1_IS1171
 
 #ibm_infosvr_websphere_jdk_update:
 #  filename: "ibm-java-sdk-8.0-5.22-linux-x64-installmgr.zip"
