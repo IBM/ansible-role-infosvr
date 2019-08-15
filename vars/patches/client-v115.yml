@@ -19,6 +19,15 @@ ibm_infosvr_patches_list:
 #  - srcFile: "servicepack_11.5.0.0_ServicePack_5_win_11502.zip"
 #    pkgFile: "servicepack_11.5.0.0_ServicePack_5_win_11502.ispkg"
 #    versionInfo: "servicepack_SP5_IS11502_11502"
+  - srcFile: rollup_RU2_xmeta_ALL_11502.zip
+    pkgFile: rollup_RU2_xmeta_ALL_11502.ispkg
+    versionInfo: rollup_RU2_xmeta_ALL_11502
+  - srcFile: rollup_RU11_ISF_all_11502.zip
+    pkgFile: rollup_RU11_ISF_all_11502.ispkg
+    versionInfo: rollup_RU11_ISF_all_11502
+  - srcFile: rollup_RU11_IMAM_ALL_11502SP5_v2.zip
+    pkgFile: rollup_RU11_IMAM_ALL_11502SP5_v2.ispkg
+    versionInfo: rollup_RU11_IMAM_ALL_11502SP5_v2
   - srcFile: servicepack_11.5.0.0_ServicePack_6_windows_11502.zip
     pkgFile: servicepack_11.5.0.0_ServicePack_6_windows_11502.ispkg
     versionInfo: servicepack_SP6_IS11502_11502

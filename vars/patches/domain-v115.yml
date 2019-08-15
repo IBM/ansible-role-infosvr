@@ -19,6 +19,24 @@ ibm_infosvr_patches_list:
 #  - srcFile: "servicepack_11.5.0.0_ServicePack_5_linux64_11502.tar.gz"
 #    pkgFile: "servicepack_11.5.0.0_ServicePack_5_linux64_11502.ispkg"
 #    versionInfo: "servicepack_SP5_IS11502_11502"
+  - srcFile: rollup_RU2_xmeta_ALL_11502.zip
+    pkgFile: rollup_RU2_xmeta_ALL_11502.ispkg
+    versionInfo: rollup_RU2_xmeta_ALL_11502
+  - srcFile: patch_JR60159_istools_unix_11500-02.tar
+    pkgFile: patch_JR60159_istools_unix_11500-02.ispkg
+    versionInfo: patch_JR60159_istools_unix_11500-02
+  - srcFile: patch_JR60159_IGC_11502_SP5.zip
+    pkgFile: patch_JR60159_IGC_11502_SP5.ispkg
+    versionInfo: patch_JR60159_IGC_11502_SP5
+  - srcFile: rollup_RU11_ISF_all_11502.zip
+    pkgFile: rollup_RU11_ISF_all_11502.ispkg
+    versionInfo: rollup_RU11_ISF_all_11502
+  - srcFile: patch_JR60306_CAS_all_server_11500-11502.zip
+    pkgFile: patch_JR60306_CAS_all_server_11500-11502.ispkg
+    versionInfo: patch_JR60306_CAS_all_server_11500-11502
+  - srcFile: rollup_RU11_IMAM_ALL_11502SP5_v2.zip
+    pkgFile: rollup_RU11_IMAM_ALL_11502SP5_v2.ispkg
+    versionInfo: rollup_RU11_IMAM_ALL_11502SP5_v2
   - srcFile: servicepack_11.5.0.0_ServicePack_6_linux64_11502.tar.gz
     pkgFile: servicepack_11.5.0.0_ServicePack_6_linux64_11502.ispkg
     versionInfo: servicepack_SP6_IS11502_11502
