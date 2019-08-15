@@ -32,13 +32,13 @@
 
 - name: configure - configure solr for Information Analyzer (linux) (v11.5)
   shell: >
-          export JAVA_HOME={{ ibm_infosvr_install_location.linux }}/jdk/jre &&
-          ./solr create_collection
-          -c da-datasets
-          -shards 1
-          -replicationFactor 1
-          -port 58983
-          -d {{ ibm_infosvr_install_location.linux }}/ASBServer/solr_configs/da_datasets_configs
+    export JAVA_HOME={{ ibm_infosvr_install_location.linux }}/jdk/jre &&
+    ./solr create_collection
+    -c da-datasets
+    -shards 1
+    -replicationFactor 1
+    -port 58983
+    -d {{ ibm_infosvr_install_location.linux }}/ASBServer/solr_configs/da_datasets_configs
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/solr/install/bin"
   become_user: root
@@ -75,6 +75,7 @@
     dest: cache/wlmconfig.json
   become: no
   delegate_to: localhost
+  when: ('ibm-information-server-domain' in group_names)
 
 - name: configure - set WLM properties according to environment scale
   uri:
@@ -121,22 +122,22 @@
 
 - name: batch sync the ISES graph
   shell: >
-          source ~/.bashrc &&
-          source dsenv &&
-          {{ ibm_infosvr_install_location.linux }}/Clients/istools/cli/istool.sh
-          graph batchload
-          -u {{ ibm_infosvr_user_isadmin }}
-          -p {{ ibm_infosvr_upwd_isadmin }}
-          -dom {{ ibm_infosvr_hosts.domain | lower }}:{{ ibm_infosvr_ports.console }}
-          -command START
-          -all
+    source ~/.bashrc &&
+    source dsenv &&
+    {{ ibm_infosvr_install_location.linux }}/Clients/istools/cli/istool.sh
+    graph batchload
+    -u {{ ibm_infosvr_user_isadmin }}
+    -p {{ ibm_infosvr_upwd_isadmin }}
+    -dom {{ ibm_infosvr_hosts.domain | lower }}:{{ ibm_infosvr_ports.console }}
+    -command START
+    -all
   args:
     executable: /bin/bash
     chdir: "{{ ibm_infosvr_install_location.linux }}/Server/DSEngine"
   when: >
-          ('ibm-information-server-engine' in group_names)
-          and __ibm_infosvr_features.ises
-          and __ibm_infosvr_version == "11.7"
+    ('ibm-information-server-engine' in group_names)
+    and __ibm_infosvr_features.ises
+    and __ibm_infosvr_version == "11.7"
   tags:
     - "sync_and_index"
 
@@ -160,6 +161,6 @@
 
 - import_tasks: configure/configure-omag.yml
   when: >
-          __ibm_infosvr_features.omag
-          and __ibm_infosvr_version == "11.7"
-          and ('ibm-information-server-ug' in group_names)
+    __ibm_infosvr_features.omag
+    and __ibm_infosvr_version == "11.7"
+    and ('ibm-information-server-ug' in group_names)
