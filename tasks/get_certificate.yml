@@ -17,10 +17,10 @@
 
 - name: record Information Server SSL certificate chain
   shell: >
-          openssl s_client
-          -connect {{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports_ext.console }}
-          -showcerts </dev/null 2>/dev/null
-          > /tmp/__ibm_infosvr_cert_chain
+    openssl s_client
+    -connect {{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports_ext.console }}
+    -showcerts </dev/null 2>/dev/null
+    > /tmp/__ibm_infosvr_cert_chain
   args:
     creates: /tmp/__ibm_infosvr_cert_chain
   when: ('ibm-information-server-domain' in group_names)
@@ -29,9 +29,9 @@
 
 - name: get SSL certificate chain length
   shell: >
-          set -o pipefail &&
-          wc -l /tmp/__ibm_infosvr_cert_chain
-          | cut -d' ' -f 1
+    set -o pipefail &&
+    wc -l /tmp/__ibm_infosvr_cert_chain
+    | cut -d' ' -f 1
   args:
     executable: /bin/bash
   register: __ibm_infosvr_cert_chain_length
@@ -39,21 +39,22 @@
 
 - name: get location of last certificate in chain
   shell: >
-          set -o pipefail &&
-          grep -n 'BEGIN CERTIFICATE' /tmp/__ibm_infosvr_cert_chain
-          | tail -1
-          | cut -d':' -f 1
+    set -o pipefail &&
+    grep -n 'BEGIN CERTIFICATE' /tmp/__ibm_infosvr_cert_chain
+    | tail -1
+    | cut -d':' -f 1
   args:
     executable: /bin/bash
   register: __ibm_infosvr_cert_chain_root
   when: ('ibm-information-server-domain' in group_names)
 
 - name: record root SSL certificate
-  shell: "set -o pipefail && \
-          tail -$(({{ __ibm_infosvr_cert_chain_length.stdout }}-{{ __ibm_infosvr_cert_chain_root.stdout }}+1)) \
-          /tmp/__ibm_infosvr_cert_chain \
-          | openssl x509 -outform PEM \
-          > /tmp/__ibm_infosvr_cert_root.crt"
+  shell: >
+    set -o pipefail &&
+    tail -$(({{ __ibm_infosvr_cert_chain_length.stdout }}-{{ __ibm_infosvr_cert_chain_root.stdout }}+1))
+    /tmp/__ibm_infosvr_cert_chain
+    | openssl x509 -outform PEM
+    > /tmp/__ibm_infosvr_cert_root.crt
   args:
     executable: /bin/bash
   when: ('ibm-information-server-domain' in group_names)

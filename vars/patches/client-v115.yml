@@ -26,9 +26,9 @@ ibm_infosvr_patches_list:
 ibm_infosvr_jdk32_update:  # https://www.ibm.com/support/fixcentral/
   filename: "ibm-java-sdk-71-win-i386.zip"
   extractedpath: "sdk"
-  versionInfo: "pwi3270_27sr4fp25-20180430_01(SR4 FP25)"
+  versionInfo: "pwi3270_27sr4fp45-20190410_01(SR4 FP45)"
 
 ibm_infosvr_jdk64_update:  # https://www.ibm.com/support/fixcentral/
   filename: "ibm-java-sdk-71-win-x86_64.zip"
   extractedpath: "sdk"
-  versionInfo: "pwa6470_27sr4fp25-20180430_01(SR4 FP25)"
+  versionInfo: "pwa6470_27sr4fp45-20190410_01(SR4 FP45)"

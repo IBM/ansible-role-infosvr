@@ -17,11 +17,11 @@
 
 - name: update - close any active user sessions
   command: >
-          ./SessionAdmin.sh
-          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
-          -user {{ ibm_infosvr_user_isadmin }}
-          -password {{ ibm_infosvr_upwd_isadmin }}
-          -kill-user-sessions
+    ./SessionAdmin.sh
+    -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+    -user {{ ibm_infosvr_user_isadmin }}
+    -password {{ ibm_infosvr_upwd_isadmin }}
+    -kill-user-sessions
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
   become_user: root
@@ -31,11 +31,11 @@
 
 - name: update - put server into maintenance mode
   command: >
-          ./SessionAdmin.sh
-          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
-          -user {{ ibm_infosvr_user_isadmin }}
-          -password {{ ibm_infosvr_upwd_isadmin }}
-          -set-maint-mode ON
+    ./SessionAdmin.sh
+    -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+    -user {{ ibm_infosvr_user_isadmin }}
+    -password {{ ibm_infosvr_upwd_isadmin }}
+    -set-maint-mode ON
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
   become_user: root
@@ -61,11 +61,11 @@
 
 - name: update - remove server from maintenance mode
   command: >
-          ./SessionAdmin.sh
-          -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
-          -user {{ ibm_infosvr_user_isadmin }}
-          -password {{ ibm_infosvr_upwd_isadmin }}
-          -set-maint-mode OFF
+    ./SessionAdmin.sh
+    -url https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}
+    -user {{ ibm_infosvr_user_isadmin }}
+    -password {{ ibm_infosvr_upwd_isadmin }}
+    -set-maint-mode OFF
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/ASBServer/bin"
   become_user: root

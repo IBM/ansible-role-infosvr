@@ -104,9 +104,9 @@
 # Optional Unified Governance (UG) / Enterprise Search (ISES) tier
 - name: get list of schemas
   shell: >
-          source ~/.bashrc &&
-          db2 connect to xmeta &&
-          db2 "select schemaname from syscat.schemata"
+    source ~/.bashrc &&
+    db2 connect to xmeta &&
+    db2 "select schemaname from syscat.schemata"
   args:
     executable: /bin/bash
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
@@ -114,25 +114,25 @@
   changed_when: False
   register: __ibm_infosvr_repo_schema_list
   when: >
-          ('ibm-information-server-repo' in group_names)
-          and __ibm_infosvr_version == "11.7"
-          and __ibm_infosvr_features.ises
+    ('ibm-information-server-repo' in group_names)
+    and __ibm_infosvr_version == "11.7"
+    and __ibm_infosvr_features.ises
 
 - name: ensure UG schemas exist
   shell: >
-          source ~/.bashrc &&
-          db2 connect to xmeta &&
-          db2 create schema {{ item }} &&
-          db2 grant CREATEIN, ALTERIN, DROPIN ON SCHEMA {{ item }} TO USER {{ ibm_infosvr_user_xmeta }}
+    source ~/.bashrc &&
+    db2 connect to xmeta &&
+    db2 create schema {{ item }} &&
+    db2 grant CREATEIN, ALTERIN, DROPIN ON SCHEMA {{ item }} TO USER {{ ibm_infosvr_user_xmeta }}
   args:
     executable: /bin/bash
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
   become: yes
   when: >
-          ('ibm-information-server-repo' in group_names)
-          and __ibm_infosvr_version == "11.7"
-          and __ibm_infosvr_features.ises
-          and __ibm_infosvr_repo_schema_list.stdout.find(item) == -1
+    ('ibm-information-server-repo' in group_names)
+    and __ibm_infosvr_version == "11.7"
+    and __ibm_infosvr_features.ises
+    and __ibm_infosvr_repo_schema_list.stdout.find(item) == -1
   with_items:
     - AUDIT_TRAIL
     - APP_CONFIG
@@ -145,9 +145,9 @@
     dest: cache/kubeselfextract.bsx
     flat: yes
   when: >
-          ('ibm-information-server-domain' in group_names)
-          and __ibm_infosvr_version == "11.7"
-          and __ibm_infosvr_features.ises
+    ('ibm-information-server-domain' in group_names)
+    and __ibm_infosvr_version == "11.7"
+    and __ibm_infosvr_features.ises
 
 - name: copy token certificate from domain tier
   fetch:
@@ -155,16 +155,16 @@
     dest: cache/tokenservicepublic.cer
     flat: yes
   when: >
-          ('ibm-information-server-domain' in group_names)
-          and __ibm_infosvr_version == "11.7"
-          and __ibm_infosvr_features.ises
+    ('ibm-information-server-domain' in group_names)
+    and __ibm_infosvr_version == "11.7"
+    and __ibm_infosvr_features.ises
 
 - import_tasks: install/ug.yml
   become: yes
   when: >
-          ('ibm-information-server-ug' in group_names)
-          and __ibm_infosvr_version == "11.7"
-          and __ibm_infosvr_features.ises
+    ('ibm-information-server-ug' in group_names)
+    and __ibm_infosvr_version == "11.7"
+    and __ibm_infosvr_features.ises
 
 - import_tasks: restart.yml
   when: __ibm_infosvr_ug_install is changed
