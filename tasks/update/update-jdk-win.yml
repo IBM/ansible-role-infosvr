@@ -61,24 +61,24 @@
     - "{{ ibm_infosvr_jdk32_update }}"
     - "{{ ibm_infosvr_jdk64_update }}"
   when: >
-    __ibm_infosvr_win_jdk64_upgrade
-    or __ibm_infosvr_win_jdk32_upgrade
+    __ibm_infosvr_win_jdk64_upgrade|bool
+    or __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - stopping Metadata Interchange Server
   win_service:
     name: mis
     state: stopped
   when: >
-    __ibm_infosvr_win_jdk64_upgrade
-    or __ibm_infosvr_win_jdk32_upgrade
+    __ibm_infosvr_win_jdk64_upgrade|bool
+    or __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - remove existing 64-bit JDK
   win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk" state=absent
-  when: __ibm_infosvr_win_jdk64_upgrade
+  when: __ibm_infosvr_win_jdk64_upgrade|bool
 
 - name: update-jdk-win - remove existing 32-bit JDK
   win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk32" state=absent
-  when: __ibm_infosvr_win_jdk32_upgrade
+  when: __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - extract Information Server 64-bit JDK updates
   win_unzip:
@@ -89,7 +89,7 @@
     rm: False
   with_items:
     - "{{ ibm_infosvr_jdk64_update }}"
-  when: __ibm_infosvr_win_jdk64_upgrade
+  when: __ibm_infosvr_win_jdk64_upgrade|bool
 
 - name: update-jdk-win - move updated 64-bit JDK into position
   win_shell: >
@@ -98,7 +98,7 @@
     {{ ibm_infosvr_install_location.win }}\jdk
   with_items:
     - "{{ ibm_infosvr_jdk64_update }}"
-  when: __ibm_infosvr_win_jdk64_upgrade
+  when: __ibm_infosvr_win_jdk64_upgrade|bool
 
 - name: update-jdk-win - extract Information Server 32-bit JDK updates
   win_unzip:
@@ -109,7 +109,7 @@
     rm: False
   with_items:
     - "{{ ibm_infosvr_jdk32_update }}"
-  when: __ibm_infosvr_win_jdk32_upgrade
+  when: __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - move updated 32-bit JDK into position
   win_shell: >
@@ -118,15 +118,15 @@
     {{ ibm_infosvr_install_location.win }}\jdk32
   with_items:
     - "{{ ibm_infosvr_jdk32_update }}"
-  when: __ibm_infosvr_win_jdk32_upgrade
+  when: __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - starting Metadata Interchange Server
   win_service:
     name: mis
     state: started
   when: >
-    __ibm_infosvr_win_jdk64_upgrade
-    or __ibm_infosvr_win_jdk32_upgrade
+    __ibm_infosvr_win_jdk64_upgrade|bool
+    or __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - cleanup installation
   win_file: path={{ ibm_infosvr_tmp.win }} state=absent
