@@ -33,51 +33,51 @@
     ibm_infosvr_hosts:
       domain: |-
         {% if groups['ibm-information-server-domain'] is defined
-        and (groups['ibm-information-server-domain']|length > 0) %}
-        {{ groups['ibm-information-server-domain'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-information-server-domain']|length > 0) -%}
+        {{ groups['ibm-information-server-domain'][0] }}
+        {%- else -%}
+        {%- endif %}
       repo: |-
         {% if groups['ibm-information-server-repo'] is defined
-        and (groups['ibm-information-server-repo']|length > 0) %}
-        {{ groups['ibm-information-server-repo'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-information-server-repo']|length > 0) -%}
+        {{ groups['ibm-information-server-repo'][0] }}
+        {%- else -%}
+        {%- endif %}
       engine: |-
         {% if groups['ibm-information-server-engine'] is defined
-        and (groups['ibm-information-server-engine']|length > 0) %}
-        {{ groups['ibm-information-server-engine'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-information-server-engine']|length > 0) -%}
+        {{ groups['ibm-information-server-engine'][0] }}
+        {%- else -%}
+        {%- endif %}
       client: |-
         {% if groups['ibm-information-server-clients'] is defined
-        and (groups['ibm-information-server-clients']|length > 0) %}
-        {{ groups['ibm-information-server-clients'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-information-server-clients']|length > 0) -%}
+        {{ groups['ibm-information-server-clients'][0] }}
+        {%- else -%}
+        {%- endif %}
       ug: |-
         {% if groups['ibm-information-server-ug'] is defined
-        and (groups['ibm-information-server-ug']|length > 0) %}
-        {{ groups['ibm-information-server-ug'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-information-server-ug']|length > 0) -%}
+        {{ groups['ibm-information-server-ug'][0] }}
+        {%- else -%}
+        {%- endif %}
       cognos: |-
         {% if groups['ibm-cognos-report-server'] is defined
-        and (groups['ibm-cognos-report-server']|length > 0) %}
-        {{ groups['ibm-cognos-report-server'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-cognos-report-server']|length > 0) -%}
+        {{ groups['ibm-cognos-report-server'][0] }}
+        {%- else -%}
+        {%- endif %}
       bpm: |-
-        {% if groups['ibm-bpm'] is defined and (groups['ibm-bpm']|length > 0) %}
-        {{ groups['ibm-bpm'][0] -}}
-        {% else %}
-        {% endif %}
+        {% if groups['ibm-bpm'] is defined and (groups['ibm-bpm']|length > 0) -%}
+        {{ groups['ibm-bpm'][0] }}
+        {%- else -%}
+        {%- endif %}
       exdb: |-
         {% if groups['ibm-information-server-external-db'] is defined
-        and (groups['ibm-information-server-external-db']|length > 0) %}
-        {{ groups['ibm-information-server-external-db'][0] -}}
-        {% else %}
-        {% endif %}
+        and (groups['ibm-information-server-external-db']|length > 0) -%}
+        {{ groups['ibm-information-server-external-db'][0] }}
+        {%- else -%}
+        {%- endif %}
     ibm_infosvr_users:
       isadmin: "{{ ibm_infosvr_user_isadmin }}"
       dsadm: "{{ ibm_infosvr_user_dsadmin }}"
@@ -109,11 +109,11 @@
 - name: set database host
   set_fact:
     __ibm_infosvr_db_host: |-
-      {% if __ibm_infosvr_use_external_db %}
-      {{ ibm_infosvr_hosts.exdb -}}
-      {% else %}
-      {{ ibm_infosvr_hosts.repo -}}
-      {% endif %}
+      {% if __ibm_infosvr_use_external_db -%}
+      {{ ibm_infosvr_hosts.exdb }}
+      {%- else -%}
+      {{ ibm_infosvr_hosts.repo }}
+      {%- endif %}
   when: ('ibm-information-server-clients' not in group_names)
 
 - name: setup unified governance external service IPs
@@ -127,107 +127,107 @@
   set_fact:
     __ibm_infosvr_features:
       opsdb: |-
-        {% if ibm_infosvr_features.opsdb is defined %}
-        {{ ibm_infosvr_features.opsdb -}}
-        {% else %}
+        {% if ibm_infosvr_features.opsdb is defined -%}
+        {{ ibm_infosvr_features.opsdb }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       ia: |-
-        {% if ibm_infosvr_features.ia is defined %}
-        {{ ibm_infosvr_features.ia -}}
-        {% else %}
+        {% if ibm_infosvr_features.ia is defined -%}
+        {{ ibm_infosvr_features.ia }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       igc: |-
-        {% if ibm_infosvr_features.igc is defined %}
-        {{ ibm_infosvr_features.igc -}}
-        {% else %}
+        {% if ibm_infosvr_features.igc is defined -%}
+        {{ ibm_infosvr_features.igc }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       dataclick: |-
-        {% if ibm_infosvr_features.dataclick is defined %}
-        {{ ibm_infosvr_features.dataclick -}}
-        {% else %}
+        {% if ibm_infosvr_features.dataclick is defined -%}
+        {{ ibm_infosvr_features.dataclick }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       masking: |-
-        {% if ibm_infosvr_features.masking is defined %}
-        {{ ibm_infosvr_features.masking -}}
-        {% else %}
+        {% if ibm_infosvr_features.masking is defined -%}
+        {{ ibm_infosvr_features.masking }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       event_mgmt: |-
-        {% if ibm_infosvr_features.event_mgmt is defined %}
-        {{ ibm_infosvr_features.event_mgmt -}}
-        {% else %}
+        {% if ibm_infosvr_features.event_mgmt is defined -%}
+        {{ ibm_infosvr_features.event_mgmt }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       qs: |-
-        {% if ibm_infosvr_features.qs is defined %}
-        {{ ibm_infosvr_features.qs -}}
-        {% else %}
+        {% if ibm_infosvr_features.qs is defined -%}
+        {{ ibm_infosvr_features.qs }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       wisd: |-
-        {% if ibm_infosvr_features.wisd is defined %}
-        {{ ibm_infosvr_features.wisd -}}
-        {% else %}
+        {% if ibm_infosvr_features.wisd is defined -%}
+        {{ ibm_infosvr_features.wisd }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       fasttrack: |-
-        {% if ibm_infosvr_features.fasttrack is defined %}
-        {{ ibm_infosvr_features.fasttrack -}}
-        {% else %}
+        {% if ibm_infosvr_features.fasttrack is defined -%}
+        {{ ibm_infosvr_features.fasttrack }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       dqec: |-
-        {% if ibm_infosvr_features.dqec is defined %}
-        {{ ibm_infosvr_features.dqec -}}
-        {% else %}
+        {% if ibm_infosvr_features.dqec is defined -%}
+        {{ ibm_infosvr_features.dqec }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       ml_term_assignment: |-
-        {% if ibm_infosvr_features.ml_term_assignment is defined %}
-        {{ ibm_infosvr_features.ml_term_assignment -}}
-        {% else %}
+        {% if ibm_infosvr_features.ml_term_assignment is defined -%}
+        {{ ibm_infosvr_features.ml_term_assignment }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       igd: |-
-        {% if ibm_infosvr_features.igd is defined %}
-        {{ ibm_infosvr_features.igd -}}
-        {% else %}
+        {% if ibm_infosvr_features.igd is defined -%}
+        {{ ibm_infosvr_features.igd }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       wlp: |-
-        {% if ibm_infosvr_features.wlp is defined %}
-        {{ ibm_infosvr_features.wlp -}}
-        {% else %}
+        {% if ibm_infosvr_features.wlp is defined -%}
+        {{ ibm_infosvr_features.wlp }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       ises: |-
-        {% if ibm_infosvr_features.ises is defined %}
-        {{ ibm_infosvr_features.ises -}}
-        {% else %}
+        {% if ibm_infosvr_features.ises is defined -%}
+        {{ ibm_infosvr_features.ises }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       omag: |-
-        {% if ibm_infosvr_features.omag is defined %}
-        {{ ibm_infosvr_features.omag -}}
-        {% else %}
+        {% if ibm_infosvr_features.omag is defined -%}
+        {{ ibm_infosvr_features.omag }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       wkc: |-
-        {% if ibm_infosvr_features.wkc is defined %}
-        {{ ibm_infosvr_features.wkc -}}
-        {% else %}
+        {% if ibm_infosvr_features.wkc is defined -%}
+        {{ ibm_infosvr_features.wkc }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
       wkc_pro: |-
-        {% if ibm_infosvr_features.wkc_pro is defined %}
-        {{ ibm_infosvr_features.wkc_pro -}}
-        {% else %}
+        {% if ibm_infosvr_features.wkc_pro is defined -%}
+        {{ ibm_infosvr_features.wkc_pro }}
+        {%- else -%}
         False
-        {% endif %}
+        {%- endif %}
 
 - name: check if UG (ISES) is installed
   shell: >
