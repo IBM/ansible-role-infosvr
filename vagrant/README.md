@@ -85,22 +85,22 @@ Define an inventory as follows into a file `hosts.vagrant`:
 [targets]
 infosvr.vagrant.ibm.com ansible_user='vagrant' ansible_ssh_private_key_file='<pathToThisDirectory>/.vagrant/machines/infosvr/virtualbox/private_key'
 
-[ibm-information-server-repo]
+[ibm_information_server_repo]
 infosvr.vagrant.ibm.com
 
-[ibm-information-server-domain]
+[ibm_information_server_domain]
 infosvr.vagrant.ibm.com
 
-[ibm-information-server-engine]
+[ibm_information_server_engine]
 infosvr.vagrant.ibm.com
 
-[ibm-information-server-clients]
+[ibm_information_server_clients]
 
-[ibm-information-server-ug]
+[ibm_information_server_ug]
 
-[ibm-cognos-report-server]
+[ibm_cognos_report_server]
 
-[ibm-bpm]
+[ibm_bpm]
 ```
 
 The configuration above makes use of the fact that the host network in the `Vagrantfile` by default uses a bridged

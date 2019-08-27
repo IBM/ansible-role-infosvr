@@ -32,7 +32,7 @@
         database_name: IADB
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: configure-ia - get default credential mapping
   command: >
@@ -46,7 +46,7 @@
   become: yes
   changed_when: False
   register: __ibm_infosvr_ia_default_credentials
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: configure-ia - set default credential mapping
   command: >
@@ -59,7 +59,7 @@
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
   when: >
-        ('ibm-information-server-engine' in group_names) and
+        ('ibm_information_server_engine' in group_names) and
         __ibm_infosvr_ia_default_credentials.stdout.find('set to user "' + ibm_infosvr_user_dsadmin + '" and ') == -1
 
 - name: configure-ia - get isadmin user roles
@@ -75,7 +75,7 @@
   become: yes
   changed_when: False
   register: __ibm_infosvr_ia_user_roles
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: configure-ia - assign additional necessary roles to isadmin user (for UGDefaultWorkspace)
   command: "{{ ibm_infosvr_install_location.linux }}/ASBNode/bin/DirectoryCommand.sh \
@@ -87,14 +87,14 @@
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
   when: >
-    ('ibm-information-server-engine' in group_names) and
+    ('ibm_information_server_engine' in group_names) and
     __ibm_infosvr_ia_user_roles.stdout.find("RulesAuthor~RulesManager~RulesUser~SorcererAdmin~SorcererDataAdmin") == -1
 
 - name: configure-ia - copy DQ configuration (v11.7)
   copy: src=dqConfig.json dest=/tmp/dqConfig.json
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
-  when: ('ibm-information-server-engine' in group_names) and (__ibm_infosvr_version == "11.7")
+  when: ('ibm_information_server_engine' in group_names) and (__ibm_infosvr_version == "11.7")
 
 - name: configure-ia - get DQ configuration (v11.7)
   command: >
@@ -111,7 +111,7 @@
   become: yes
   changed_when: False
   register: __ibm_infosvr_ia_dq_config
-  when: ('ibm-information-server-engine' in group_names) and (__ibm_infosvr_version == "11.7")
+  when: ('ibm_information_server_engine' in group_names) and (__ibm_infosvr_version == "11.7")
 
 # TODO: determine a way to make idempotent
 - name: configure-ia - update DQ configuration to enable actionable rules (v11.7)
@@ -126,7 +126,7 @@
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
   when: >
-        ('ibm-information-server-engine' in group_names)
+        ('ibm_information_server_engine' in group_names)
         and (__ibm_infosvr_version == "11.7")
   with_items: "{{ __ibm_infosvr_ia_dq_config.results }}"
 
@@ -146,13 +146,13 @@
     - "/ibm/iis/ia/api/configuration/dataQuality"
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
-  when: ('ibm-information-server-engine' in group_names) and (__ibm_infosvr_version == "11.7")
+  when: ('ibm_information_server_engine' in group_names) and (__ibm_infosvr_version == "11.7")
 
 - name: configure-ia - copy IA engine node configuration
   template: src=ia.job.properties.j2 dest={{ ibm_infosvr_install_location.linux }}/ASBNode/conf/ia.job.properties
   become_user: root
   become: yes
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: configure-ia - get global analysis database settings
   command: >
@@ -163,7 +163,7 @@
           -getIADBParams
   changed_when: False
   register: __ibm_infosvr_ia_iadb_params
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: configure-ia - configure global analysis database settings
   command: >
@@ -176,7 +176,7 @@
           -iaDBDataConnection IADB
           -iaDataSource jdbc/IADB
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and
     (((__ibm_infosvr_ia_iadb_params.stdout|from_json).host != (hostvars[ibm_infosvr_hosts.engine].ansible_fqdn|upper))
     or ((__ibm_infosvr_ia_iadb_params.stdout|from_json).dataConnection != "IADB")
@@ -191,7 +191,7 @@
           -getDSParams
   changed_when: False
   register: __ibm_infosvr_ia_ds_params
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: configure-ia - configure global analysis engine settings
   command: >
@@ -205,7 +205,7 @@
           -dsPassword {{ ibm_infosvr_upwd_dsadmin }}
           -useCredentialMapping TRUE
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and
     (((__ibm_infosvr_ia_ds_params.stdout|from_json).host != (hostvars[ibm_infosvr_hosts.engine].ansible_fqdn|lower))
     or ((__ibm_infosvr_ia_ds_params.stdout|from_json).user != ibm_infosvr_user_dsadmin))

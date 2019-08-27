@@ -1,18 +1,18 @@
-[ibm-information-server-repo]
+[ibm_information_server_repo]
 infosvr
 
-[ibm-information-server-domain]
+[ibm_information_server_domain]
 infosvr
 
-[ibm-information-server-engine]
+[ibm_information_server_engine]
 infosvr
 
-[ibm-information-server-clients]
+[ibm_information_server_clients]
 
-[ibm-information-server-ug]
+[ibm_information_server_ug]
 
-[ibm-information-server-external-db]
+[ibm_information_server_external_db]
 
-[ibm-cognos-report-server]
+[ibm_cognos_report_server]
 
-[ibm-bpm]
+[ibm_bpm]

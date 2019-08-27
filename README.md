@@ -75,7 +75,7 @@ The following example playbook will do a complete installation and configuration
         name: '*'
         exclude: docker*,kubelet*,kubectl*,kubeadm*
       become: yes
-      when: ('ibm-information-server-clients' not in group_names)
+      when: ('ibm_information_server_clients' not in group_names)
 ```
 
 The pre-tasks ensure that all OS-level packges are up-to-date before beginning the installation.
@@ -85,35 +85,35 @@ The pre-tasks ensure that all OS-level packges are up-to-date before beginning t
 The following groups are expected in the inventory, as they are used to distinguish where various components are installed. Of course, if you want to install multiple components on a single server this can be done by simply providing the same hostname under each group. In the example below, for instance, the repository and domain tiers are both placed on 'serverA' while the engine tier will be installed separately on 'serverB' and the Unified Governance tier is also given its own system 'serverC'.
 
 ```ini
-[ibm-information-server-repo]
+[ibm_information_server_repo]
 # Linux host where the repository tier (database) should be installed (DB2)
 serverA.somewhere.com
 
-[ibm-information-server-domain]
+[ibm_information_server_domain]
 # Linux host where the domain (services) tier should be installed (WebSphere)
 serverA.somewhere.com
 
-[ibm-information-server-engine]
+[ibm_information_server_engine]
 # Linux host where the engine tier should be installed
 serverB.somewhere.com
 
-[ibm-information-server-clients]
+[ibm_information_server_clients]
 # Windows host where the client applications should be installed, and a Metadata Interchange Server configured for Windows-only brokers / bridges
 client.somewhere.com
 
-[ibm-information-server-ug]
+[ibm_information_server_ug]
 # Linux host where the v11.7+ Unified Governance tier shuold be installed (kubernetes)
 serverC.somewhere.com
 
-[ibm-information-server-external-db]
-# Linux host that holds a pre-existing database into which to deploy XMETA, etc -- if no host provided, or this group is missing entirely, will install the bundled DB2 onto ibm-information-server-repo server
+[ibm_information_server_external_db]
+# Linux host that holds a pre-existing database into which to deploy XMETA, etc -- if no host provided, or this group is missing entirely, will install the bundled DB2 onto ibm_information_server_repo server
 serverD.somewhere.com
 
-[ibm-cognos-report-server]
+[ibm_cognos_report_server]
 # Linux host where a pre-existing Cognos BI installation exists (for Information Governance Dashboard)
 cognos.somewhere.com
 
-[ibm-bpm]
+[ibm_bpm]
 # Linux host where a pre-existing BPM installation exists (currently unused)
 bpm.somewhere.com
 ```

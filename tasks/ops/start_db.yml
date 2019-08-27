@@ -22,7 +22,7 @@
   become_user: "{{ ibm_infosvr_users.db2inst1 }}"
   become: yes
   changed_when: False
-  when: ('ibm-information-server-repo' in group_names)
+  when: ('ibm_information_server_repo' in group_names)
 
 - name: confirm database is running
   wait_for:
@@ -31,4 +31,4 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-repo' in group_names)
+  when: ('ibm_information_server_repo' in group_names)

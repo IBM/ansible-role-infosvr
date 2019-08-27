@@ -38,7 +38,7 @@
       - bc
       - iptables-services
       - python-lxml
-  when: (not 'ibm-information-server-external-db' in group_names)
+  when: (not 'ibm_information_server_external_db' in group_names)
   retries: 3
   delay: 5
   register: __ibm_infosvr_common_yum
@@ -48,7 +48,7 @@
   selinux: state=disabled
   register: __ibm_infosvr_selinux_result
   ignore_errors: yes
-  when: (not 'ibm-information-server-external-db' in group_names)
+  when: (not 'ibm_information_server_external_db' in group_names)
 
 - name: common - check selinux
   assert:
@@ -72,7 +72,7 @@
         (ansible_memtotal_mb < 32768)
         and (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "6")
-        and (not 'ibm-information-server-external-db' in group_names)
+        and (not 'ibm_information_server_external_db' in group_names)
 
 - name: common - disable transparent hugepages (replace)
   replace:
@@ -84,7 +84,7 @@
         (ansible_memtotal_mb < 32768)
         and (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "6")
-        and (not 'ibm-information-server-external-db' in group_names)
+        and (not 'ibm_information_server_external_db' in group_names)
 
 - name: common - enable firewalld (generally not recommended)
   systemd: name=firewalld enabled=yes state=started
@@ -120,7 +120,7 @@
     force: no
   when: >
         (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
-        and (not 'ibm-information-server-external-db' in group_names)
+        and (not 'ibm_information_server_external_db' in group_names)
         and (not __ibm_infosvr_extracted_media.stat.exists)
 
 - name: common - extract installation media
@@ -131,7 +131,7 @@
     copy: no
   when: >
           (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
-          and (not 'ibm-information-server-external-db' in group_names)
+          and (not 'ibm_information_server_external_db' in group_names)
 
 - name: common - extract entitlements
   unarchive:
@@ -140,8 +140,8 @@
     creates: "{{ ibm_infosvr_tmp.linux }}/is-suite/image.properties"
   when: >
           (ibm_infosvr_version_xml.find('NOT INSTALLED') != -1)
-          and (not 'ibm-information-server-external-db' in group_names)
+          and (not 'ibm_information_server_external_db' in group_names)
 
 - name: common - cleanup installation media
   file: path={{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_media_bin.server_tarball }} state=absent
-  when: (not 'ibm-information-server-external-db' in group_names)
+  when: (not 'ibm_information_server_external_db' in group_names)

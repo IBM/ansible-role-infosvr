@@ -27,7 +27,7 @@
           and __ibm_infosvr_os_start_zookeeper_result.status.Result == "success"
   changed_when: False
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not ibm_infosvr_container)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
@@ -44,7 +44,7 @@
           and not __ibm_infosvr_os_start_zookeeper_result.failed
   changed_when: False
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and ibm_infosvr_container
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
@@ -57,7 +57,7 @@
     delay: 10
     timeout: 300
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
 
@@ -73,7 +73,7 @@
           and __ibm_infosvr_os_start_solr_result.status.Result == "success"
   changed_when: False
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not ibm_infosvr_container)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('solr') == -1)
@@ -90,7 +90,7 @@
           and not __ibm_infosvr_os_start_solr_result.failed
   changed_when: False
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and ibm_infosvr_container
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('solr') == -1)
@@ -103,7 +103,7 @@
     delay: 10
     timeout: 300
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('solr') == -1)
 
@@ -119,7 +119,7 @@
           and __ibm_infosvr_os_start_kafka_result.status.Result == "success"
   changed_when: False
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not ibm_infosvr_container)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
@@ -136,7 +136,7 @@
           and not __ibm_infosvr_os_start_kafka_result.failed
   changed_when: False
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and ibm_infosvr_container
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
@@ -149,6 +149,6 @@
     delay: 10
     timeout: 300
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('kafka') == -1)

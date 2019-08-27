@@ -23,7 +23,7 @@
     > /tmp/__ibm_infosvr_cert_chain
   args:
     creates: /tmp/__ibm_infosvr_cert_chain
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 # Unbelievable that OpenSSL doesn't provide a more direct way of doing this...
 
@@ -35,7 +35,7 @@
   args:
     executable: /bin/bash
   register: __ibm_infosvr_cert_chain_length
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: get location of last certificate in chain
   shell: >
@@ -46,7 +46,7 @@
   args:
     executable: /bin/bash
   register: __ibm_infosvr_cert_chain_root
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: record root SSL certificate
   shell: >
@@ -57,14 +57,14 @@
     > /tmp/__ibm_infosvr_cert_root.crt
   args:
     executable: /bin/bash
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: retrieve Information Server SSL certificate
   fetch:
     src: /tmp/__ibm_infosvr_cert_root.crt
     dest: cache/__ibm_infosvr_cert_root.crt
     flat: yes
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: remove temporary SSL certificate files
   file:
@@ -73,4 +73,4 @@
   with_items:
     - /tmp/__ibm_infosvr_cert_chain
     - /tmp/__ibm_infosvr_cert_root.crt
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)

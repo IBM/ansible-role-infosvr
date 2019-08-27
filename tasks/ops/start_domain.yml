@@ -26,7 +26,7 @@
   become_user: root
   become: yes
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: confirm application server is running
   wait_for:
@@ -35,4 +35,4 @@
     state: started
     delay: 10
     timeout: 300
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)

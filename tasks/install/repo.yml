@@ -22,7 +22,7 @@
     state: present
     name:
       - libaio
-  when: (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
+  when: (not __ibm_infosvr_use_external_db and ('ibm_information_server_repo' in group_names))
   retries: 3
   delay: 5
   register: __ibm_infosvr_repo_yum
@@ -39,8 +39,8 @@
     - "{{ ibm_infosvr_user_ia }}"
     - "{{ ibm_infosvr_user_srd }}"
   when: >
-        (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
-        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
+        (__ibm_infosvr_use_external_db and ('ibm_information_server_external_db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm_information_server_repo' in group_names))
 
 - name: repo - create required users
   user: name={{ item.user }} group={{ item.group }} password={{ item.password }} shell=/bin/bash
@@ -67,8 +67,8 @@
       user: "{{ ibm_infosvr_user_srd }}"
       password: "{{ ibm_infosvr_upwd_srd |password_hash('sha512', ibm_infosvr_salt) }}"
   when: >
-        (__ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names))
-        or (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
+        (__ibm_infosvr_use_external_db and ('ibm_information_server_external_db' in group_names))
+        or (not __ibm_infosvr_use_external_db and ('ibm_information_server_repo' in group_names))
   loop_control:
     label: "{{ item.user }} - {{ item.group }}"
 
@@ -84,7 +84,7 @@
   when: >
         __ibm_infosvr_use_external_db
         and (item[0].file == 'create_xmeta_db.sql' or item[0].file == 'createUserPref.sql')
-        and ('ibm-information-server-repo' in group_names)
+        and ('ibm_information_server_repo' in group_names)
   with_nested:
     - "{{ __ibm_infosvr_external_db_scripts }}"
     - [ { match: '@DATABASE_NAME@', value: 'xmeta' },
@@ -101,7 +101,7 @@
   when: >
         __ibm_infosvr_use_external_db
         and (item[0].file == 'db2_grant_Permissions.sql')
-        and ('ibm-information-server-repo' in group_names)
+        and ('ibm_information_server_repo' in group_names)
   with_nested:
     - "{{ __ibm_infosvr_external_db_scripts }}"
     - [ { match: '@DATABASE_NAME@', value: 'xmeta' },
@@ -116,7 +116,7 @@
   when: >
         __ibm_infosvr_use_external_db
         and (item[0].file == 'createUserPref.sql')
-        and ('ibm-information-server-repo' in group_names)
+        and ('ibm_information_server_repo' in group_names)
         and (__ibm_infosvr_version == "11.7")
   with_nested:
     - "{{ __ibm_infosvr_external_db_scripts }}"
@@ -131,7 +131,7 @@
   when: >
         __ibm_infosvr_use_external_db
         and (item[0].file == 'create_ia_db.sql' or item[0].file == 'create_ia_db_sp.sql')
-        and ('ibm-information-server-repo' in group_names)
+        and ('ibm_information_server_repo' in group_names)
         and __ibm_infosvr_features.ia
   with_nested:
     - "{{ __ibm_infosvr_external_db_scripts }}"
@@ -146,10 +146,10 @@
     dest: cache/{{ item.file }}
     flat: yes
   with_items: "{{ __ibm_infosvr_external_db_scripts }}"
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names)
+  when: __ibm_infosvr_use_external_db and ('ibm_information_server_repo' in group_names)
 
 - import_tasks: existing-db.yml
-  when: __ibm_infosvr_use_external_db and ('ibm-information-server-external-db' in group_names)
+  when: __ibm_infosvr_use_external_db and ('ibm_information_server_external_db' in group_names)
 
 - name: repo - apply response file template
   template:
@@ -160,13 +160,13 @@
     mode: 0644
   when: >
         (ibm_infosvr_version_xml.find('repository="true"') == -1)
-        and ('ibm-information-server-repo' in group_names)
+        and ('ibm_information_server_repo' in group_names)
 
 - name: repo - parse repository-specific variables
   include_vars: file=repo.yml
 
 - import_tasks: kernel-and-firewall.yml
-  when: (not __ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
+  when: (not __ibm_infosvr_use_external_db and ('ibm_information_server_repo' in group_names))
 
 ##########
 # BASE INSTALLATION
@@ -182,10 +182,10 @@
   register: __ibm_infosvr_repo_install
   when: >
         (ibm_infosvr_version_xml.find('repository="true"') == -1)
-        and ('ibm-information-server-repo' in group_names)
+        and ('ibm_information_server_repo' in group_names)
 
 - import_tasks: db2client.yml
-  when: (__ibm_infosvr_use_external_db and ('ibm-information-server-repo' in group_names))
+  when: (__ibm_infosvr_use_external_db and ('ibm_information_server_repo' in group_names))
 
 - name: repo - confirm repository tier is fully started
   wait_for: port={{ ibm_infosvr_ports.db2 }} host={{ __ibm_infosvr_db_host }} state=started delay=10 timeout=300
@@ -203,7 +203,7 @@
         or (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
         and (__ibm_infosvr_version == "11.5")
-        and (not 'ibm-information-server-external-db' in group_names)
+        and (not 'ibm_information_server_external_db' in group_names)
 
 - name: repo - register DB2 in systemd
   systemd: name=db2fmcd enabled=yes state=started daemon_reload=yes
@@ -211,7 +211,7 @@
         (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
         and (__ibm_infosvr_version == "11.5")
-        and (not 'ibm-information-server-external-db' in group_names)
+        and (not 'ibm_information_server_external_db' in group_names)
         and (not ibm_infosvr_container)
 
 - name: repo - restart repository tier
@@ -219,6 +219,6 @@
     msg: "Restarting to ensure restartability works"
     test_command: "ss -tln | grep ':{{ ibm_infosvr_ports.db2 }} '"
   when: >
-    ('ibm-information-server-repo' in group_names)
+    ('ibm_information_server_repo' in group_names)
     and __ibm_infosvr_repo_install is changed
     and (not ibm_infosvr_container)

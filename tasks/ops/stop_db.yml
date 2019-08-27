@@ -23,4 +23,4 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-repo' in group_names)
+  when: ('ibm_information_server_repo' in group_names)

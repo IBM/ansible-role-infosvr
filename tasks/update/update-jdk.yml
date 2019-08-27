@@ -33,7 +33,7 @@
   register: __ibm_infosvr_websphere_existing_jdk_version
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and (not __ibm_infosvr_features.wlp)
 
 - name: update-jdk - check existing WebSphere JDK7 version (v11.5)
@@ -42,7 +42,7 @@
   register: __ibm_infosvr_websphere_existing_jdk7_version
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and (__ibm_infosvr_version == "11.5")
     and (not __ibm_infosvr_features.wlp)
 
@@ -89,7 +89,7 @@
   become_user: root
   become: yes
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and not (__ibm_infosvr_features.wlp)
     and ibm_infosvr_websphere_jdk_update is defined
     and __ibm_infosvr_jdk_was_file is defined
@@ -111,7 +111,7 @@
   become_user: root
   become: yes
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and not (__ibm_infosvr_features.wlp)
     and ibm_infosvr_websphere_jdk7_update is defined
     and __ibm_infosvr_jdk7_was_file is defined

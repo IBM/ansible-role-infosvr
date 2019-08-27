@@ -19,14 +19,14 @@
   command: /usr/sbin/ss -tln -H
   register: __ibm_infosvr_status
   changed_when: False
-  when: ('ibm-information-server-clients' not in group_names)
+  when: ('ibm_information_server_clients' not in group_names)
 
 - name: check status of repository tier
   assert:
     that:
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.db2 | string) + ' ') > 0"
     msg: "Repository tier is not fully operational."
-  when: ('ibm-information-server-repo' in group_names or 'ibm-information-server-external-db' in group_names)
+  when: ('ibm_information_server_repo' in group_names or 'ibm_information_server_external_db' in group_names)
 
 - name: check status of domain tier
   assert:
@@ -34,7 +34,7 @@
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.console | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.default | string) + ' ') > 0"
     msg: "Domain tier is not fully operational."
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: check status of WAS ND
   assert:
@@ -49,7 +49,7 @@
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.soap_connector | string) + ' ') > 0"
     msg: "Domain tier WAS ND is not fully operational."
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and (not __ibm_infosvr_features.wlp)
 
 - name: check status of open source services (domain)
@@ -60,7 +60,7 @@
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.kafka | string) + ' ') > 0"
     msg: "Shared open source services are not fully operational."
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and not __ibm_infosvr_features.ises
 
 - name: check status of open source services (ISES)
@@ -70,7 +70,7 @@
       - "__ibm_infosvr_status.stdout.find(':9092 ') > 0"
     msg: "Shared open source services are not fully operational."
   when: >
-          ('ibm-information-server-ug' in group_names)
+          ('ibm_information_server_ug' in group_names)
           and __ibm_infosvr_features.ises
 
 - name: check status of engine tier
@@ -82,4 +82,4 @@
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.jobmon_port1 | string) + ' ') > 0"
       - "__ibm_infosvr_status.stdout.find(':' + (ibm_infosvr_ports.jobmon_port2 | string) + ' ') > 0"
     msg: "Engine tier is not fully operational."
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)

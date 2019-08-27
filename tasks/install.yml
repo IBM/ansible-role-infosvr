@@ -30,7 +30,7 @@
     - { key: "fsize", value: "62914530" }
   become_user: root
   become: yes
-  when: not ('ibm-information-server-clients' in group_names)
+  when: not ('ibm_information_server_clients' in group_names)
 
 - name: open up limits (non-container)
   pam_limits:
@@ -45,7 +45,7 @@
   become_user: root
   become: yes
   when: >
-    not ('ibm-information-server-clients' in group_names)
+    not ('ibm_information_server_clients' in group_names)
     and not ibm_infosvr_container
 
 - name: open up limits (container)
@@ -61,28 +61,28 @@
   become_user: root
   become: yes
   when: >
-    not ('ibm-information-server-clients' in group_names)
+    not ('ibm_information_server_clients' in group_names)
     and ibm_infosvr_container
 
 - import_tasks: install/common.yml
   become_user: root
   become: yes
-  when: not ('ibm-information-server-clients' in group_names) and not ('ibm-information-server-ug' in group_names)
+  when: not ('ibm_information_server_clients' in group_names) and not ('ibm_information_server_ug' in group_names)
 
 - import_tasks: install/repo.yml
   become_user: root
   become: yes
-  when: ('ibm-information-server-repo' in group_names) or ('ibm-information-server-external-db' in group_names)
+  when: ('ibm_information_server_repo' in group_names) or ('ibm_information_server_external_db' in group_names)
 
 - import_tasks: install/domain.yml
   become_user: root
   become: yes
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - import_tasks: install/engine.yml
   become_user: root
   become: yes
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: clean up server installation files
   file: path={{ item.file }} state={{ item.state }}
@@ -90,16 +90,16 @@
     - { file: "{{ ibm_infosvr_tmp.linux }}/", state: 'absent' }
   become_user: root
   become: yes
-  when: not ('ibm-information-server-clients' in group_names)
+  when: not ('ibm_information_server_clients' in group_names)
 
 - import_tasks: install/client.yml
-  when: ('ibm-information-server-clients' in group_names)
+  when: ('ibm_information_server_clients' in group_names)
 
 - name: clean up client installation files
   win_file: path={{ item.file }} state={{ item.state }}
   with_items:
     - { file: "{{ ibm_infosvr_tmp.win }}/", state: 'absent' }
-  when: ('ibm-information-server-clients' in group_names)
+  when: ('ibm_information_server_clients' in group_names)
 
 # Optional Unified Governance (UG) / Enterprise Search (ISES) tier
 - name: get list of schemas
@@ -114,7 +114,7 @@
   changed_when: False
   register: __ibm_infosvr_repo_schema_list
   when: >
-    ('ibm-information-server-repo' in group_names)
+    ('ibm_information_server_repo' in group_names)
     and __ibm_infosvr_version == "11.7"
     and __ibm_infosvr_features.ises
 
@@ -129,7 +129,7 @@
   become_user: "{{ ibm_infosvr_user_db2_instance }}"
   become: yes
   when: >
-    ('ibm-information-server-repo' in group_names)
+    ('ibm_information_server_repo' in group_names)
     and __ibm_infosvr_version == "11.7"
     and __ibm_infosvr_features.ises
     and __ibm_infosvr_repo_schema_list.stdout.find(item) == -1
@@ -145,7 +145,7 @@
     dest: cache/kubeselfextract.bsx
     flat: yes
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and __ibm_infosvr_version == "11.7"
     and __ibm_infosvr_features.ises
 
@@ -155,14 +155,14 @@
     dest: cache/tokenservicepublic.cer
     flat: yes
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and __ibm_infosvr_version == "11.7"
     and __ibm_infosvr_features.ises
 
 - import_tasks: install/ug.yml
   become: yes
   when: >
-    ('ibm-information-server-ug' in group_names)
+    ('ibm_information_server_ug' in group_names)
     and __ibm_infosvr_version == "11.7"
     and __ibm_infosvr_features.ises
 

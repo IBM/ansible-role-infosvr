@@ -29,7 +29,7 @@
     chdir: "{{ ibm_infosvr_install_location.linux }}/Server/DSEngine/bin"
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
   register: __ibm_infosvr_masking
   changed_when: False
 
@@ -51,4 +51,4 @@
     chdir: "{{ ibm_infosvr_install_location.linux }}/Server/DSEngine/bin"
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
-  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_masking.stdout.find('ODPPLL') == -1
+  when: ('ibm_information_server_engine' in group_names) and __ibm_infosvr_masking.stdout.find('ODPPLL') == -1

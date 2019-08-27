@@ -19,7 +19,7 @@
   template:
     src: uginfo.rsp.j2
     dest: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/installer/uginfo.rsp"
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: get Unified Governance additions status
   command: >
@@ -35,7 +35,7 @@
       value: "{{ ibm_infosvr_hosts.ug }}"
     - key: "com.ibm.iis.isf.security.AllowedRefererDomainNames"
       value: "{{ ibm_infosvr_hosts.ug.split('.')[1:] | join('.') }}"
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: enable Unified Governance additions
   command: >
@@ -44,7 +44,7 @@
           -key {{ item.item.key }}
           -value '{{ item.item.value }}'
   when: >
-        ('ibm-information-server-domain' in group_names)
+        ('ibm_information_server_domain' in group_names)
         and (item.stdout.find(item.item.value) == -1)
   with_items: "{{ __ibm_infosvr_ug_additions.results }}"
 
@@ -62,7 +62,7 @@
     - { key: "com.ibm.iis.odf.autoclassification.configuration", value: "CA,TM,DQ" }
   when: >
         __ibm_infosvr_features.ia
-        and ('ibm-information-server-domain' in group_names)
+        and ('ibm_information_server_domain' in group_names)
 
 - name: enable Unified Governance IA additions
   command: >
@@ -72,7 +72,7 @@
           -value '{{ item.item.value }}'
   when: >
         __ibm_infosvr_features.ia
-        and ('ibm-information-server-domain' in group_names)
+        and ('ibm_information_server_domain' in group_names)
         and (item.stdout.find(item.item.value) == -1)
   with_items: "{{ __ibm_infosvr_ug_ia_additions.results }}"
 
@@ -83,11 +83,11 @@
     regexp: "^odf.zookeeper.connect="
     line: "odf.zookeeper.connect={{ ibm_infosvr_hosts.ug }}:2181/kafka"
     backup: yes
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: transfer new default ODF parameters
   template: src=ODFParams.json.j2 dest=/tmp/ODFParams.json
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
 
 - name: get Unified Governance ODF parameters
   command: >
@@ -104,7 +104,7 @@
     - "-projectName UGDefaultWorkspace"
   when: >
         __ibm_infosvr_features.ia
-        and ('ibm-information-server-domain' in group_names)
+        and ('ibm_information_server_domain' in group_names)
 
 # TODO: determine way to make idempotent
 - name: set Unified Governance ODF parameters
@@ -119,7 +119,7 @@
   with_items: "{{ __ibm_infosvr_ug_odf_params.results }}"
   when: >
         __ibm_infosvr_features.ia
-        and ('ibm-information-server-domain' in group_names)
+        and ('ibm_information_server_domain' in group_names)
 
 - name: get ML-based term classification status
   command: >
@@ -134,7 +134,7 @@
               com.ibm.iis.odf.services.termclassification.matching.bg.MatcherDiscoveryService,\
               com.ibm.iis.odf.iisext.services.cbta.ClassBasedTermAssignmentService"
   when: >
-        ('ibm-information-server-domain' in group_names)
+        ('ibm_information_server_domain' in group_names)
         and __ibm_infosvr_features.ml_term_assignment
 
 - name: enable ML-based term classification
@@ -144,7 +144,7 @@
           -key {{ item.item.key }}
           -value '{{ item.item.value }}'
   when: >
-        ('ibm-information-server-domain' in group_names)
+        ('ibm_information_server_domain' in group_names)
         and (__ibm_infosvr_features.ml_term_assignment)
         and (item.stdout.find(item.item.value) == -1)
   with_items: "{{ __ibm_infosvr_ug_mlta_status.results }}"
@@ -154,7 +154,7 @@
   with_items:
     - stopped
     - started
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: configure domain tier to use UG (ISES) tier
   command: >
@@ -166,9 +166,9 @@
             {{ __ibm_infosvr_features.wkc_pro | lower }}
   args:
     chdir: "{{ ibm_infosvr_install_location.linux }}/UGDockerDeployment/bin"
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)
   register: __ibm_infosvr_sos_properties
 
 # Tricky condition below to ensure we run a full restart, not just domain tier, if SOS props changed
 - import_tasks: restart.yml
-  when: hostvars[groups['ibm-information-server-domain'][0]].__ibm_infosvr_sos_properties is changed
+  when: hostvars[groups['ibm_information_server_domain'][0]].__ibm_infosvr_sos_properties is changed

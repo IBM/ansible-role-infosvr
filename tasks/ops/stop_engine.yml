@@ -24,7 +24,7 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
+  when: ('ibm_information_server_engine' in group_names) and __ibm_infosvr_version == "11.7"
 
 - name: stop IBM InfoSphere Information Server DataStage services
   shell: >
@@ -37,7 +37,7 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: stop IBM InfoSphere Information Server NodeAgents
   shell: >
@@ -50,7 +50,7 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-engine' in group_names)
+  when: ('ibm_information_server_engine' in group_names)
 
 - name: stop IBM InfoSphere Information Server DSAppWatcher
   command: >
@@ -61,7 +61,7 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_features.opsdb
+  when: ('ibm_information_server_engine' in group_names) and __ibm_infosvr_features.opsdb
 
 - name: stop IBM InfoSphere Information Server ODFEngine (v11.7)
   service: state=stopped name=ODFEngine
@@ -69,4 +69,4 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-engine' in group_names) and __ibm_infosvr_version == "11.7"
+  when: ('ibm_information_server_engine' in group_names) and __ibm_infosvr_version == "11.7"

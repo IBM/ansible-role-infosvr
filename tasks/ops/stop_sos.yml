@@ -22,7 +22,7 @@
   ignore_errors: yes
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and (not ibm_infosvr_container)
 
 - name: stop IBM InfoSphere Information Server Kafka (service)
@@ -32,7 +32,7 @@
   ignore_errors: yes
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and ibm_infosvr_container
 
 - name: stop IBM InfoSphere Information Server Solr (systemd)
@@ -42,7 +42,7 @@
   ignore_errors: yes
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and (not ibm_infosvr_container)
 
 - name: stop IBM InfoSphere Information Server Solr (service)
@@ -52,7 +52,7 @@
   ignore_errors: yes
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and ibm_infosvr_container
 
 - name: stop IBM InfoSphere Information Server Zookeeper (systemd)
@@ -62,7 +62,7 @@
   ignore_errors: yes
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and (not ibm_infosvr_container)
 
 - name: stop IBM InfoSphere Information Server Zookeeper (service)
@@ -72,5 +72,5 @@
   ignore_errors: yes
   changed_when: False
   when: >
-    ('ibm-information-server-domain' in group_names)
+    ('ibm_information_server_domain' in group_names)
     and ibm_infosvr_container

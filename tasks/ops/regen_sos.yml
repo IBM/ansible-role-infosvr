@@ -20,7 +20,7 @@
     path: "{{ ibm_infosvr_install_location.linux }}/shared-open-source/zookeeper/update-config.sh"
   register: __ibm_infosvr_sos_update_scripts
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
 
@@ -33,7 +33,7 @@
   become_user: root
   become: yes
   when: >
-          ('ibm-information-server-domain' in group_names)
+          ('ibm_information_server_domain' in group_names)
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
           and __ibm_infosvr_sos_update_scripts.stat.exists

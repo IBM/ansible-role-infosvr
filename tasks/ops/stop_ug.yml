@@ -21,7 +21,7 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)
 
 - name: remove all running IBM InfoSphere Information Server pods
   shell: >
@@ -31,4 +31,4 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)

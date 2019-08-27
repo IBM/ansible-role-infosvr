@@ -20,62 +20,62 @@
 - name: container check
   stat:
     path: /.dockerenv
-  when: ('ibm-information-server-clients' not in group_names)
+  when: ('ibm_information_server_clients' not in group_names)
   register: __ibm_infosvr_container
 
 - name: set container status
   set_fact:
     ibm_infosvr_container: "{{ __ibm_infosvr_container.stat.exists }}"
-  when: ('ibm-information-server-clients' not in group_names)
+  when: ('ibm_information_server_clients' not in group_names)
 
 - name: setup variables for subsequent role use
   set_fact:
     ibm_infosvr_hosts:
       domain: |-
-        {% if groups['ibm-information-server-domain'] is defined
-        and (groups['ibm-information-server-domain']|length > 0) -%}
-        {{ groups['ibm-information-server-domain'][0] }}
+        {% if groups['ibm_information_server_domain'] is defined
+        and (groups['ibm_information_server_domain']|length > 0) -%}
+        {{ groups['ibm_information_server_domain'][0] }}
         {%- else -%}
         {%- endif %}
       repo: |-
-        {% if groups['ibm-information-server-repo'] is defined
-        and (groups['ibm-information-server-repo']|length > 0) -%}
-        {{ groups['ibm-information-server-repo'][0] }}
+        {% if groups['ibm_information_server_repo'] is defined
+        and (groups['ibm_information_server_repo']|length > 0) -%}
+        {{ groups['ibm_information_server_repo'][0] }}
         {%- else -%}
         {%- endif %}
       engine: |-
-        {% if groups['ibm-information-server-engine'] is defined
-        and (groups['ibm-information-server-engine']|length > 0) -%}
-        {{ groups['ibm-information-server-engine'][0] }}
+        {% if groups['ibm_information_server_engine'] is defined
+        and (groups['ibm_information_server_engine']|length > 0) -%}
+        {{ groups['ibm_information_server_engine'][0] }}
         {%- else -%}
         {%- endif %}
       client: |-
-        {% if groups['ibm-information-server-clients'] is defined
-        and (groups['ibm-information-server-clients']|length > 0) -%}
-        {{ groups['ibm-information-server-clients'][0] }}
+        {% if groups['ibm_information_server_clients'] is defined
+        and (groups['ibm_information_server_clients']|length > 0) -%}
+        {{ groups['ibm_information_server_clients'][0] }}
         {%- else -%}
         {%- endif %}
       ug: |-
-        {% if groups['ibm-information-server-ug'] is defined
-        and (groups['ibm-information-server-ug']|length > 0) -%}
-        {{ groups['ibm-information-server-ug'][0] }}
+        {% if groups['ibm_information_server_ug'] is defined
+        and (groups['ibm_information_server_ug']|length > 0) -%}
+        {{ groups['ibm_information_server_ug'][0] }}
         {%- else -%}
         {%- endif %}
       cognos: |-
-        {% if groups['ibm-cognos-report-server'] is defined
-        and (groups['ibm-cognos-report-server']|length > 0) -%}
-        {{ groups['ibm-cognos-report-server'][0] }}
+        {% if groups['ibm_cognos_report_server'] is defined
+        and (groups['ibm_cognos_report_server']|length > 0) -%}
+        {{ groups['ibm_cognos_report_server'][0] }}
         {%- else -%}
         {%- endif %}
       bpm: |-
-        {% if groups['ibm-bpm'] is defined and (groups['ibm-bpm']|length > 0) -%}
-        {{ groups['ibm-bpm'][0] }}
+        {% if groups['ibm_bpm'] is defined and (groups['ibm_bpm']|length > 0) -%}
+        {{ groups['ibm_bpm'][0] }}
         {%- else -%}
         {%- endif %}
       exdb: |-
-        {% if groups['ibm-information-server-external-db'] is defined
-        and (groups['ibm-information-server-external-db']|length > 0) -%}
-        {{ groups['ibm-information-server-external-db'][0] }}
+        {% if groups['ibm_information_server_external_db'] is defined
+        and (groups['ibm_information_server_external_db']|length > 0) -%}
+        {{ groups['ibm_information_server_external_db'][0] }}
         {%- else -%}
         {%- endif %}
     ibm_infosvr_users:
@@ -114,14 +114,14 @@
       {%- else -%}
       {{ ibm_infosvr_hosts.repo }}
       {%- endif %}
-  when: ('ibm-information-server-clients' not in group_names)
+  when: ('ibm_information_server_clients' not in group_names)
 
 - name: setup unified governance external service IPs
   set_fact:
     __ibm_infosvr_k8s_externals:
       domain: "{{ hostvars[ibm_infosvr_hosts.domain].ansible_fqdn }}"
       repo: "{{ hostvars[__ibm_infosvr_db_host].ansible_fqdn }}"
-  when: ('ibm-information-server-clients' not in group_names)
+  when: ('ibm_information_server_clients' not in group_names)
 
 - name: default any missing features to disabled
   set_fact:
@@ -237,7 +237,7 @@
   ignore_errors: True
   changed_when: False
   become: yes
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)
 
 - name: fetch UG installation status
   fetch:
@@ -245,7 +245,7 @@
     dest: cache/ug_podlist.log
     flat: yes
   become: yes
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)
 
 - name: get OMAG configuration files
   find:
@@ -255,7 +255,7 @@
       - '*.registrystore'
     file_type: file
   become: yes
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)
   register: __ibm_infosvr_omag_config
 
 - name: set UG installation status fact
@@ -271,4 +271,4 @@
   changed_when: False
   become: yes
   register: __ibm_infosvr_ug_omag_pod
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)

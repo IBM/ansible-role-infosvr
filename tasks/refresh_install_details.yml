@@ -17,7 +17,7 @@
 
 - name: refresh - check existing installation details
   raw: "cat \
-        {% if 'ibm-information-server-clients' in group_names %}\
+        {% if 'ibm_information_server_clients' in group_names %}\
         {{ ibm_infosvr_install_location.win }}\\\
         {% else %}
         {{ ibm_infosvr_install_location.linux }}/\
@@ -49,7 +49,7 @@
     content: attribute
     attribute: x:currentVersion
   register: ibm_infosvr_installed_version_xml
-  when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm-information-server-clients' in group_names)
+  when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm_information_server_clients' in group_names)
 
 - name: refresh - register version number for reference
   set_fact:
@@ -57,7 +57,7 @@
       {{ ibm_infosvr_installed_version_xml.matches[0][__ibm_infosvr_namespace].currentVersion }}
     __ibm_infosvr_version: >-
       {{ ibm_infosvr_installed_version_xml.matches[0][__ibm_infosvr_namespace].currentVersion[:4] }}
-  when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm-information-server-clients' in group_names)
+  when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm_information_server_clients' in group_names)
 
 - name: refresh - determine version from install media
   set_fact:
@@ -66,4 +66,4 @@
                             {% else %}\
                             {{ ibm_infosvr_media_bin.client_zip[4:8] }}\
                             {% endif %}"
-  when: ibm_infosvr_version_xml_output.rc != 0 or ('ibm-information-server-clients' in group_names)
+  when: ibm_infosvr_version_xml_output.rc != 0 or ('ibm_information_server_clients' in group_names)

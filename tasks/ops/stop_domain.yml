@@ -24,4 +24,4 @@
   become: yes
   ignore_errors: yes
   changed_when: False
-  when: ('ibm-information-server-domain' in group_names)
+  when: ('ibm_information_server_domain' in group_names)

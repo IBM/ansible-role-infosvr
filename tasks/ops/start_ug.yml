@@ -22,7 +22,7 @@
   ignore_errors: yes
   changed_when: False
   when: >
-          ('ibm-information-server-ug' in group_names)
+          ('ibm_information_server_ug' in group_names)
           and __ibm_infosvr_features.ises
           and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
 
@@ -35,7 +35,7 @@
   become: yes
   changed_when: False
   when: >
-          ('ibm-information-server-ug' in group_names)
+          ('ibm_information_server_ug' in group_names)
           and __ibm_infosvr_features.ises
           and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
   register: __ibm_infosvr_ug_k8s_pods_status
@@ -57,7 +57,7 @@
   changed_when: False
   become: yes
   register: __ibm_infosvr_ug_omag_pod
-  when: ('ibm-information-server-ug' in group_names)
+  when: ('ibm_information_server_ug' in group_names)
 
 - name: ensure OMAG configuration is restored
   command: >
@@ -65,7 +65,7 @@
   become: yes
   with_items: "{{ __ibm_infosvr_omag_config.files }}"
   when: >
-          ('ibm-information-server-ug' in group_names)
+          ('ibm_information_server_ug' in group_names)
           and __ibm_infosvr_features.ises
           and not (__ibm_infosvr_ug_pods_list.find('cassandra') == -1)
           and __ibm_infosvr_features.omag

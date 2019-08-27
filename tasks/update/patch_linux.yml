@@ -115,24 +115,24 @@
 - import_tasks: ops/stop_domain.yml
   when: >
           __ibm_infosvr_patch_install is changed
-          and ('ibm-information-server-domain' in group_names)
+          and ('ibm_information_server_domain' in group_names)
 
 - import_tasks: ops/stop_sos.yml
   when: >
           __ibm_infosvr_patch_install is changed
-          and ('ibm-information-server-domain' in group_names)
+          and ('ibm_information_server_domain' in group_names)
 
 - import_tasks: ops/regen_sos.yml
   when: >
           __ibm_infosvr_patch_install is changed
-          and ('ibm-information-server-domain' in group_names)
+          and ('ibm_information_server_domain' in group_names)
 
 - import_tasks: ops/start_sos.yml
   when: >
           __ibm_infosvr_patch_install is changed
-          and ('ibm-information-server-domain' in group_names)
+          and ('ibm_information_server_domain' in group_names)
 
 - import_tasks: ops/start_domain.yml
   when: >
           __ibm_infosvr_patch_install is changed
-          and ('ibm-information-server-domain' in group_names)
+          and ('ibm_information_server_domain' in group_names)

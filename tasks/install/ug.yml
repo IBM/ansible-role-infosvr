@@ -20,7 +20,7 @@
 - name: ug - confirm repository tier is running and accessible
   wait_for:
     port: "{{ ibm_infosvr_ports.db2 }}"
-    host: "{{ groups['ibm-information-server-repo'][0] }}"
+    host: "{{ groups['ibm_information_server_repo'][0] }}"
     state: started
     delay: 10
     timeout: 300
@@ -28,7 +28,7 @@
 - name: ug - confirm domain tier is running and accessible
   wait_for:
     port: "{{ item }}"
-    host: "{{ groups['ibm-information-server-domain'][0] }}"
+    host: "{{ groups['ibm_information_server_domain'][0] }}"
     state: started
     delay: 10
     timeout: 300
