@@ -47,7 +47,6 @@
     namespaces:
       x: http://www.ibm.com/LocalInstallRegistry
     content: attribute
-    attribute: x:currentVersion
   register: ibm_infosvr_installed_version_xml
   when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm_information_server_clients' in group_names)
 
