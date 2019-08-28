@@ -17,9 +17,16 @@
 FROM centos:7
 
 # Add base packages needed by Information Server and Ansible
-RUN yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && yum clean all
-RUN yum install -y libstdc++.i686 libgcc.i686 && yum clean all
-RUN easy_install pip && pip install ansible
+RUN yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && \
+	yum clean all && \
+	yum install -y libstdc++.i686 libgcc.i686 && \
+	yum clean all && \
+	easy_install pip && \
+	pip install ansible && \
+	ansible-galaxy install IBM.infosvr && \
+	ansible-galaxy install IBM.infosvr-metadata-asset-manager && \
+	ansible-galaxy install IBM.infosvr-import-export && \
+	ansible-galaxy install IBM.infosvr-openigc
 
 # Copy a Linux look-a-like version
 COPY proc_version /root/proc_version
@@ -30,8 +37,6 @@ COPY local_connection /etc/ansible/inventories/
 COPY infosvr /etc/ansible/inventories/
 COPY build.yml /root/playbooks/
 COPY ops.yml /root/playbooks/
-
-RUN ansible-galaxy install IBM.infosvr && ansible-galaxy install IBM.infosvr-metadata-asset-manager && ansible-galaxy install IBM.infosvr-import-export && ansible-galaxy install IBM.infosvr-openigc
 
 # Expose web console / API, Zookeeper and Kafka ports
 EXPOSE 9446 52181 59092
