@@ -22,11 +22,7 @@ RUN yum install -y initscripts chkconfig which lsof screen openssl python python
 	yum install -y libstdc++.i686 libgcc.i686 && \
 	yum clean all && \
 	easy_install pip && \
-	pip install ansible && \
-	ansible-galaxy install IBM.infosvr && \
-	ansible-galaxy install IBM.infosvr-metadata-asset-manager && \
-	ansible-galaxy install IBM.infosvr-import-export && \
-	ansible-galaxy install IBM.infosvr-openigc
+	pip install ansible
 
 # Copy a Linux look-a-like version
 COPY proc_version /root/proc_version
@@ -37,6 +33,11 @@ COPY local_connection /etc/ansible/inventories/
 COPY infosvr /etc/ansible/inventories/
 COPY build.yml /root/playbooks/
 COPY ops.yml /root/playbooks/
+
+RUN ansible-galaxy install IBM.infosvr && \
+	ansible-galaxy install IBM.infosvr-metadata-asset-manager && \
+	ansible-galaxy install IBM.infosvr-import-export && \
+	ansible-galaxy install IBM.infosvr-openigc
 
 # Expose web console / API, Zookeeper and Kafka ports
 EXPOSE 9446 52181 59092
