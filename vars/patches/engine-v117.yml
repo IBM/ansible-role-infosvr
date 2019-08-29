@@ -16,23 +16,23 @@
 ###
 
 ibm_infosvr_patches_list:
-#  - srcFile: patch_PXE_Dec2018_linux64_11702.tar
-#    pkgFile: patch_PXE_Dec2018_linux64_11700-02.ispkg
-#    versionInfo: patch_PXE_Dec2018_linux64_11700-02
-#  - srcFile: patch_Dec2018_DFD_all_11702.zip
-#    pkgFile: patch_Dec2018_DFD_all_11702.ispkg
-#    versionInfo: patch_Dec2018_DFD_all_11702
-#  - srcFile: patch_JR60289_FileCC_all_11700-11702.tar
-#    pkgFile: patch_JR60289_FileCC_all_11700-11702.ispkg
-#    versionInfo: patch_JR60289_FileCC_all_11700-11702
-#  - srcFile: servicepack_11.7.0.2_SP1_linux64_11702.tar.gz
-#    pkgFile: servicepack.is_11_7_0_2.linux64.SP1.RC1.ispkg
-#    versionInfo: servicepack_SP1_IS11702_11702
+  - srcFile: patch_JR60943_server_Linux64_11310-11710.tar
+    pkgFile: patch_JR60943_server_Linux64_11310-11710.ispkg
+    versionInfo: patch_JR60943_server_Linux64_11310-11710
+  - srcFile: patch_JR61087_scapibridge_all_11710.tar
+    pkgFile: patch_JR61087_scapibridge_all_11710.ispkg
+    versionInfo: patch_JR61087_scapibridge_all_11710
   - srcFile: servicepack_11.7.1.0_SP1_linux64_11710.tar.gz
     pkgFile: servicepack_11.7.1.0_SP1_linux64_11710.ispkg
     versionInfo: servicepack_SP1_IS1171
+  - srcFile: patch_July2019_DFD_all_11710.zip
+    pkgFile: patch_July2019_DFD_all_11710.ispkg
+    versionInfo: patch_July2019_DFD_all_11710
+  - srcFile: PXE_DI_Feature_Patch_July_2019.tar
+    pkgFile: PXE_DI_Feature_Patch_July_2019.ispkg
+    versionInfo: PXE_DI_Feature_Patch_July_2019
 
-#ibm_infosvr_jdk_update:
-#  filename: "ibm-java-sdk-8.0-5.22-linux-x86_64.tgz"
-#  extractedpath: "ibm-java-x86_64-80"
-#  versionInfo: "pxa6480sr5fp22-20180919_01(SR5 FP22)"
+ibm_infosvr_jdk_update:
+  filename: "ibm-java-sdk-8.0-5.35-linux-x86_64.tgz"
+  extractedpath: "ibm-java-x86_64-80"
+  versionInfo: "pxa6480sr5fp35-20190418_01(SR5 FP35)"

@@ -16,17 +16,14 @@
 ###
 
 ibm_infosvr_patches_list:
-#  - srcFile: patch_Dec2018_DFD_all_11702.zip
-#    pkgFile: patch_Dec2018_DFD_all_11702.ispkg
-#    versionInfo: patch_Dec2018_DFD_all_11702
-#  - srcFile: servicepack_11.7.0.2_SP1_linux64_11702.tar.gz
-#    pkgFile: servicepack.is_11_7_0_2.linux64.SP1.RC1.ispkg
-#    versionInfo: servicepack_SP1_IS11702_11702
   - srcFile: servicepack_11.7.1.0_SP1_linux64_11710.tar.gz
     pkgFile: servicepack_11.7.1.0_SP1_linux64_11710.ispkg
     versionInfo: servicepack_SP1_IS1171
+  - srcFile: patch_July2019_DFD_all_11710.zip
+    pkgFile: patch_July2019_DFD_all_11710.ispkg
+    versionInfo: patch_July2019_DFD_all_11710
 
-#ibm_infosvr_websphere_jdk_update:
-#  filename: "ibm-java-sdk-8.0-5.22-linux-x64-installmgr.zip"
-#  extractedpath: "com.ibm.java.jdk.v8_8.0.5022.20180921_0916"
-#  versionInfo: "pxa6480sr5fp22-20180919_01(SR5 FP22)"
+ibm_infosvr_websphere_jdk_update:
+  filename: "ibm-java-sdk-8.0-5.35-linux-x64-installmgr.zip"
+  extractedpath: "com.ibm.java.jdk.v8_8.0.5035.20190422_0948"
+  versionInfo: "pxa6480sr5fp35-20190418_01(SR5 FP35)"
