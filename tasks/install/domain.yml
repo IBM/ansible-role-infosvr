@@ -23,13 +23,23 @@
   yum:
     state: present
     name:
-      - compat-libstdc++-33
       - libXtst
       - elfutils
   retries: 3
   delay: 5
   register: __ibm_infosvr_domain_yum
   until: __ibm_infosvr_domain_yum is succeeded
+
+- name: domain - installing domain-specific packages (CentOS)
+  yum:
+    state: present
+    name:
+      - compat-libstdc++-33
+  retries: 3
+  delay: 5
+  register: __ibm_infosvr_domain_yum_centos
+  until: __ibm_infosvr_domain_yum_centos is succeeded
+  when: (ansible_distribution == "CentOS")
 
 - name: domain - apply response file template (Liberty)
   template:
@@ -137,21 +147,18 @@
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
-          and (not ibm_infosvr_container)
 
 - name: domain - register Solr service in systemd
   systemd: name=InfoSrvSolrCloud.service enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
-          and (not ibm_infosvr_container)
 
 - name: domain - register Kafka service in systemd
   systemd: name=InfoSrvKafka.service enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
-          and (not ibm_infosvr_container)
 
 - import_tasks: ops/stop_domain.yml
   when: >

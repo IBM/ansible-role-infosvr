@@ -19,4 +19,3 @@
 - import_tasks: ops/stop_domain.yml
 - import_tasks: ops/stop_sos.yml
 - import_tasks: ops/stop_ug.yml
-- import_tasks: ops/stop_db.yml

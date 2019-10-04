@@ -21,21 +21,25 @@ keep a large VM around), this could be useful.
 
 ### Step 1: Building a base image
 
-Start by building a base image into which you'll do the deployment from this Ansible role.
+Build the base image into which you'll do the deployment from this Ansible role. This image builds a `systemd`-capable
+RedHat image into which the minimal system packages and Ansible roles needed to do the installation of IBM Information
+Server are loaded.
 
 To build the base image, change into the `container` subdirectory of this repository and execute the following:
 
 ```bash
 $ cd container
-$ docker build . -t infosvr_base
+$ docker build --rm --build-arg REDHAT_USER='<your_username>' --build-arg REDHAT_PASSWORD='<your_password>' -t infosvr_base .
 ```
+
+(Provide your RedHat username and password for registering to attaching the system to RedHat to allow `yum` to work.)
 
 After a minute or two you should have a new image called `infosvr_base`:
 
 ```bash
 $ docker images
 REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE
-infosvr_base                               latest              91c56796b63b        6 minutes ago       514MB
+infosvr_base                               latest              91c56796b63b        6 minutes ago       510MB
 ```
 
 This base image simply has the foundational elements for actually deploying an Information Server environment into
@@ -52,7 +56,7 @@ These overrides will then be applied automatically picked up and applied in the 
 
 (If you do not provide any overrides, the default values from `defaults/main.yml` of the role will be used.)
 
-### Step 3: Running the Information Server deployment
+### Step 3: Start a base image for deployment
 
 To actually run through the Information Server deployment into the image, you will need to run the container with a
 number of options:
@@ -68,14 +72,18 @@ number of options:
 - To ensure the embedded DB2 can be installed and run without issues, you need to run the container with `host` IPC
     mode and with the `IPC_OWNER` capability added. You should also ensure that your host system has appropriate
     settings for the various `sysctl` parameters listed further below.
+- To ensure that `systemd` will work as expected, you'll also need to add the `SYS_ADMIN` capability, mount the
+    `/sys/fs/cgroup` directory into your container, and the `/run` tmpfs directory.
 
 ```bash
 $ docker run \
     --ipc=host \
     --cap-add=IPC_OWNER \
     --hostname infosvr \
+    --volume /sys/fs/cgroup:/sys/fs/cgroup \
     --volume ~/Developer/media:/mnt/media:ro \
-    -p 9446:9446 \
+    --tmpfs /run \
+    -P \
     -d \
     --name infosvr_build \
     infosvr_base
@@ -87,18 +95,26 @@ the appropriate parameters for installing and running DB2.) **Important note**: 
 than* `infosvr`, please also change the `local_connection` and `infosvr` files in the `container` directory *before*
 running the very first build step in this process.
 
-Upon running this container, it will begin automatically installing and deploying IBM InfoSphere Information Server
-into the container. You can view the progress of the installation using the following command from outside the docker
-container:
+### Step 4: Run the Information Server deployment
+
+Once the base image is up and running, execute the deployment of IBM Information Server within it using the following
+command:
 
 ```bash
-$ docker logs -f infosvr_build
+$ docker exec infosvr_build /bin/bash -c "screen -dmLS install sh -c 'ansible-playbook /root/playbooks/build.yml --extra-vars @/mnt/media/vars.yml'"
+```
+
+This will begin automatically installing and deploying IBM InfoSphere Information Server into the container. You can
+view the progress of the installation using the following command from outside the docker container:
+
+```bash
+$ docker exec infosvr_build tail -F /screenlog.0
 
 PLAY [IBM InfoSphere Information Server] ***************************************
 ...
 ```
 
-This simply tails the log of the ansible role running within the container itself. (Simply press `Ctrl-C` to exit
+This simply tails the log of the Ansible role running within the container itself. (Simply press `Ctrl-C` to exit
 from the logs, without impacting the install itself.)
 
 Note that this process will take some time: likely 1 hour or more. In particular, tasks like the installation of the
@@ -126,7 +142,7 @@ tier(s) that are being installed. (There could also be a few seconds to a minute
 installing.)
 
 When successfully completed, you should see the `completed all steps successfully` message from three separate
-log files, and the following output in the overall log (`docker logs -f infosvr_build` output):
+log files, and the following output in the overall log (`docker exec infosvr_build tail -F /screenlog.0` output):
 
 ```text
 PLAY RECAP *********************************************************************
@@ -141,7 +157,7 @@ is given in the lower-right (just over 53 minutes in the example above).
 If you entered an interactive shell within the container to view the more detailed logs, just type `exit` to close
 out of that interactive session.
 
-### Step 4: Tagging your deployed image for later re-use
+### Step 5: Tagging your deployed image for later re-use
 
 Rather than needing to go through this hour(s)-long second step each time you want to make use of a container
 running the software, you'll probably want to tag this image for later re-use. Before doing so, it will be best to
@@ -163,6 +179,7 @@ much space as possible. I would suggest removing the following:
 - `/opt/IBM/InformationServer/Updates/Backup.*`
 - `/opt/IBM/InformationServer/Updates/_jvm.*`
 - `/opt/IBM/InformationServer/Updates/server.*`
+- `/opt/IBM/InformationServer/_uninstall/Backup.*`
 - `/opt/IBM/InformationServer/_uninstall/_jvm.*`
 - `/opt/IBM/InformationServer/_uninstall/server.*`
 - `/tmp/*`
@@ -171,8 +188,9 @@ You can do this by once again logging in to an interactive shell in the containe
 
 ```bash
 $ docker exec -it infosvr_build /bin/bash
-$ rm -rf /tmp/*
+[root@infosvr /]# rm -rf /tmp/*
 ...
+[root@infosvr /]# shutdown -h now
 ```
 
 (Of course, if you want any other change to consistently be available on each fresh startup of the image in a
@@ -183,14 +201,9 @@ like the following:
 
 ```bash
 $ docker commit \
-    --change='ENTRYPOINT ["/bin/bash", "-c", "ansible-playbook /root/playbooks/ops.yml --tags=start && tail -F /opt/IBM/InformationServer/wlp/usr/servers/iis/logs/messages.log"]' \
     infosvr_build \
     localhost:5000/infosvr:v11.7.0.2
 ```
-
-Note that here we also change the `ENTRYPOINT` so that when starting up a container from this commit point it
-will attempt to startup Information Server itself rather than trying to install it. Once started, it will
-indefinitely tail the WebSphere Liberty Profile's log file.
 
 To avoid any clashes with running a fresh container (see troubleshooting section on mixed shared memory),
 you should probably stop and remove the build container at this point:
@@ -212,6 +225,8 @@ $ docker run \
     --ipc=host \
     --cap-add=IPC_OWNER \
     --hostname infosvr \
+    --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    --tmpfs /run \
     -p 9446:9446 \
     -d \
     localhost:5000/infosvr:v11.7.0.2
@@ -220,15 +235,6 @@ $ docker run \
 (And of course, you should be able to make use of the container through Kubernetes as well, just be sure that
 your k8s spec includes the IPC mode, capabilities, and hostname as required by the command above.)
 
-You can use the same logging command as earlier to view the status of the container as it starts up:
-
-```bash
-$ docker logs -f <container_name>
-```
-
-You should see Ansible output while the various components of Information Server itself are started up, eventually
-followed by the output of the WebSphere Liberty profile logs.
-
 ### Step 6: Shutting down / removing the container
 
 While you can simply do a `docker stop` and removal, because the container has been running in the `host` IPC
@@ -236,7 +242,8 @@ mode it may leave behind a number of shared objects if not shutdown cleanly. To 
 run the following:
 
 ```bash
-$ docker exec <container_name> sh -c 'ansible-playbook /root/playbooks/ops.yml --tags=stop'
+$ docker exec -it <container_name> /bin/bash
+[root@infosvr /]# ansible-playbook /root/playbooks/ops.yml --tags=stop
 ...
 PLAY RECAP *********************************************************************
 localhost                  : ok=21   changed=0    unreachable=0    failed=0
@@ -244,10 +251,7 @@ localhost                  : ok=21   changed=0    unreachable=0    failed=0
 Monday 25 February 2019  22:08:18 +0000 (0:00:01.357)       0:00:45.490 *******
 ===============================================================================
 ...
-$ docker stop <container_name>
-<container_name>
-$ docker rm <container_name>
-<container_name>
+[root@infosvr /]# shutdown -h now
 ```
 
 If you forget, you can always follow the instructions in troubleshooting below regarding mixed up shared memory
@@ -272,7 +276,7 @@ It should be possible to run an image in a new container without needing `--priv
 Within the Linux host, you can first check the existing value of a parameter using the following command (as root):
 
 ```bash
-$ sysctl -w kernel.msgmnb
+$ sysctl kernel.msgmnb
 kernel.msgmnb = 65536
 ```
 

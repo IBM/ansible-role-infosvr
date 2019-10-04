@@ -28,24 +28,6 @@
   changed_when: False
   when: >
           ('ibm_information_server_domain' in group_names)
-          and (not ibm_infosvr_container)
-          and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
-
-- name: start IBM InfoSphere Information Server Zookeeper (service)
-  service: state=started name=InfoSrvZookeeper pattern='org.apache.zookeeper.server.quorum.QuorumPeerMain'
-  become_user: root
-  become: yes
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_os_start_zookeeper_result
-  until: >
-          __ibm_infosvr_os_start_zookeeper_result.failed is defined
-          and not __ibm_infosvr_os_start_zookeeper_result.failed
-  changed_when: False
-  when: >
-          ('ibm_information_server_domain' in group_names)
-          and ibm_infosvr_container
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('zookeeper') == -1)
 
@@ -74,24 +56,6 @@
   changed_when: False
   when: >
           ('ibm_information_server_domain' in group_names)
-          and (not ibm_infosvr_container)
-          and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.find('solr') == -1)
-
-- name: start IBM InfoSphere Information Server Solr (service)
-  service: state=started name=InfoSrvSolrCloud pattern='/shared-open-source/solr/install -jar start.jar'
-  become_user: root
-  become: yes
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_os_start_solr_result
-  until: >
-          __ibm_infosvr_os_start_solr_result.failed is defined
-          and not __ibm_infosvr_os_start_solr_result.failed
-  changed_when: False
-  when: >
-          ('ibm_information_server_domain' in group_names)
-          and ibm_infosvr_container
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('solr') == -1)
 
@@ -120,24 +84,6 @@
   changed_when: False
   when: >
           ('ibm_information_server_domain' in group_names)
-          and (not ibm_infosvr_container)
-          and (not __ibm_infosvr_features.ises
-          or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
-
-- name: start IBM InfoSphere Information Server Kafka (service)
-  service: state=started name=InfoSrvKafka pattern='kafka.Kafka'
-  become_user: root
-  become: yes
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_os_start_kafka_result
-  until: >
-          __ibm_infosvr_os_start_kafka_result.failed is defined
-          and not __ibm_infosvr_os_start_kafka_result.failed
-  changed_when: False
-  when: >
-          ('ibm_information_server_domain' in group_names)
-          and ibm_infosvr_container
           and (not __ibm_infosvr_features.ises
           or __ibm_infosvr_ug_pods_list.find('kafka') == -1)
 

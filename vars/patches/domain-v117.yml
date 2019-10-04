@@ -24,6 +24,6 @@ ibm_infosvr_patches_list:
     versionInfo: patch_July2019_DFD_all_11710
 
 ibm_infosvr_websphere_jdk_update:
-  filename: "ibm-java-sdk-8.0-5.35-linux-x64-installmgr.zip"
-  extractedpath: "com.ibm.java.jdk.v8_8.0.5035.20190422_0948"
-  versionInfo: "pxa6480sr5fp35-20190418_01(SR5 FP35)"
+  filename: "ibm-java-sdk-8.0-5.40-linux-x64-installmgr.zip"
+  extractedpath: "com.ibm.java.jdk.v8_8.0.5040.20190808_0919"
+  versionInfo: "pxa6480sr5fp40-20190807_01(SR5 FP40)"

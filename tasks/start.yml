@@ -15,7 +15,6 @@
 # limitations under the License.
 ###
 
-- import_tasks: ops/start_db.yml
 - import_tasks: ops/start_sos.yml
 - import_tasks: ops/start_ug.yml
 - import_tasks: ops/start_domain.yml

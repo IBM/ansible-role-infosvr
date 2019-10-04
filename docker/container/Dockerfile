@@ -14,18 +14,21 @@
 # limitations under the License.
 ###
 
-FROM centos:7
+FROM registry.redhat.io/rhel7-init
+ARG REDHAT_USER
+ARG REDHAT_PASSWORD
+
+VOLUME [ "/sys/fs/cgroup" ]
 
 # Add base packages needed by Information Server and Ansible
-RUN yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl && \
-	yum clean all && \
-	yum install -y libstdc++.i686 libgcc.i686 && \
-	yum clean all && \
-	easy_install pip && \
-	pip install ansible
-
-# Copy a Linux look-a-like version
-COPY proc_version /root/proc_version
+RUN subscription-manager register --username=${REDHAT_USER} --password=${REDHAT_PASSWORD} && \
+        subscription-manager attach && \
+        yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl less && \
+        yum clean all && \
+        yum install -y libstdc++.i686 libgcc.i686 && \
+        yum clean all && \
+        easy_install pip && \
+        pip install ansible
 
 # Configure defaults for connections, etc
 COPY ansible.cfg /etc/ansible/
@@ -35,11 +38,10 @@ COPY build.yml /root/playbooks/
 COPY ops.yml /root/playbooks/
 
 RUN ansible-galaxy install IBM.infosvr && \
-	ansible-galaxy install IBM.infosvr-metadata-asset-manager && \
-	ansible-galaxy install IBM.infosvr-import-export && \
-	ansible-galaxy install IBM.infosvr-openigc
+        ansible-galaxy install IBM.infosvr-metadata-asset-manager && \
+        ansible-galaxy install IBM.infosvr-import-export && \
+        ansible-galaxy install IBM.infosvr-openigc
 
 # Expose web console / API, Zookeeper and Kafka ports
 EXPOSE 9446 52181 59092
 
-ENTRYPOINT ["/bin/bash", "-c", "screen -dmLS install sh -c 'ansible-playbook /root/playbooks/build.yml --extra-vars @/mnt/media/vars.yml'; sleep 3 && tail -F /screenlog.0"]

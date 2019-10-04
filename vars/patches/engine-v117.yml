@@ -33,6 +33,6 @@ ibm_infosvr_patches_list:
     versionInfo: PXE_DI_Feature_Patch_July_2019
 
 ibm_infosvr_jdk_update:
-  filename: "ibm-java-sdk-8.0-5.35-linux-x86_64.tgz"
+  filename: "ibm-java-sdk-8.0-5.40-linux-x86_64.tgz"
   extractedpath: "ibm-java-x86_64-80"
-  versionInfo: "pxa6480sr5fp35-20190418_01(SR5 FP35)"
+  versionInfo: "pxa6480sr5fp40-20190807_01(SR5 FP40)"
