@@ -14,16 +14,12 @@
 # limitations under the License.
 ###
 
-FROM registry.redhat.io/rhel7-init
-ARG REDHAT_USER
-ARG REDHAT_PASSWORD
+FROM rhel7-systemd-base
 
 VOLUME [ "/sys/fs/cgroup" ]
 
 # Add base packages needed by Information Server and Ansible
-RUN subscription-manager register --username=${REDHAT_USER} --password=${REDHAT_PASSWORD} && \
-        subscription-manager attach && \
-        yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl less && \
+RUN yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl less && \
         yum clean all && \
         yum install -y libstdc++.i686 libgcc.i686 && \
         yum clean all && \
@@ -44,4 +40,3 @@ RUN ansible-galaxy install IBM.infosvr && \
 
 # Expose web console / API, Zookeeper and Kafka ports
 EXPOSE 9446 52181 59092
-

@@ -19,27 +19,40 @@ keep a large VM around), this could be useful.
 
 ## Building a re-usable container
 
+### Step 0: Picking a foundational image
+
+To ensure the IBM Information Server services automatically startup when creating or restarting a container, it is best
+to use a `systemd`-capable base image: for example `registry.redhat.io/rhel7-init`. The choice of foundational image
+is up to you, given that some (like the one mentioned) will require licenses, subscriptions, etc.
+
+Ensure that the image has been setup ready-to-use, including activating any necessary subscription.
+
+(In the example above, this would require creating a derived container image after running `subscription-manager`
+inside the a container running the vanilla image, and then `docker commit`ing the results into a new derived
+container image.)
+
+The next step by default assumes you've named this derived image `rhel7-systemd-base`.
+
 ### Step 1: Building a base image
 
-Build the base image into which you'll do the deployment from this Ansible role. This image builds a `systemd`-capable
-RedHat image into which the minimal system packages and Ansible roles needed to do the installation of IBM Information
-Server are loaded.
+This image builds from your choice of foundational image above by loading the minimal system packages and Ansible roles
+needed to do the installation of IBM Information Server.
 
-To build the base image, change into the `container` subdirectory of this repository and execute the following:
+To build the base image, change into the `container` subdirectory of this repository and first modify the `FROM` line of
+the `Dockerfile` to reflect your derived container image from the previous step.
+
+Then execute the following:
 
 ```bash
-$ cd container
-$ docker build --rm --build-arg REDHAT_USER='<your_username>' --build-arg REDHAT_PASSWORD='<your_password>' -t infosvr_base .
+$ docker build --rm -t infosvr_base .
 ```
-
-(Provide your RedHat username and password for registering to attaching the system to RedHat to allow `yum` to work.)
 
 After a minute or two you should have a new image called `infosvr_base`:
 
 ```bash
 $ docker images
 REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE
-infosvr_base                               latest              91c56796b63b        6 minutes ago       510MB
+infosvr_base                               latest              91c56796b63b        6 minutes ago       512MB
 ```
 
 This base image simply has the foundational elements for actually deploying an Information Server environment into
