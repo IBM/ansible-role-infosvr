@@ -24,7 +24,8 @@ RUN yum install -y initscripts chkconfig which lsof screen openssl python python
         yum install -y libstdc++.i686 libgcc.i686 && \
         yum clean all && \
         easy_install pip && \
-        pip install ansible
+        pip install ansible && \
+        pip install jmespath
 
 # Configure defaults for connections, etc
 COPY ansible.cfg /etc/ansible/
