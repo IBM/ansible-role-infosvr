@@ -125,37 +125,20 @@
     - "/etc/init.d/InfoSrvKafka"
   register: __ibm_infosvr_sos_scripts
 
-# Next two tasks for RHEL 7 only (extrapolated from other services)
-- name: domain - configure domain tier systemd restartability
-  template:
-    src: "{{ item.src }}"
-    dest: /etc/systemd/system/{{ item.svc }}
-    owner: root
-    group: root
-    mode: "0644"
-  with_items:
-    - { src: InfoSrvZookeeper.service.j2, svc: InfoSrvZookeeper.service }
-    - { src: InfoSrvSolrCloud.service.j2, svc: InfoSrvSolrCloud.service }
-    - { src: InfoSrvKafka.service.j2, svc: InfoSrvKafka.service }
-  register: __ibm_infosvr_sos_services
-  when: >
-          (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-          and (ansible_distribution_major_version == "7")
-
 - name: domain - register Zookeeper service in systemd
-  systemd: name=InfoSrvZookeeper.service enabled=yes daemon_reload=yes
+  systemd: name=InfoSrvZookeeper enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
 
 - name: domain - register Solr service in systemd
-  systemd: name=InfoSrvSolrCloud.service enabled=yes daemon_reload=yes
+  systemd: name=InfoSrvSolrCloud enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
 
 - name: domain - register Kafka service in systemd
-  systemd: name=InfoSrvKafka.service enabled=yes daemon_reload=yes
+  systemd: name=InfoSrvKafka enabled=yes daemon_reload=yes
   when: >
           (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
           and (ansible_distribution_major_version == "7")
@@ -165,32 +148,27 @@
           (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
           or __ibm_infosvr_domain_install is changed
           or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed
 
 - import_tasks: ops/stop_sos.yml
   when: >
           (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
           or __ibm_infosvr_domain_install is changed
           or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed
 
 - import_tasks: ops/regen_sos.yml
   when: >
           (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
           or __ibm_infosvr_domain_install is changed
           or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed
 
 - import_tasks: ops/start_sos.yml
   when: >
           (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
           or __ibm_infosvr_domain_install is changed
           or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed
 
 - import_tasks: ops/start_domain.yml
   when: >
           (__ibm_infosvr_websphere_jvm_heap is changed and (__ibm_infosvr_version == "11.5"))
           or __ibm_infosvr_domain_install is changed
           or __ibm_infosvr_sos_scripts is changed
-          or __ibm_infosvr_sos_services is changed

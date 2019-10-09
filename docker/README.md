@@ -52,7 +52,7 @@ After a minute or two you should have a new image called `infosvr_base`:
 ```bash
 $ docker images
 REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE
-infosvr_base                               latest              91c56796b63b        6 minutes ago       512MB
+infosvr_base                               latest              91c56796b63b        6 minutes ago       529MB
 ```
 
 This base image simply has the foundational elements for actually deploying an Information Server environment into

@@ -89,7 +89,7 @@
         and (__ibm_infosvr_version == "11.5")
 
 - name: engine - register DataStage in systemd (v11.5 + RHEL7)
-  systemd: name=ds.rc.service enabled=yes state=started daemon_reload=yes
+  systemd: name=ds.rc enabled=yes state=started daemon_reload=yes
   when: >
         (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
         and (ansible_distribution_major_version == "7")
