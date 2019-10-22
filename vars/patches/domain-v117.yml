@@ -16,12 +16,9 @@
 ###
 
 ibm_infosvr_patches_list:
-  - srcFile: servicepack_11.7.1.0_SP1_linux64_11710.tar.gz
-    pkgFile: servicepack_11.7.1.0_SP1_linux64_11710.ispkg
-    versionInfo: servicepack_SP1_IS1171
-  - srcFile: patch_July2019_DFD_all_11710.zip
-    pkgFile: patch_July2019_DFD_all_11710.ispkg
-    versionInfo: patch_July2019_DFD_all_11710
+  - srcFile: servicepack_11.7.1.0_SP2_linux64_11710.tar.gz
+    pkgFile: servicepack_11.7.1.0_SP2_linux64_11710.ispkg
+    versionInfo: servicepack_SP2_IS1171
 
 ibm_infosvr_websphere_jdk_update:
   filename: "ibm-java-sdk-8.0-5.40-linux-x64-installmgr.zip"

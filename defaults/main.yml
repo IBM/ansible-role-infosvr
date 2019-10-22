@@ -53,9 +53,9 @@ ibm_infosvr_wkc_bin:
   entitlements: "IS_V1171_WKC_Pro_bundle_spec.zip"          # https://www.ibm.com/software/passportadvantage/pao_customer.html
 
 ibm_infosvr_updater:
-  version: "IBM InfoSphere Information Server Update Installer Version 11.7.1.041"
-  win: "is-update-windows-11.7.1.041.zip"
-  linux: "is-update-linux64-11.7.1.041.tar"
+  version: "IBM InfoSphere Information Server Update Installer Version 11.7.1.043"
+  win: "is-update-windows-11.7.1.043.zip"
+  linux: "is-update-linux64-11.7.1.043.tar"
 
 # FEATURES TO INSTALL
 ibm_infosvr_features:
