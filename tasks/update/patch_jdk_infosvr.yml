@@ -26,30 +26,24 @@
   command: >
             mv {{ ibm_infosvr_install_location.linux }}/jdk
             {{ ibm_infosvr_tmp.linux }}/is_jdk_backup.{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
-  when: __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
+  when: __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionId) == -1
 
-- name: patch_jdk_infosvr - transfer JDK updates
+- name: patch_jdk_infosvr - transfer JDK update
   copy:
-    src: "{{ ibm_infosvr_media_dir }}/{{ item.filename }}"
-    dest: "{{ ibm_infosvr_tmp.linux }}/{{ item.filename }}"
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_jdk_definition.infosvr_filename }}"
+    dest: "{{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_jdk_definition.infosvr_filename }}"
     force: no
-  with_items:
-    - "{{ ibm_infosvr_jdk_update }}"
 
-- name: patch_jdk_infosvr - extract Information Server JDK updates
+- name: patch_jdk_infosvr - extract Information Server JDK update
   unarchive:
-    src: "{{ ibm_infosvr_tmp.linux }}/{{ item.filename }}"
+    src: "{{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_jdk_definition.infosvr_filename }}"
     dest: "{{ ibm_infosvr_tmp.linux }}"
-    creates: "{{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }}"
+    creates: "{{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_jdk_definition.infosvr_extract_path }}"
     copy: no
-  with_items:
-    - "{{ ibm_infosvr_jdk_update }}"
 
 - name: patch_jdk_infosvr - move updated JDK into position
-  command: mv {{ ibm_infosvr_tmp.linux }}/{{ item.extractedpath }} {{ ibm_infosvr_install_location.linux }}/jdk
-  with_items:
-    - "{{ ibm_infosvr_jdk_update }}"
-  when: __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_update.versionInfo) == -1
+  command: mv {{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_jdk_definition.infosvr_extract_path }} {{ ibm_infosvr_install_location.linux }}/jdk
+  when: __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionId) == -1
 
 - name: patch_jdk_infosvr - restore ownership of JDK
   file:

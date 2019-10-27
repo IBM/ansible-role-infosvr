@@ -15,8 +15,6 @@
 # limitations under the License.
 ###
 
-- import_tasks: refresh_install_details.yml
-
 ##########
 # UPDATE THE INSTALLER
 - name: patch - create directories
@@ -50,62 +48,19 @@
   raw: "0 | cmd /c C:\\temp\\update-installer\\updateImage.bat -i {{ ibm_infosvr_install_location.win }}\\_uninstall"
   when: __ibm_infosvr_update_installer_version.stdout.find(ibm_infosvr_updater.version) == -1
 
-##########
-# EXTRACT UPDATE MEDIA
-# This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
-- name: patch - check patch is downloaded
-  stat:
-    path: "{{ ibm_infosvr_media_dir }}/{{ item.srcFile }}"
-  delegate_to: localhost
-  become: no
-  with_items: "{{ ibm_infosvr_patches_list }}"
-  register: __ibm_infosvr_patching_files
-
-- name: patch - transfer updates
-  win_copy:
-    src: "{{ ibm_infosvr_media_dir }}/{{ item.item.srcFile }}"
-    dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
-    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
-  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
-  with_items: "{{ __ibm_infosvr_patching_files.results }}"
-  loop_control:
-    label: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
-
-- name: patch - extract updates
-  win_unzip:
-    src: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
-    dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads"
-    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.pkgFile }}"
-    rm: False
-  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
-  with_items: "{{ __ibm_infosvr_patching_files.results }}"
-  loop_control:
-    label: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.srcFile }}"
+# Obtain the latest install information to know what version we need to update
+- import_tasks: refresh_install_details.yml
 
 ##########
-# INSTALL UPDATES
-- name: patch - install updates
-  win_shell: >
-              {{ ibm_infosvr_install_location.win }}\Updates\bin\installUpdates.exe
-              -installLocation {{ ibm_infosvr_install_location.win }}
-              -patchPackage {{ ibm_infosvr_install_location.win }}\Updates\Downloads\{{ item.item.pkgFile }}
-              -user {{ ibm_infosvr_user_isadmin }}
-              -password {{ ibm_infosvr_upwd_isadmin }}
-              -console
-              -wasadmin {{ ibm_infosvr_user_was }}
-              -waspassword {{ ibm_infosvr_upwd_was }}
-              -acceptlicense
-              -dbadmin {{ ibm_infosvr_user_db2_instance }}
-              -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
-              {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
-  when: item.stat.exists and ibm_infosvr_version_xml.find(item.item.versionInfo) == -1
-  with_items: "{{ __ibm_infosvr_patching_files.results }}"
-  loop_control:
-    label: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ item.item.pkgFile }}"
+# INSTALL PATCHES
+- name: patch - list patches for this release
+  find:
+    paths: "{{ role_path }}/vars/patches/client/{{ __ibm_infosvr_version_full }}/"
+  register: __ibm_infosvr_client_patch_file_list
 
-- name: patch - clean up installation files
-  win_file: path={{ item.file }} state={{ item.state }}
-  with_items:
-    - { file: "{{ ibm_infosvr_install_location.win }}\\Updates\\Backup.*", state: 'absent' }
-    - { file: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\*.zip", state: 'absent' }
-  ignore_errors: yes
+- name: patch - install one-by-one
+  include_tasks: install_one_patch_win.yml
+  with_items: "{{ __ibm_infosvr_client_patch_file_list.files | sort(attribute='path') }}"
+  loop_control:
+    loop_var: patch_file
+    label: patching with {{ patch_file }}
