@@ -22,12 +22,16 @@
     name:
       - libselinux-python
       - unzip
+      - glibc.i686
+      - libstdc++.i686
       - libXp
       - libXau
       - libXext
       - libX11
       - libxcb
+      - libgcc.i686
       - libXmu
+      - pam.i686
       - net-tools
       - bind-utils
       - nss-softokn-freebl
@@ -39,42 +43,6 @@
   delay: 5
   register: __ibm_infosvr_common_yum
   until: __ibm_infosvr_common_yum is succeeded
-
-- name: common - install RHEL 7.6- packages
-  yum:
-    state: present
-    exclude: docker*,kubelet*,kubectl*,kubeadm*
-    name:
-      - glibc.i686
-      - libstdc++.i686
-      - libgcc.i686
-      - pam.i686
-  when: >
-    (not 'ibm_information_server_external_db' in group_names)
-    and (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-    and not (ansible_distribution_version == "7.7")
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_common_76_yum
-  until: __ibm_infosvr_common_76_yum is succeeded
-
-- name: common - install RHEL 7.7+ packages
-  yum:
-    state: present
-    exclude: docker*,kubelet*,kubectl*,kubeadm*
-    name:
-      - glibc.x86_64
-      - libstdc++.x86_64
-      - libgcc.x86_64
-      - pam.x86_64
-  when: >
-    (not 'ibm_information_server_external_db' in group_names)
-    and (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-    and (ansible_distribution_version == "7.7")
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_common_77_yum
-  until: __ibm_infosvr_common_77_yum is succeeded
 
 - name: common - disable selinux
   selinux: state=disabled

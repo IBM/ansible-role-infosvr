@@ -23,6 +23,7 @@
   yum:
     state: present
     name:
+      - libgcc.i686
       - ed
       - util-linux-ng
       - gcc
@@ -32,36 +33,6 @@
   delay: 5
   register: __ibm_infosvr_engine_yum
   until: __ibm_infosvr_engine_yum is succeeded
-
-- name: engine - install RHEL 7.6- packages
-  yum:
-    state: present
-    exclude: docker*,kubelet*,kubectl*,kubeadm*
-    name:
-      - libgcc.i686
-  when: >
-    (not 'ibm_information_server_external_db' in group_names)
-    and (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-    and not (ansible_distribution_version == "7.7")
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_engine_76_yum
-  until: __ibm_infosvr_engine_76_yum is succeeded
-
-- name: engine - install RHEL 7.7+ packages
-  yum:
-    state: present
-    exclude: docker*,kubelet*,kubectl*,kubeadm*
-    name:
-      - libgcc.x86_64
-  when: >
-    (not 'ibm_information_server_external_db' in group_names)
-    and (ansible_distribution == "RedHat" or ansible_distribution == "CentOS")
-    and (ansible_distribution_version == "7.7")
-  retries: 3
-  delay: 5
-  register: __ibm_infosvr_engine_77_yum
-  until: __ibm_infosvr_engine_77_yum is succeeded
 
 - name: engine - create required groups
   group: name={{ item }}
