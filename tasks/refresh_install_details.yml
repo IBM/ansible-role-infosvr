@@ -48,7 +48,8 @@
       x: http://www.ibm.com/LocalInstallRegistry
     content: attribute
   register: ibm_infosvr_installed_version_xml
-  when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm_information_server_clients' in group_names)
+  when: ibm_infosvr_version_xml_output.rc == 0
+  delegate_to: localhost
 
 - name: refresh - register version number for reference
   set_fact:
@@ -56,7 +57,7 @@
       {{ ibm_infosvr_installed_version_xml.matches[0][__ibm_infosvr_namespace].currentVersion }}
     __ibm_infosvr_version: >-
       {{ ibm_infosvr_installed_version_xml.matches[0][__ibm_infosvr_namespace].currentVersion[:4] }}
-  when: ibm_infosvr_version_xml_output.rc == 0 and not ('ibm_information_server_clients' in group_names)
+  when: ibm_infosvr_version_xml_output.rc == 0
 
 - name: refresh - determine version from install media
   set_fact:
@@ -65,4 +66,9 @@
                             {% else %}\
                             {{ ibm_infosvr_media_bin.client_zip[4:8] }}\
                             {% endif %}"
-  when: ibm_infosvr_version_xml_output.rc != 0 or ('ibm_information_server_clients' in group_names)
+    __ibm_infosvr_version_full: "{% if ibm_infosvr_media_bin.client_zip[:3] == 'IIS' %}\
+                                  {{ ibm_infosvr_media_bin.client_zip[5:13] }}\
+                                  {% else %}\
+                                  {{ ibm_infosvr_media_bin.client_zip[4:12] }}\
+                                  {% endif %}"
+  when: ibm_infosvr_version_xml_output.rc != 0

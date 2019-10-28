@@ -18,7 +18,6 @@
 - name: patch - parsing {{ patch_file.path | basename }}
   include_vars:
     file: "{{ patch_file.path }}"
-  delegate_to: localhost
 
 #- debug: var=ibm_infosvr_patch_definition
 
