@@ -51,7 +51,12 @@
       and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_32) == -1)) }}
 
 - name: update-jdk-win - ensure tmp install location exists
-  win_file: path={{ ibm_infosvr_tmp.win }} state=directory
+  win_file:
+    path: "{{ ibm_infosvr_tmp.win }}"
+    state: directory
+  when: >
+    __ibm_infosvr_win_jdk64_upgrade|bool
+    or __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - transfer 32-bit JDK update
   win_copy:
@@ -124,4 +129,6 @@
     or __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - cleanup installation
-  win_file: path={{ ibm_infosvr_tmp.win }} state=absent
+  win_file:
+    path: "{{ ibm_infosvr_tmp.win }}"
+    state: absent
