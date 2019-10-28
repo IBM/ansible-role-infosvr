@@ -15,9 +15,6 @@
 # limitations under the License.
 ###
 
-- name: update-jdk-win - parse client-specific patches
-  include_vars: file=patches/client-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
-
 - name: update-jdk-win - check existing InfoSvr 64-bit JDK version
   win_shell: >
     {{ ibm_infosvr_install_location.win }}\jdk\bin\java -version
@@ -35,34 +32,40 @@
 - name: update-jdk-win - check if JDK upgrade needed
   set_fact:
     __ibm_infosvr_win_jdk64_upgrade: >
-      "{{ (ibm_infosvr_jdk64_update is defined
-      and __ibm_infosvr_existing_jdk64_version is defined
+      "{{ (ibm_infosvr_jdk_definition is defined
+      and ibm_infosvr_jdk_definition.filename_64 is defined
+      and ibm_infosvr_jdk_definition.versionInfo_64 is defined
       and __ibm_infosvr_existing_jdk64_version.rc != 0
-      or (ibm_infosvr_jdk64_update is defined
+      or (ibm_infosvr_jdk_definition is defined
+      and ibm_infosvr_jdk_definition.filename_64 is defined
       and __ibm_infosvr_existing_jdk64_version.stderr is defined
-      and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk64_update.versionInfo) == -1)) }}"
+      and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_64) == -1)) }}"
     __ibm_infosvr_win_jdk32_upgrade: >
-      "{{ (ibm_infosvr_jdk32_update is defined
+      "{{ (ibm_infosvr_jdk_definition is defined
+      and ibm_infosvr_jdk_definition.filename_32 is defined
       and __ibm_infosvr_existing_jdk32_version is defined
       and __ibm_infosvr_existing_jdk32_version.rc != 0
-      or (ibm_infosvr_jdk32_update is defined
+      or (ibm_infosvr_jdk_definition is defined
+      and ibm_infosvr_jdk_definition.filename_32 is defined
       and __ibm_infosvr_existing_jdk32_version.stderr is defined
-      and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk32_update.versionInfo) == -1)) }}"
+      and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_32) == -1)) }}"
 
 - name: update-jdk-win - ensure tmp install location exists
   win_file: path={{ ibm_infosvr_tmp.win }} state=directory
 
-- name: update-jdk-win - transfer JDK updates
+- name: update-jdk-win - transfer 32-bit JDK update
   win_copy:
-    src: "{{ ibm_infosvr_media_dir }}/{{ item.filename }}"
-    dest: "{{ ibm_infosvr_tmp.win }}\\{{ item.filename }}"
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_jdk_definition.filename_32 }}"
+    dest: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_jdk_definition.filename_32 }}"
     force: no
-  with_items:
-    - "{{ ibm_infosvr_jdk32_update }}"
-    - "{{ ibm_infosvr_jdk64_update }}"
-  when: >
-    __ibm_infosvr_win_jdk64_upgrade|bool
-    or __ibm_infosvr_win_jdk32_upgrade|bool
+  when: __ibm_infosvr_win_jdk32_upgrade|bool
+
+- name: update-jdk-win - transfer 64-bit JDK updates
+  win_copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_jdk_definition.filename_64 }}"
+    dest: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_jdk_definition.filename_64 }}"
+    force: no
+  when: __ibm_infosvr_win_jdk64_upgrade|bool
 
 - name: update-jdk-win - stopping Metadata Interchange Server
   win_service:
@@ -82,42 +85,34 @@
 
 - name: update-jdk-win - extract Information Server 64-bit JDK updates
   win_unzip:
-    src: "{{ ibm_infosvr_tmp.win }}\\{{ item.filename }}"
+    src: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_jdk_definition.filename_64 }}"
     dest: "{{ ibm_infosvr_tmp.win }}"
-    creates: "{{ ibm_infosvr_tmp.win }}\\{{ item.extractedpath }}"
+    creates: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_jdk_definition.extract_path_64 }}"
     copy: no
     rm: False
-  with_items:
-    - "{{ ibm_infosvr_jdk64_update }}"
   when: __ibm_infosvr_win_jdk64_upgrade|bool
 
 - name: update-jdk-win - move updated 64-bit JDK into position
   win_shell: >
     move
-    {{ ibm_infosvr_tmp.win }}\{{ item.extractedpath }}
+    {{ ibm_infosvr_tmp.win }}\{{ ibm_infosvr_jdk_definition.extract_path_64 }}
     {{ ibm_infosvr_install_location.win }}\jdk
-  with_items:
-    - "{{ ibm_infosvr_jdk64_update }}"
   when: __ibm_infosvr_win_jdk64_upgrade|bool
 
 - name: update-jdk-win - extract Information Server 32-bit JDK updates
   win_unzip:
-    src: "{{ ibm_infosvr_tmp.win }}\\{{ item.filename }}"
+    src: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_jdk_definition.filename_32 }}"
     dest: "{{ ibm_infosvr_tmp.win }}"
-    creates: "{{ ibm_infosvr_tmp.win }}\\{{ item.extractedpath }}"
+    creates: "{{ ibm_infosvr_tmp.win }}\\{{ ibm_infosvr_jdk_definition.extract_path_32 }}"
     copy: no
     rm: False
-  with_items:
-    - "{{ ibm_infosvr_jdk32_update }}"
   when: __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - move updated 32-bit JDK into position
   win_shell: >
     move
-    {{ ibm_infosvr_tmp.win }}\{{ item.extractedpath }}
+    {{ ibm_infosvr_tmp.win }}\{{ ibm_infosvr_jdk_definition.extract_path_32 }}
     {{ ibm_infosvr_install_location.win }}\jdk32
-  with_items:
-    - "{{ ibm_infosvr_jdk32_update }}"
   when: __ibm_infosvr_win_jdk32_upgrade|bool
 
 - name: update-jdk-win - starting Metadata Interchange Server
