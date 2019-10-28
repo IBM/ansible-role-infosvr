@@ -16,8 +16,8 @@
 ###
 
 ibm_infosvr_patch_definition:
-  - name: is11702_ServicePack1_ug_services_engine_client_win
-    srcFile: servicepack_11.7.0.2_SP1_win_11702.zip
-    pkgFile: servicepack.is_11_7_0_2.windows.SP1.RC1.ispkg
-    versionId: servicepack_SP1_IS11702_11702
+  name: is11702_ServicePack1_ug_services_engine_client_win
+  srcFile: servicepack_11.7.0.2_SP1_win_11702.zip
+  pkgFile: servicepack.is_11_7_0_2.windows.SP1.RC1.ispkg
+  versionId: servicepack_SP1_IS11702_11702
 

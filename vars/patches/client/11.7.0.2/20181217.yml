@@ -16,8 +16,8 @@
 ###
 
 ibm_infosvr_patch_definition:
-  - name: is11700-11702_SAPPack_R3_8101_windows
-    srcFile: fixpack_SAP_R38101_windows_11702.zip
-    pkgFile: fixpack_SAP_R38101_buildRC2_windows_20181129_1142.ispkg
-    versionId: fixpack_SAP_R38101_windows_11702
+  name: is11700-11702_SAPPack_R3_8101_windows
+  srcFile: fixpack_SAP_R38101_windows_11702.zip
+  pkgFile: fixpack_SAP_R38101_buildRC2_windows_20181129_1142.ispkg
+  versionId: fixpack_SAP_R38101_windows_11702
 

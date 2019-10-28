@@ -16,8 +16,8 @@
 ###
 
 ibm_infosvr_patch_definition:
-  - name: is11312-1171_SAP_BW_4401_windows
-    srcFile: fixpack_SAP_BW4401_windows_11312-1171.zip
-    pkgFile: fixpack_SAP_BW4401_windows_11312-1171.ispkg
-    versionId: fixpack_SAP_BW4401_windows_11312-1171
+  name: is11312-1171_SAP_BW_4401_windows
+  srcFile: fixpack_SAP_BW4401_windows_11312-1171.zip
+  pkgFile: fixpack_SAP_BW4401_windows_11312-1171.ispkg
+  versionId: fixpack_SAP_BW4401_windows_11312-1171
 

@@ -16,8 +16,8 @@
 ###
 
 ibm_infosvr_patch_definition:
-  - name: is11702_JR60421_IMAM_services_client_multi
-    srcFile: patch_JR60421_IMAM_11702.zip
-    pkgFile: patch_JR60421_IMAM_11702.ispkg
-    versionId: patch_JR60421_IMAM_11702
+  name: is11702_JR60421_IMAM_services_client_multi
+  srcFile: patch_JR60421_IMAM_11702.zip
+  pkgFile: patch_JR60421_IMAM_11702.ispkg
+  versionId: patch_JR60421_IMAM_11702
 
