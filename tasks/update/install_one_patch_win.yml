@@ -71,8 +71,10 @@
     and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
 
 - name: patch - clean up installation files
-  win_file: path={{ item.file }} state={{ item.state }}
+  win_file:
+    path: "{{ item }}"
+    state: absent
   with_items:
-    - { file: "{{ ibm_infosvr_install_location.win }}\\Updates\\Backup.*", state: 'absent' }
-    - { file: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\*.zip", state: 'absent' }
+    - "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.srcFile }}"
+    - "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.pkgFile }}"
   ignore_errors: yes
