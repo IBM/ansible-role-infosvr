@@ -31,24 +31,24 @@
 
 - name: update-jdk-win - check if JDK upgrade needed
   set_fact:
-    __ibm_infosvr_win_jdk64_upgrade: >
-      "{{ (ibm_infosvr_jdk_definition is defined
+    __ibm_infosvr_win_jdk64_upgrade: >-
+      {{ (ibm_infosvr_jdk_definition is defined
       and ibm_infosvr_jdk_definition.filename_64 is defined
       and ibm_infosvr_jdk_definition.versionInfo_64 is defined
       and __ibm_infosvr_existing_jdk64_version.rc != 0
       or (ibm_infosvr_jdk_definition is defined
       and ibm_infosvr_jdk_definition.filename_64 is defined
       and __ibm_infosvr_existing_jdk64_version.stderr is defined
-      and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_64) == -1)) }}"
-    __ibm_infosvr_win_jdk32_upgrade: >
-      "{{ (ibm_infosvr_jdk_definition is defined
+      and __ibm_infosvr_existing_jdk64_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_64) == -1)) }}
+    __ibm_infosvr_win_jdk32_upgrade: >-
+      {{ (ibm_infosvr_jdk_definition is defined
       and ibm_infosvr_jdk_definition.filename_32 is defined
       and __ibm_infosvr_existing_jdk32_version is defined
       and __ibm_infosvr_existing_jdk32_version.rc != 0
       or (ibm_infosvr_jdk_definition is defined
       and ibm_infosvr_jdk_definition.filename_32 is defined
       and __ibm_infosvr_existing_jdk32_version.stderr is defined
-      and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_32) == -1)) }}"
+      and __ibm_infosvr_existing_jdk32_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo_32) == -1)) }}
 
 - name: update-jdk-win - ensure tmp install location exists
   win_file: path={{ ibm_infosvr_tmp.win }} state=directory
