@@ -19,8 +19,8 @@ ibm_infosvr_jdk_definition:
   name: is115_JR61417_ISF_services_engine_client_windows
   filename_32: ibm-java-sdk-71-win-i386.zip
   extract_path_32: sdk
-  versionInfo_32: "pwi3280sr5fp40-20190807_01(SR5 FP40)"
+  versionInfo_32: "pwi3270_27sr4fp50-20190715_02(SR4 FP50)"
   filename_64: ibm-java-sdk-71-win-x86_64.zip
   extract_path_64: sdk
-  versionInfo_64: "pwa6480sr5fp40-20190807_01(SR5 FP40)"
+  versionInfo_64: "pwa6470_27sr4fp50-20190715_02(SR4 FP50)"
 
