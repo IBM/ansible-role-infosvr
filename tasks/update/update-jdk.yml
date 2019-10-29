@@ -46,7 +46,7 @@
       __ibm_infosvr_existing_jdk_version.stderr is defined and
       __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo) == -1)
     or (__ibm_infosvr_websphere_existing_jdk_version.stderr is defined and
-      __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo) == -1)
+      __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.was_versionInfo) == -1)
     or (ibm_infosvr_jdk_definition is defined and ibm_infosvr_jdk_definition.jdk7_filename is defined and
       __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and
       __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_jdk_definition.jdk7_versionInfo) == -1)
@@ -87,7 +87,7 @@
     and ibm_infosvr_jdk_definition is defined
     and __ibm_infosvr_jdk_was_file is defined
     and __ibm_infosvr_jdk_was_file.stat.exists
-    and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo) == -1
+    and __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.was_versionInfo) == -1
     and (not __ibm_infosvr_features.wlp)
 
 - name: update-jdk - check WAS JDK7 is downloaded
@@ -118,7 +118,7 @@
       __ibm_infosvr_existing_jdk_version.stderr is defined and
       __ibm_infosvr_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo) == -1)
     or (__ibm_infosvr_websphere_existing_jdk_version.stderr is defined and
-      __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.versionInfo) == -1)
+      __ibm_infosvr_websphere_existing_jdk_version.stderr.find(ibm_infosvr_jdk_definition.was_versionInfo) == -1)
     or (ibm_infosvr_jdk_definition is defined and ibm_infosvr_jdk_definition.jdk7_filename is defined and
       __ibm_infosvr_websphere_existing_jdk7_version.stderr is defined and
       __ibm_infosvr_websphere_existing_jdk7_version.stderr.find(ibm_infosvr_jdk_definition.jdk7_versionInfo) == -1)
