@@ -19,5 +19,5 @@ ibm_infosvr_patch_definition:
   name: is11502_ServicePack1_services_engine_client_win
   srcFile: servicepack_11.5_ServicePack_1_windows_11502.zip
   pkgFile: servicepack_11.5_ServicePack_1_windows_11502.ispkg
-  versionId: servicepack_11.5_ServicePack_1_windows_11502
+  versionId: rollup_11.5_GovernanceRollup_8_11502
 

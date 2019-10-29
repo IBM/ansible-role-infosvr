@@ -19,5 +19,5 @@ ibm_infosvr_patch_definition:
   name: is11502_ServicePack4_services_engine_client_win
   srcFile: servicepack_11.5.0.0_ServicePack_4_win_11502.180709.zip
   pkgFile: servicepack.is_11_5.windows.SP4.RC2.ispkg
-  versionId: servicepack.is_11_5.windows.SP4.RC2
+  versionId: servicepack_SP4_IS11502_11502
 

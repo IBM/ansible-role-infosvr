@@ -19,5 +19,5 @@ ibm_infosvr_patch_definition:
   name: is11502_isf_ru7_services_engine_client_multi
   srcFile: rollup_RU7v3_ISF_all_11502.zip
   pkgFile: rollup_RU7v3_ISF_all_11502.ispkg
-  versionId: rollup_RU7v3_ISF_all_11502
+  versionId: rollup_RU7_ISF_all_11502
 

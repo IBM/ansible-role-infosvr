@@ -19,5 +19,5 @@ ibm_infosvr_patch_definition:
   name: is11502_ServicePack3_services_engine_client_win
   srcFile: servicepack_11.5_SP3_windows_11502.zip
   pkgFile: servicepack_11.5_SP3_windows_11502.ispkg
-  versionId: servicepack_11.5_SP3_windows_11502
+  versionId: patchbag_SP3_IS11502_11502
 
