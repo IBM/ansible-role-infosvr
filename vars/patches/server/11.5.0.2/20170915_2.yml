@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11502_ServicePack2_services_engine_linux64
   srcFile: servicepack_11.5_ServicePack_2_linux64_11502.tar
   pkgFile: servicepack_11.5_ServicePack_2_linux64_11502.ispkg
-  versionId: servicepack_11.5_ServicePack_2_linux64_11502
+  versionId: "11.5.0.2 Service Pack 2"
   tiers:
     - domain
     - engine

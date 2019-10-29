@@ -72,13 +72,24 @@
     force: no
   when: __ibm_infosvr_win_jdk64_upgrade|bool
 
-- name: update-jdk-win - stopping Metadata Interchange Server
+- name: update-jdk-win - stopping Metadata Interchange Server (service)
   win_service:
     name: mis
     state: stopped
   when: >
     __ibm_infosvr_win_jdk64_upgrade|bool
     or __ibm_infosvr_win_jdk32_upgrade|bool
+  ignore_errors: yes
+  register: __ibm_infosvr_win_mis_service
+
+- name: update-jdk-win - stopping Metadata Interchange Server (bat)
+  win_shell: >
+    {{ ibm_infosvr_install_location.win }}\Clients\MetaBrokersAndBridges\bin\mis-stop-service.bat
+  when: >
+    (__ibm_infosvr_win_jdk64_upgrade|bool
+    or __ibm_infosvr_win_jdk32_upgrade|bool)
+    and (not (__ibm_infosvr_win_mis_service.state is defined)
+    or __ibm_infosvr_win_mis_service.state != 'stopped')
 
 - name: update-jdk-win - remove existing 64-bit JDK
   win_file: path="{{ ibm_infosvr_install_location.win }}\\jdk" state=absent
@@ -120,13 +131,24 @@
     {{ ibm_infosvr_install_location.win }}\jdk32
   when: __ibm_infosvr_win_jdk32_upgrade|bool
 
-- name: update-jdk-win - starting Metadata Interchange Server
+- name: update-jdk-win - starting Metadata Interchange Server (service)
   win_service:
     name: mis
     state: started
   when: >
     __ibm_infosvr_win_jdk64_upgrade|bool
     or __ibm_infosvr_win_jdk32_upgrade|bool
+  ignore_errors: yes
+  register: __ibm_infosvr_win_mis_service
+
+- name: update-jdk-win - starting Metadata Interchange Server (bat)
+  win_shell: >
+    {{ ibm_infosvr_install_location.win }}\Clients\MetaBrokersAndBridges\bin\mis-start-service.bat
+  when: >
+    (__ibm_infosvr_win_jdk64_upgrade|bool
+    or __ibm_infosvr_win_jdk32_upgrade|bool)
+    and (not (__ibm_infosvr_win_mis_service.state is defined)
+    or __ibm_infosvr_win_mis_service.state != 'started')
 
 - name: update-jdk-win - cleanup installation
   win_file:

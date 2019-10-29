@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11502_ServicePack3_services_engine_linux64
   srcFile: servicepack_11.5_SP3_linux64_11502.tar.gz
   pkgFile: servicepack_11.5_SP3_linux64_11502.ispkg
-  versionId: servicepack_11.5_SP3_linux64_11502
+  versionId: patchbag_SP3_IS11502_11502
   tiers:
     - domain
     - engine

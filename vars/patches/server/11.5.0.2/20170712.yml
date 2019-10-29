@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11502_ServicePack1_services_engine_linux64
   srcFile: servicepack_11.5_ServicePack_1_linux64_11502.tar
   pkgFile: servicepack_11.5_ServicePack_1_linux64_11502.ispkg
-  versionId: servicepack_11.5_ServicePack_1_linux64_11502
+  versionId: rollup_11.5_GovernanceRollup_8_11502
   tiers:
     - domain
     - engine
