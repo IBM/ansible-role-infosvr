@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is1171_JR60997_microservices_services_all
   srcFile: patch_JR60997v3_microservices_all_1171.tar.gz
   pkgFile: patch_JR60997v3_microservices_all_1171.ispkg
-  versionId: patch_JR60997v3_microservices_all_1171
+  versionId: fixpack_IS11710_11700-11702
   tiers:
     - domain
 
