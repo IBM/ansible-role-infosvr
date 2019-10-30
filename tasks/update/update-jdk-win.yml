@@ -148,7 +148,7 @@
     (__ibm_infosvr_win_jdk64_upgrade|bool
     or __ibm_infosvr_win_jdk32_upgrade|bool)
     and (not (__ibm_infosvr_win_mis_service.state is defined)
-    or __ibm_infosvr_win_mis_service.state != 'started')
+    or __ibm_infosvr_win_mis_service.state != 'running')
 
 - name: update-jdk-win - cleanup installation
   win_file:
