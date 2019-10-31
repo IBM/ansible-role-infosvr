@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11700_ServicePack3_ug_services_engine_linux64
   srcFile: servicepack_11.7_SP3_linux64_11700.tar.gz
   pkgFile: servicepack_11.7_SP3_linux64_11700.ispkg
-  versionId: servicepack_11.7_SP3_linux64_11700
+  versionId: servicepack_SP3_IS117_11700
   tiers:
     - domain
     - engine

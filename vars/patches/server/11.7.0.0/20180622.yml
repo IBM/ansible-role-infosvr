@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is117_fp1_server_linux64
   srcFile: fixpack_FP1_IS117_linux64_11700.tar.gz
   pkgFile: fixpack.is_11_7_0_1.linux64.RSP1.180618.ispkg
-  versionId: fixpack.is_11_7_0_1.linux64.RSP1.180618
+  versionId: fixpack_FP1_IS117_11700
   tiers:
     - domain
     - engine
