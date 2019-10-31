@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11701_ServicePack1_ug_services_engine_linux64
   srcFile: servicepack_11.7.0.1_SP1_linux64_11701.tar.gz
   pkgFile: servicepack.is_11_7_0_1.linux64.SP1.RC1.ispkg
-  versionId: servicepack.is_11_7_0_1.linux64.SP1.RC1
+  versionId: servicepack_SP1_IS11701_11701
   tiers:
     - domain
     - engine

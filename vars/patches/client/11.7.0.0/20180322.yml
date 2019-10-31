@@ -19,5 +19,5 @@ ibm_infosvr_patch_definition:
   name: is11700_ServicePack2_ug_services_engine_client_win
   srcFile: servicepack_11.7_SP2_win_11700.zip
   pkgFile: servicepack_11.7_SP2_win_11700.ispkg
-  versionId: servicepack_11.7_SP2_win_11700
+  versionId: servicepack_SP2_IS117_11700
 

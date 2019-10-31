@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is117_fp2_server_linux64
   srcFile: fixpack_FP2_IS117_linux64_11700-11701.tar.gz
   pkgFile: fixpack_FP2_IS117_linux64_11700-11701.ispkg
-  versionId: fixpack_FP2_IS117_linux64_11700-11701
+  versionId: fixpack_FP2_IS117_11701
   tiers:
     - domain
     - engine

@@ -19,5 +19,5 @@ ibm_infosvr_patch_definition:
   name: is117_fp2_server_client_win
   srcFile: fixpack_FP2_IS117_win_11700-11701.zip
   pkgFile: fixpack_FP2_IS117_win_11700-11701.ispkg
-  versionId: fixpack_FP2_IS117_win_11700-11701
+  versionId: fixpack_FP2_IS117_11701
 
