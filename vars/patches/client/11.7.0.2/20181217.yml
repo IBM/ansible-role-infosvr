@@ -20,4 +20,3 @@ ibm_infosvr_patch_definition:
   srcFile: fixpack_SAP_R38101_windows_11702.zip
   pkgFile: fixpack_SAP_R38101_buildRC2_windows_20181129_1142.ispkg
   versionId: fixpack_SAP_R38101_windows_11702
-

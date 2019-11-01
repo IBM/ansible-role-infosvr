@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: fixpack_IS11710_11700-11702
   tiers:
     - domain
-

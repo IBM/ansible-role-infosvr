@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: fixpack_SAP_BW4401_linux64_11312-1171
   tiers:
     - engine
-

@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: patch_JR60293_ccdb2_all_11500-11502
   tiers:
     - engine
-

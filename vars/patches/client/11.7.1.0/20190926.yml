@@ -20,4 +20,3 @@ ibm_infosvr_patch_definition:
   srcFile: fixpack_SAP_BW4401_windows_11312-1171.zip
   pkgFile: fixpack_SAP_BW4401_windows_11312-1171.ispkg
   versionId: fixpack_SAP_BW4401_windows_11312-1171
-

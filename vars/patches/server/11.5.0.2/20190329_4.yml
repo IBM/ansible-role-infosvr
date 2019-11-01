@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: patch_JR60596_cc-oracle_linux64_11500-11502
   tiers:
     - engine
-

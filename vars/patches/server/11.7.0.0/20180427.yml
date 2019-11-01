@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: PXE_DI_Feature_Patch_linux64_11700
   tiers:
     - engine
-

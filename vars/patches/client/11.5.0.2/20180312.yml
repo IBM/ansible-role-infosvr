@@ -20,4 +20,3 @@ ibm_infosvr_patch_definition:
   srcFile: servicepack_11.5_SP3_windows_11502.zip
   pkgFile: servicepack_11.5_SP3_windows_11502.ispkg
   versionId: patchbag_SP3_IS11502_11502
-
