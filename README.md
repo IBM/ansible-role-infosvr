@@ -124,28 +124,53 @@ As with any Ansible inventory, sufficient details should be provided to ensure c
 
 ### Installing patches
 
-The role is intended to also be able to keep an installed environment up-to-date with patches and system packages. To apply patches, simply enter the relevant details into the files under `vars/patches/<tier>-<version>.yml`. For example, fixes for v11.7 engine tier should go into `vars/patches/engine-v117.yml` while fixes for v11.7 domain tier go into `vars/patches/domain-v117.yml`. Generally these are kept up-to-date within GitHub based on the availability of major patches in Fix Central; but should you wish to apply an interim fix or other that is not already in the list, simply follow the instructions below.
+The role is intended to also be able to keep an installed environment up-to-date with patches and system packages. To apply patches, simply enter the relevant details into the files under `vars/patches/[server|client]/<version>/<date>.yml`. For example, fixes for v11.7.1.0 server-side should go into `vars/patches/server/11.7.1.0/<date>.yml` while fixes for v11.7.0.2 client-side go into `vars/patches/client/11.7.0.2/<date>.yml`, where `<date>` is the date on which the patch was released. Generally these are kept up-to-date within GitHub based on the availability of major patches in Fix Central; but should you wish to apply an interim fix or other that is not already in the list, simply follow the instructions below.
 
-- Each patch should be a list entry under the `ibm_infosvr_patches_list` variable.
-- Each entry should contain:
+- Each patch should be a dictionary named `ibm_infosvr_patch_definition`.
+- The dictionary should contain the following keys:
+  - `name`: the name of the patch / fixpack, as listed on IBM Fix Central
   - `srcFile`: the name of the patch / fixpack file, as downloaded from IBM Fix Central
   - `pkgFile`: the name of the `.ispkg` file contained within the `srcFile`
-  - `versionInfo`: the `installerId` tag that is added to your Version.xml once the patch / fixpack is installed
+  - `versionId`: the `installerId` tag that is added to your Version.xml once the patch / fixpack is installed
+  - `tiers`: a list of the tiers on which this patch should be applied (possible values are `domain` and `engine`) -- for the client patches, this is implied to be client, so no `tiers` is needed
 
 For example:
 
 ```yml
-ibm_infosvr_patches_list:
-  - srcFile: "fixpack_FP2_IS117_linux64_11700-11701.tar.gz"
-    pkgFile: "fixpack_FP2_IS117_linux64_11700-11701.ispkg"
-    versionInfo: "fixpack_FP2_IS117_11701"
+ibm_infosvr_patch_definition:
+  name: is11700_ServicePack2_ug_services_engine_linux64
+  srcFile: servicepack_11.7_SP2_linux64_11700.tar.gz
+  pkgFile: servicepack_11.7_SP2_linux64_11700.ispkg
+  versionId: servicepack_SP2_IS117_11700
+  tiers:
+    - domain
+    - engine
 ```
 
-JDK updates can also be included using the variables `ibm_infosvr_jdk_update` (for the Information Server JDK), `ibm_infosvr_websphere_jdk_update` (for the WebSphere Application Server JDK), and `ibm_infosvr_websphere_jdk7_update` (for the WebSphere Application Server Java 7 JDK -- v11.5 only). Each should contain sub-variables:
+JDK updates can also be included under `vars/patches/jdk/[server|client]/<major>/latest.yml`, where `<major>` is the major release version (`11.5` or `11.7`). In both cases, a single dictionary named `ibm_infosvr_jdk_definition` should be used to define the JDK information.
 
-- `filename`: the name of the JDK file as downloaded from IBM Fix Central
-- `extractedpath`: the path into which the JDK is extracted when unarchived
-- `versionInfo`: the unique version info you see when running `java -version` for the JDK
+For `11.5` the following keys are needed:
+
+- `name`: the name of the JDK, as listed on IBM Fix Central
+- `infosvr_filename`: the name of the JDK file, as downloaded from IBM Fix Central
+- `infosvr_extract_path`: the path created by extracting the JDK file
+- `versionInfo`: the version string that uniquely identifies this version of the JDK (from `java -version`)
+- `was_filename`: the name of the WebSphere Application Server (WAS) fixpack that contains the v6 JDK
+- `was_offering`: the name of the offering within the WAS JDK (v6) fixpack
+- `jdk7_filename`: the name of the WAS fixpack that contains the v7 JDK
+- `jdk7_offering`: the name of the offering within the WAS JDK (v7) fixpack
+- `was_versionInfo`: the version string that uniquely identifies this version of the JDK (v6, from `java -version`)
+- `jdk7_versionInfo`: the version string that uniquely identifies this version of the JDK (v7, from `java -version`)
+
+For `11.7` the following keys are needed:
+
+- `name`: the name of the JDK, as listed on IBM Fix Central
+- `infosvr_filename`: the name of the JDK file, as downloaded from IBM Fix Central
+- `infosvr_extract_path`: the path created by extracting the JDK file
+- `was_filename`: the name of the WebSphere Application Server (WAS) fixpack that contains the JDK
+- `was_offering`: the name of the offering within the WAS JDK fixpack
+- `versionInfo`: the version string that uniquely identifies this version of the (non-WAS) JDK (from `java -version`)
+- `was_versionInfo`: the version string that uniquely identifies this version of the (WAS) JDK (from `java -version`)
 
 These JDK updates are not a list, but a simple dictionary -- because each update will overwrite the previous update, you should only ever need to list the latest version of the JDK you wish to apply.
 
@@ -155,7 +180,7 @@ To run through an update, use the `update` tag as follows:
 ansible-playbook [-i hosts] [site.yml] --tags=update
 ```
 
-This will apply any patches listed in the `vars/patches...` files for your particular release that have not already been applied. It will *not* however update any system-level packages for the operating system: if this is desired, ensure your broader playbook takes care of such an update.
+This will apply any patches listed in the `vars/patches...` files for your particular release that have not already been applied. The patches are applied in sorted order, based on the date on which they were released (oldest first). It will *not* however update any system-level packages for the operating system: if this is desired, ensure your broader playbook takes care of such an update.
 
 ### Environment operations
 
