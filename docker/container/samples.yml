@@ -1,0 +1,9 @@
+---
+egeria_samples_cocopharma_db_type: ibm-db2
+egeria_samples_db_credentials:
+  owner: db2inst1
+  group: db2iadm1
+  passwd: db21nst1
+egeria_samples_db_schema: DB2INST1
+egeria_samples_db_host_remote: INFOSVR
+egeria_samples_db_port_remote: 50000
