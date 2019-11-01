@@ -1,0 +1,25 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+ibm_infosvr_jdk_definition:
+  name: is117_JR61417_ISF_services_engine_linux64
+  infosvr_filename: ibm-java-sdk-8.0-5.40-linux-x86_64.tgz
+  infosvr_extract_path: ibm-java-x86_64-80
+  was_filename: ibm-java-sdk-8.0-5.40-linux-x64-installmgr.zip
+  was_offering: com.ibm.java.jdk.v8_8.0.5040.20190808_0919
+  versionInfo: "pxa6480sr5fp40-20190807_01(SR5 FP40)"
+  was_versionInfo: "pxa6480sr5fp40-20190807_01(SR5 FP40)"

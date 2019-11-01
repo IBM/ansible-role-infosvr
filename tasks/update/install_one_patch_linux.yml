@@ -1,0 +1,60 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: patch - parsing {{ patch_file.path | basename }}
+  include_vars:
+    file: "{{ patch_file.path }}"
+
+#- debug: var=ibm_infosvr_patch_definition
+
+##########
+# EXTRACT UPDATE MEDIA
+# This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
+- name: patch - check {{ ibm_infosvr_patch_definition.srcFile }} is downloaded
+  stat:
+    path: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_patch_definition.srcFile }}"
+  delegate_to: localhost
+  become: no
+  register: __ibm_infosvr_patching_file
+
+##########
+# INSTALL UPDATES
+# - first on domain tier
+- name: patch - install update on domain tier
+  include_tasks: install_patch_on_tier.yml
+  when: >
+    __ibm_infosvr_patching_file.stat.exists
+    and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
+    and ('domain' in ibm_infosvr_patch_definition.tiers)
+    and ('ibm_information_server_domain' in group_names)
+
+# Refresh the details we have on what is installed after each install
+- import_tasks: refresh_install_details.yml
+  when: __ibm_infosvr_patch_install is defined and __ibm_infosvr_patch_install is changed
+
+# - then on engine tier
+- name: patch - install update on engine tier
+  include_tasks: install_patch_on_tier.yml
+  when: >
+    __ibm_infosvr_patching_file.stat.exists
+    and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
+    and ('engine' in ibm_infosvr_patch_definition.tiers)
+    and ('ibm_information_server_engine' in group_names)
+
+# Refresh the details we have on what is installed after each install
+- import_tasks: refresh_install_details.yml
+  when: __ibm_infosvr_patch_install is defined and __ibm_infosvr_patch_install is changed

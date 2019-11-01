@@ -1,0 +1,80 @@
+---
+###
+# Copyright 2018 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###
+
+- name: patch - parsing {{ patch_file.path | basename }}
+  include_vars:
+    file: "{{ patch_file.path }}"
+
+#- debug: var=ibm_infosvr_patch_definition
+
+##########
+# EXTRACT UPDATE MEDIA
+# This is a separate step from unarchive to allow files to be transferred independently to save time / bandwidth
+- name: patch - check {{ ibm_infosvr_patch_definition.srcFile }} is downloaded
+  stat:
+    path: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_patch_definition.srcFile }}"
+  delegate_to: localhost
+  become: no
+  register: __ibm_infosvr_patching_file
+
+- name: patch - copy {{ ibm_infosvr_patch_definition.srcFile }}
+  win_copy:
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_patch_definition.srcFile }}"
+    dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.srcFile }}"
+    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.srcFile }}"
+  when: >
+    __ibm_infosvr_patching_file.stat.exists
+    and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
+
+- name: patch - extract {{ ibm_infosvr_patch_definition.srcFile }}
+  win_unzip:
+    src: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.srcFile }}"
+    dest: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads"
+    creates: "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.pkgFile }}"
+    rm: False
+  when: >
+    __ibm_infosvr_patching_file.stat.exists
+    and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
+
+##########
+# INSTALL UPDATES
+- name: patch - install {{ ibm_infosvr_patch_definition.srcFile }}
+  win_shell: >
+              {{ ibm_infosvr_install_location.win }}\Updates\bin\installUpdates.exe
+              -installLocation {{ ibm_infosvr_install_location.win }}
+              -patchPackage {{ ibm_infosvr_install_location.win }}\Updates\Downloads\{{ ibm_infosvr_patch_definition.pkgFile }}
+              -user {{ ibm_infosvr_user_isadmin }}
+              -password {{ ibm_infosvr_upwd_isadmin }}
+              -console
+              -wasadmin {{ ibm_infosvr_user_was }}
+              -waspassword {{ ibm_infosvr_upwd_was }}
+              -acceptlicense
+              -dbadmin {{ ibm_infosvr_user_db2_instance }}
+              -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
+              {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
+  when: >
+    __ibm_infosvr_patching_file.stat.exists
+    and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
+
+- name: patch - clean up installation files
+  win_file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.srcFile }}"
+    - "{{ ibm_infosvr_install_location.win }}\\Updates\\Downloads\\{{ ibm_infosvr_patch_definition.pkgFile }}"
+  ignore_errors: yes

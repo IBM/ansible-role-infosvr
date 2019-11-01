@@ -20,23 +20,19 @@
 
 - name: patch_jdk_was - transfer JDK update
   copy:
-    src: "{{ ibm_infosvr_media_dir }}/{{ item.filename }}"
-    dest: "{{ ibm_infosvr_tmp.linux }}/{{ item.filename }}"
+    src: "{{ ibm_infosvr_media_dir }}/{{ ibm_infosvr_jdk_definition.was_filename }}"
+    dest: "{{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_jdk_definition.was_filename }}"
     force: no
-  with_items:
-    - "{{ ibm_infosvr_websphere_jdk_update }}"
 
 - name: patch_jdk_was - patch WebSphere JDK
   command: >
           {{ ibm_infosvr_install_location.im }}/eclipse/tools/imcl
           install
-          {{ item.extractedpath }}
-          -repositories {{ ibm_infosvr_tmp.linux }}/{{ item.filename }}
+          {{ ibm_infosvr_jdk_definition.was_offering }}
+          -repositories {{ ibm_infosvr_tmp.linux }}/{{ ibm_infosvr_jdk_definition.was_filename }}
           -installationDirectory {{ ibm_infosvr_install_location.was }}
           -acceptLicense
-  with_items:
-    - "{{ ibm_infosvr_websphere_jdk_update }}"
-  when: ibm_infosvr_websphere_jdk_update is defined
+  when: ibm_infosvr_jdk_definition.was_filename is defined
 
 - name: patch_jdk_was - ensure updated security of JDK
   lineinfile:

@@ -43,21 +43,10 @@
   when: ('ibm_information_server_domain' in group_names)
   changed_when: False
 
-- name: update - parse domain-specific patches
-  include_vars: file=patches/domain-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
-
 - import_tasks: update/patch_linux.yml
   become_user: root
   become: yes
-  when: ('ibm_information_server_domain' in group_names)
-
-- name: update - parse engine-specific patches
-  include_vars: file=patches/engine-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
-
-- import_tasks: update/patch_linux.yml
-  become_user: root
-  become: yes
-  when: ('ibm_information_server_engine' in group_names)
+  when: ('ibm_information_server_domain' in group_names) or ('ibm_information_server_engine' in group_names)
 
 - name: update - remove server from maintenance mode
   command: >
@@ -73,14 +62,21 @@
   when: ('ibm_information_server_domain' in group_names)
   changed_when: False
 
-- name: update - parse client-specific patches
-  include_vars: file=patches/client-v{{ __ibm_infosvr_version|replace(".", "") }}.yml
-
 - import_tasks: update/patch_win.yml
   when: ('ibm_information_server_clients' in group_names)
 
+# Load latest JDK version information
+- name: update - lookup latest JDK information
+  include_vars:
+    file: "{{ role_path }}/vars/patches/jdk/server/{{ __ibm_infosvr_version }}/latest.yml"
+
 - import_tasks: update/update-jdk.yml
   when: ('ibm_information_server_domain' in group_names) or ('ibm_information_server_engine' in group_names)
+
+# Load latest JDK version information
+- name: update - lookup latest JDK information
+  include_vars:
+    file: "{{ role_path }}/vars/patches/jdk/client/{{ __ibm_infosvr_version }}/latest.yml"
 
 - import_tasks: update/update-jdk-win.yml
   when: ('ibm_information_server_clients' in group_names)
