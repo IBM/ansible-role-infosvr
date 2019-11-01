@@ -23,4 +23,3 @@ ibm_infosvr_jdk_definition:
   filename_64: ibm-java-sdk-80-win-x86_64.zip
   extract_path_64: sdk
   versionInfo_64: "pwa6480sr5fp40-20190807_01(SR5 FP40)"
-

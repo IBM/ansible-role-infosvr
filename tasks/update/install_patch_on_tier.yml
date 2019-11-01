@@ -44,6 +44,9 @@
           -dbpassword {{ ibm_infosvr_upwd_db2_instance }}
           {% if ibm_infosvr_force.patch is defined and ibm_infosvr_force.patch %}-force{% endif %}
   register: __ibm_infosvr_patch_install
+  when: >
+    __ibm_infosvr_patching_file.stat.exists
+    and ibm_infosvr_version_xml.find(ibm_infosvr_patch_definition.versionId) == -1
 
 - name: patch - clean up installation files
   file: path={{ item.file }} state={{ item.state }}

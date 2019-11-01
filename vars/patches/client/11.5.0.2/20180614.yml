@@ -20,4 +20,3 @@ ibm_infosvr_patch_definition:
   srcFile: patch_JR59097_ISF_windows_113-117.zip
   pkgFile: patch_JR59097_ISF_windows_113-117.ispkg
   versionId: patch_JR59097_ISF_windows_113-117
-

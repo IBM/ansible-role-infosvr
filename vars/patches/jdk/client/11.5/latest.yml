@@ -23,4 +23,3 @@ ibm_infosvr_jdk_definition:
   filename_64: ibm-java-sdk-71-win-x86_64.zip
   extract_path_64: sdk
   versionInfo_64: "pwa6470_27sr4fp50-20190715_02(SR4 FP50)"
-

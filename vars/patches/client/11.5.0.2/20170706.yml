@@ -20,4 +20,3 @@ ibm_infosvr_patch_definition:
   srcFile: rollup_RU7v3_ISF_all_11502.zip
   pkgFile: rollup_RU7v3_ISF_all_11502.ispkg
   versionId: rollup_RU7_ISF_all_11502
-

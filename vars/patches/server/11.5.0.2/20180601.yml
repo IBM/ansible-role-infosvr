@@ -23,4 +23,3 @@ ibm_infosvr_patch_definition:
   tiers:
     - domain
     - engine
-

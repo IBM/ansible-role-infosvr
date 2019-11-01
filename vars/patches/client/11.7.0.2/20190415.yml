@@ -20,4 +20,3 @@ ibm_infosvr_patch_definition:
   srcFile: patch_JR60421_IMAM_11702.zip
   pkgFile: patch_JR60421_IMAM_11702.ispkg
   versionId: patch_JR60421_IMAM_11702
-
