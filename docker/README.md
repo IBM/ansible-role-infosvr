@@ -23,15 +23,13 @@ keep a large VM around), this could be useful.
 
 To ensure the IBM Information Server services automatically startup when creating or restarting a container, it is best
 to use a `systemd`-capable base image: for example `registry.redhat.io/rhel7-init`. The choice of foundational image
-is up to you, given that some (like the one mentioned) will require licenses, subscriptions, etc.
+is up to you, given that some (like the one mentioned) require licenses, subscriptions, etc.
 
-Ensure that the image has been setup ready-to-use, including activating any necessary subscription.
+Ensure that the image has been setup ready-to-use, including activating any necessary subscription either via the host
+OS or within the container itself.
 
-(In the example above, this would require creating a derived container image after running `subscription-manager`
-inside the a container running the vanilla image, and then `docker commit`ing the results into a new derived
-container image.)
-
-The next step by default assumes you've named this derived image `rhel7-systemd-base`.
+The Dockerfile for the next step will assume you are using `registry.redhat.io/rhel7-init`. If you have opted to use
+another base image, or build your own, replace the `FROM ...` line in the Dockerfile before proceeding to the next step.
 
 ### Step 1: Building a base image
 
@@ -39,7 +37,8 @@ This image builds from your choice of foundational image above by loading the mi
 needed to do the installation of IBM Information Server.
 
 To build the base image, change into the `container` subdirectory of this repository and first modify the `FROM` line of
-the `Dockerfile` to reflect your derived container image from the previous step.
+the `Dockerfile` to reflect your chosen foundational image from the previous step. (Or if you have access to and are happy
+to use `registry.redhat.io/rhel7-init` then no change is needed.)
 
 Then execute the following:
 
@@ -52,7 +51,7 @@ After a minute or two you should have a new image called `infosvr_base`:
 ```bash
 $ docker images
 REPOSITORY                                 TAG                 IMAGE ID            CREATED             SIZE
-infosvr_base                               latest              91c56796b63b        6 minutes ago       529MB
+infosvr_base                               latest              91c56796b63b        6 minutes ago       548MB
 ```
 
 This base image simply has the foundational elements for actually deploying an Information Server environment into
