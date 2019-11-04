@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11501_isf_ru4_services_engine_client_multi
   srcFile: rollup_RU4v5_ISF_all_11501.zip
   pkgFile: rollup_RU4v5_ISF_all_11501.ispkg
-  versionId: rollup_RU4v5_ISF_all_11501
+  versionId: rollup_RU4_ISF_all_11501
   tiers:
     - domain
     - engine

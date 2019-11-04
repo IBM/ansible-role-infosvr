@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11501_JR55455_merged_services_engine_client_linux64
   srcFile: patch_Security_JR55455_merged_linux64_11501.zip
   pkgFile: patch_Security_JR55455_merged_linux64_11501.ispkg
-  versionId: patch_Security_JR55455_merged_linux64_11501
+  versionId: patch_Security_JR55455_merged_11501
   tiers:
     - domain
     - engine

@@ -19,7 +19,7 @@ ibm_infosvr_patch_definition:
   name: is11501_Gov_RU2_services_engine_linux64
   srcFile: rollup_11.5_GovernanceRollup_2_linux64_11501.tar
   pkgFile: rollup_11.5_GovernanceRollup_2_linux64_11501.ispkg
-  versionId: rollup_11.5_GovernanceRollup_2_linux64_11501
+  versionId: 11.5_GovernanceRollup_2
   tiers:
     - domain
     - engine
