@@ -30,8 +30,7 @@ RUN yum install -y initscripts chkconfig which lsof screen openssl curl python p
 # Remove init.d garbage created by some of the packages above
 RUN systemctl disable network && \
 	rm /etc/init.d/network && \
-	rm /etc/init.d/netconsole && \
-	rm /etc/init.d/functions
+	rm /etc/init.d/netconsole
 
 # Configure defaults for connections, etc
 COPY ansible.cfg /etc/ansible/
