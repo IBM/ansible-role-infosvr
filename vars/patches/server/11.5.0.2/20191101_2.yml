@@ -15,11 +15,11 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_jdk_definition:
-  name: is115_JR61916_ISF_services_engine_client_windows
-  filename_32: ibm-java-sdk-71-win-i386.zip
-  extract_path_32: sdk
-  versionInfo_32: "pwi3270_27sr4fp60-20190715_02(SR4 FP60)"
-  filename_64: ibm-java-sdk-71-win-x86_64.zip
-  extract_path_64: sdk
-  versionInfo_64: "pwa6470_27sr4fp60-20190715_02(SR4 FP60)"
+ibm_infosvr_patch_definition:
+  name: is11502_JR60963_comp-inst_engine_unix
+  srcFile: patch_JR60963_Comp-Inst_server_all_11502.tar
+  pkgFile: patch_JR60963_Comp-Inst_server_all_11502.ispkg
+  versionId: patch_JR60963_Comp-Inst_server_all_11502
+  tiers:
+    - engine
+
