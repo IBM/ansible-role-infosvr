@@ -15,11 +15,11 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_jdk_definition:
-  name: is117_JR61916_ISF_services_engine_client_windows
-  filename_32: ibm-java-sdk-80-win-i386.zip
-  extract_path_32: sdk
-  versionInfo_32: "pwi3280sr6fp5-20190807_01(SR6 FP5)"
-  filename_64: ibm-java-sdk-80-win-x86_64.zip
-  extract_path_64: sdk
-  versionInfo_64: "pwa6480sr6fp5-20190807_01(SR6 FP5)"
+ibm_infosvr_patch_definition:
+  name: is11700-1171_july2019_PXE_engine_linux64
+  srcFile: PXE_DI_Feature_Patch_July_2019_V2.tar
+  pkgFile: PXE_DI_Feature_Patch_July_2019_V2.ispkg
+  versionId: PXE_DI_Feature_Patch_July_2019_V2
+  tiers:
+    - engine
+

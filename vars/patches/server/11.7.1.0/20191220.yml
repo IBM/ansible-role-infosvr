@@ -15,11 +15,11 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_jdk_definition:
-  name: is117_JR61916_ISF_services_engine_client_windows
-  filename_32: ibm-java-sdk-80-win-i386.zip
-  extract_path_32: sdk
-  versionInfo_32: "pwi3280sr6fp5-20190807_01(SR6 FP5)"
-  filename_64: ibm-java-sdk-80-win-x86_64.zip
-  extract_path_64: sdk
-  versionInfo_64: "pwa6480sr6fp5-20190807_01(SR6 FP5)"
+ibm_infosvr_patch_definition:
+  name: is11710_SAPPack_R3_8201_linux64
+  srcFile: fixpack_SAP_R38201_linux64_1171.tar
+  pkgFile: fixpack_SAP_R38201_buildRC2_linux64_20191205_2249.ispkg
+  versionId: fixpack_SAP_R38201_buildRC2_linux64_20191205_2249
+  tiers:
+    - engine
+

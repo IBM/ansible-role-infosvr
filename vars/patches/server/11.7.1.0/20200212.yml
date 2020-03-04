@@ -15,11 +15,12 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_jdk_definition:
-  name: is117_JR61916_ISF_services_engine_client_windows
-  filename_32: ibm-java-sdk-80-win-i386.zip
-  extract_path_32: sdk
-  versionInfo_32: "pwi3280sr6fp5-20190807_01(SR6 FP5)"
-  filename_64: ibm-java-sdk-80-win-x86_64.zip
-  extract_path_64: sdk
-  versionInfo_64: "pwa6480sr6fp5-20190807_01(SR6 FP5)"
+ibm_infosvr_patch_definition:
+  name: is1171_IGC_RUP1_services_engine_client_all
+  srcFile: patch_IGC_RUP1_11710_SP2.zip
+  pkgFile: patch_IGC_RUP1_11710_SP2.ispkg
+  versionId: patch_IGC_RUP1_11710_SP2
+  tiers:
+    - domain
+    - engine
+
