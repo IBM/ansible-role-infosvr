@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: patch_IMAM_1171_SP2_RU2
   tiers:
     - domain
-

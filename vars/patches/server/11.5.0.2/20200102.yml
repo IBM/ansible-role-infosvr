@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: patch_JR60965_imam_server_11502
   tiers:
     - domain
-

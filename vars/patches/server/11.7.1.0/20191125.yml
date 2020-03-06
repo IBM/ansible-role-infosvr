@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: PXE_DI_Feature_Patch_July_2019_V2
   tiers:
     - engine
-

@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: fixpack_SAP_R38201_linux64_11710
   tiers:
     - engine
-

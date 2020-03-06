@@ -22,4 +22,3 @@ ibm_infosvr_patch_definition:
   versionId: patch_JR61495_AmazonS3CC_all_11710
   tiers:
     - engine
-
