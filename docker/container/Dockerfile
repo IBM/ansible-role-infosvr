@@ -14,12 +14,12 @@
 # limitations under the License.
 ###
 
-FROM rhel7-systemd-base
+FROM registry.redhat.io/ubi7-init
 
 VOLUME [ "/sys/fs/cgroup" ]
 
 # Add base packages needed by Information Server and Ansible
-RUN yum install -y initscripts chkconfig which lsof screen openssl python python-lxml python-jmespath python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl less git && \
+RUN yum install -y initscripts chkconfig which lsof screen openssl curl python python-lxml python-requests python-setuptools sudo file libselinux-python unzip glibc.i686 libXp libXau libXext libX11 libxcb libXmu pam.i686 net-tools bind-utils nss-softokn-freebl bc iptables-services libaio numactl-libs compat-libstdc++-33 libXtst elfutils ed util-linux-ng gcc gcc-c++ perl less git && \
         yum clean all && \
         yum install -y libstdc++.i686 libgcc.i686 && \
         yum clean all && \
@@ -27,12 +27,19 @@ RUN yum install -y initscripts chkconfig which lsof screen openssl python python
         pip install ansible && \
         pip install jmespath
 
+# Remove init.d garbage created by some of the packages above
+RUN systemctl disable network && \
+	rm /etc/init.d/network && \
+	rm /etc/init.d/netconsole
+
 # Configure defaults for connections, etc
 COPY ansible.cfg /etc/ansible/
 COPY local_connection /etc/ansible/inventories/
 COPY infosvr /etc/ansible/inventories/
+COPY egeria /etc/ansible/inventories/
 COPY build.yml /root/playbooks/
 COPY ops.yml /root/playbooks/
+COPY samples.yml /root/
 
 RUN ansible-galaxy install IBM.infosvr && \
         ansible-galaxy install IBM.infosvr-metadata-asset-manager && \

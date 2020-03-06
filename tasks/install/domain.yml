@@ -81,7 +81,7 @@
 
 - name: domain - install Installation Manager update utility
   command: >
-          {{ ibm_infosvr_install_location.linux }}/_uninstall/payloads/Shared/WAS/payload/WAS/agentInstaller/installc
+          {{ ibm_infosvr_tmp.linux }}/is-suite/payloads/Shared/WAS/payload/WAS/agentInstaller/installc
           -acceptLicense
   args:
     creates: "{{ ibm_infosvr_install_location.im }}"

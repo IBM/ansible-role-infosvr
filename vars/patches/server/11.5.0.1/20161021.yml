@@ -15,11 +15,10 @@
 # limitations under the License.
 ###
 
-ibm_infosvr_jdk_definition:
-  name: is117_JR61916_ISF_services_engine_linux64
-  infosvr_filename: ibm-java-sdk-8.0-6.5-linux-x86_64.tgz
-  infosvr_extract_path: ibm-java-x86_64-80
-  was_filename: ibm-java-sdk-8.0-6.5-linux-x64-installmgr.zip
-  was_offering: com.ibm.java.jdk.v8_8.0.6005.20200127_1546
-  versionInfo: "pxa6480sr6fp5-20200111_02(SR6 FP5)"
-  was_versionInfo: "pxa6480sr6fp5-20200111_02(SR6 FP5)"
+ibm_infosvr_patch_definition:
+  name: is115_JR56659_cc_kafka_linux64
+  srcFile: patch_JR56659_cc-kafka_linux64_11500-11501.tar
+  pkgFile: patch_JR56659_cc-kafka_linux64_11500-11501.ispkg
+  versionId: patch_JR56659_cc-kafka_linux64_11500-11501
+  tiers:
+    - engine

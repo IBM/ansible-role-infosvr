@@ -17,12 +17,12 @@
 
 ibm_infosvr_jdk_definition:
   name: is115_JR61417_ISF_services_engine_linux64
-  infosvr_filename: ibm-java-sdk-7.1-4.50-linux-x86_64.tgz
+  infosvr_filename: ibm-java-sdk-7.1-4.60-linux-x86_64.tgz
   infosvr_extract_path: ibm-java-x86_64-71
-  versionInfo: "pxa6470_27sr4fp50-20190715_02(SR4 FP50)"
+  versionInfo: "pxa6470_27sr4fp60-20200113_02(SR4 FP60)"
   was_filename: 8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPH04261.zip
   was_offering: 8.5.0.0-WS-WASJavaSDK-LinuxX64-IFPH04261
-  jdk7_filename: 7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPH14763.zip
-  jdk7_offering: 7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPH14763
+  jdk7_filename: 7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPH21196.zip
+  jdk7_offering: 7.0.1.0-WS-WASJavaSDK7-LinuxX64-IFPH21196
   was_versionInfo: "pxa6460_26sr8fp75-20181107_01(SR8 FP75)"
-  jdk7_versionInfo: "pxa6470sr10fp50-20190715_02(SR10 FP50)"
+  jdk7_versionInfo: "pxa6470sr10fp60-20200113_02(SR10 FP60)"
