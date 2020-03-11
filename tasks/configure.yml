@@ -162,6 +162,7 @@
     url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
           /ibm/iis/igc-rest/v1/logout/"
     method: GET
+    validate_certs: no
     headers:
       Cookie: "{{ __ibm_infosvr_solr_indices.set_cookie }}"
   when: ('ibm_information_server_domain' in group_names)
