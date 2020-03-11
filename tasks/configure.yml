@@ -60,7 +60,10 @@
     validate_certs: no
     timeout: 120
   ignore_errors: yes
+  register: __ibm_infosvr_solr_indices
   when: ('ibm_information_server_domain' in group_names)
+  tags:
+    - "sync_and_index"
 
 - name: configure - ensure local cache directory exists
   file:
@@ -82,16 +85,14 @@
     url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
           /ibm/iis/ds/api/engines/{{ hostvars[ibm_infosvr_hosts.engine].ansible_fqdn | upper }}/wlmconfig"
     method: POST
-    user: "{{ ibm_infosvr_user_isadmin }}"
-    password: "{{ ibm_infosvr_upwd_isadmin }}"
     body: "{{ lookup('file', 'cache/wlmconfig.json') }}"
     body_format: json
-    force_basic_auth: yes
     status_code: 200
     validate_certs: no
     timeout: 10
     headers:
       Content-Type: "application/json; charset=utf-8"
+      Cookie: "{{ __ibm_infosvr_solr_indices.set_cookie }}"
   when: ('ibm_information_server_domain' in group_names)
 
 - import_tasks: configure/configure-ia.yml
@@ -146,13 +147,23 @@
     url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
           /ibm/iis/common-utils/rest/v1/app/reindex?batchSize=25&solrBatchSize=100&upgrade=true&force=true"
     method: GET
-    user: "{{ ibm_infosvr_user_isadmin }}"
-    password: "{{ ibm_infosvr_upwd_isadmin }}"
-    force_basic_auth: yes
     status_code: 200
     validate_certs: no
     timeout: 120
+    headers:
+      Cookie: "{{ __ibm_infosvr_solr_indices.set_cookie }}"
   ignore_errors: yes
+  when: ('ibm_information_server_domain' in group_names)
+  tags:
+    - "sync_and_index"
+
+- name: close session
+  uri:
+    url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
+          /ibm/iis/igc-rest/v1/logout/"
+    method: GET
+    headers:
+      Cookie: "{{ __ibm_infosvr_solr_indices.set_cookie }}"
   when: ('ibm_information_server_domain' in group_names)
   tags:
     - "sync_and_index"

@@ -146,6 +146,16 @@
     - "/ibm/iis/ia/api/configuration/dataQuality"
   become_user: "{{ ibm_infosvr_user_dsadmin }}"
   become: yes
+  register: __ibm_infosvr_ia_dq_config
+  when: ('ibm_information_server_engine' in group_names) and (__ibm_infosvr_version == "11.7")
+
+- name: configure-ia - close session
+  uri:
+    url: "https://{{ ibm_infosvr_hosts.domain }}:{{ ibm_infosvr_ports.console }}\
+          /ibm/iis/igc-rest/v1/logout/"
+    method: GET
+    headers:
+      Cookie: "{{ __ibm_infosvr_ia_dq_config.set_cookie }}"
   when: ('ibm_information_server_engine' in group_names) and (__ibm_infosvr_version == "11.7")
 
 - name: configure-ia - copy IA engine node configuration
