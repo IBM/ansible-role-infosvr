@@ -165,7 +165,9 @@
     validate_certs: no
     headers:
       Cookie: "{{ __ibm_infosvr_solr_indices.set_cookie }}"
-  when: ('ibm_information_server_domain' in group_names)
+  when: >
+    ('ibm_information_server_domain' in group_names)
+    and (__ibm_infosvr_solr_indices.set_cookie is defined)
   tags:
     - "sync_and_index"
 

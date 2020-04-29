@@ -157,7 +157,10 @@
     validate_certs: no
     headers:
       Cookie: "{{ __ibm_infosvr_ia_dq_config_api.set_cookie }}"
-  when: ('ibm_information_server_engine' in group_names) and (__ibm_infosvr_version == "11.7")
+  when: >
+    ('ibm_information_server_engine' in group_names)
+    and (__ibm_infosvr_version == "11.7")
+    and (__ibm_infosvr_ia_dq_config_api.set_cookie is defined)
 
 - name: configure-ia - copy IA engine node configuration
   template: src=ia.job.properties.j2 dest={{ ibm_infosvr_install_location.linux }}/ASBNode/conf/ia.job.properties
