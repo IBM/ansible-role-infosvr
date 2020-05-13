@@ -18,7 +18,7 @@
 ibm_infosvr_patch_definition:
   name: is11502_JR60965_imam_services_engine_all
   srcFile: patch_JR60965_imam_server_11502.zip
-  pkgFile: patch_JR60965_imam_server_11502.ispkg
+  pkgFile: patch_JR60965_imam_server_11502/patch_JR60965_imam_server_11502.ispkg
   versionId: patch_JR60965_imam_server_11502
   tiers:
     - domain
