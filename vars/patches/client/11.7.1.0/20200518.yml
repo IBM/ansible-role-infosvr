@@ -19,4 +19,4 @@ ibm_infosvr_patch_definition:
   name: is1171_fp1_server_client_win
   srcFile: fixpack_FP1_IS1171_win_11710.zip
   pkgFile: fixpack_FP1_IS1171_win_11710.ispkg
-  versionId: fixpack_FP1_IS1171_win_11710
+  versionId: fixpack_IS11711_11710
